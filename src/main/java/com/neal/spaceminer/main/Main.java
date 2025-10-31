@@ -1,4 +1,4 @@
-package com.neal.spaceminer;
+package com.neal.spaceminer.main;
 
 import javax.swing.*;
 

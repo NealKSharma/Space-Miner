@@ -1,4 +1,4 @@
-package com.neal.spaceminer;
+package com.neal.spaceminer.main;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
