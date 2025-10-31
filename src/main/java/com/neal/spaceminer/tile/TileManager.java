@@ -19,7 +19,7 @@ public class TileManager {
     public TileManager(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         tile = new Tile[10];
-        mapTileNum = new int[gamePanel.maxScreenCol][gamePanel.maxScreenRow];
+        mapTileNum = new int[gamePanel.maxWorldCol][gamePanel.maxWorldRow];
 
         getTileImage();
         loadMap("/maps/map01.txt");
@@ -72,23 +72,30 @@ public class TileManager {
 
     public void draw(Graphics2D g2){
 
-        int col = 0;
-        int row = 0;
-        int x  = 0;
-        int y  = 0;
+        int worldCol = 0;
+        int worldRow = 0;
 
-        while(col < gamePanel.maxScreenCol && row < gamePanel.maxScreenRow){
-            int tileNum = mapTileNum[col][row];
+        while(worldCol < gamePanel.maxWorldCol && worldRow < gamePanel.maxWorldRow){
+            int tileNum = mapTileNum[worldCol][worldRow];
 
-            g2.drawImage(tile[tileNum].img, x, y, gamePanel.tileSize, gamePanel.tileSize, null);
-            col++;
-            x += gamePanel.tileSize;
+            int worldX = worldCol * gamePanel.tileSize;
+            int worldY = worldRow * gamePanel.tileSize;
+            int screenX = (int) (worldX - gamePanel.ship.worldX + gamePanel.ship.screenX);
+            int screenY = (int) (worldY - gamePanel.ship.worldY + gamePanel.ship.screenY);
 
-            if (col==gamePanel.maxScreenCol){
-                col = 0;
-                x = 0;
-                row++;
-                y+= gamePanel.tileSize;
+            if (worldX + gamePanel.tileSize> gamePanel.ship.worldX - gamePanel.ship.screenX &&
+                worldX - gamePanel.tileSize < gamePanel.ship.worldX + gamePanel.ship.screenX &&
+                worldY + gamePanel.tileSize > gamePanel.ship.worldY - gamePanel.ship.screenY &&
+                worldY - gamePanel.tileSize < gamePanel.ship.worldY + gamePanel.ship.screenY){
+
+                g2.drawImage(tile[tileNum].img, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+            }
+
+            worldCol++;
+
+            if (worldCol==gamePanel.maxWorldCol){
+                worldCol = 0;
+                worldRow++;
             }
         }
     }

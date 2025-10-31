@@ -15,6 +15,9 @@ public class Ship extends Entity{
     GamePanel gamePanel;
     KeyHandler keyHandler;
 
+    public final int screenX;
+    public final int screenY;
+
     // Rotation properties
     private double angle = 0; // Current angle in radians
     private double rotationSpeed = 0.01; // Rotation speed in radians per frame
@@ -24,13 +27,16 @@ public class Ship extends Entity{
         this.gamePanel = gamePanel;
         this.keyHandler = keyHandler;
 
+        screenX = gamePanel.screenWidth/2 - gamePanel.tileSize/2;
+        screenY = gamePanel.screenHeight/2 - gamePanel.tileSize/2;;
+
         initialize();
         getImage();
     }
 
     public void initialize(){
-        x = 100.0;
-        y = 100.0;
+        worldX = gamePanel.tileSize*23;
+        worldY = gamePanel.tileSize*21;
         speed = 1.5;
         angle = 0; // Start facing North
     }
@@ -58,8 +64,8 @@ public class Ship extends Entity{
         if (keyHandler.up){
             double moveAngle = angle - Math.PI / 2;
 
-            x += Math.cos(moveAngle) * speed;
-            y += Math.sin(moveAngle) * speed;
+            worldX += Math.cos(moveAngle) * speed;
+            worldY += Math.sin(moveAngle) * speed;
 
         }
     }
@@ -73,20 +79,10 @@ public class Ship extends Entity{
         // Save original transform
         AffineTransform oldTransform = g2d.getTransform();
 
-        // Create new transform for rotation
-        AffineTransform transform = new AffineTransform();
-
-        // Calculate center of the ship
-        double centerX = x + gamePanel.tileSize / 2.0;
-        double centerY = y + gamePanel.tileSize / 2.0;
-
-        // Move to ship center, rotate, then offset back
-        transform.translate(centerX, centerY);
-        transform.rotate(angle); // Rotate by the current angle
-        transform.translate(-gamePanel.tileSize / 2.0, -gamePanel.tileSize / 2.0);
-
-        g2d.setTransform(transform);
-        g2d.drawImage(shipImage, 0, 0, gamePanel.tileSize, gamePanel.tileSize, null);
+        // Translate to center, rotate, then draw centered
+        g2d.translate(screenX + gamePanel.tileSize / 2, screenY + gamePanel.tileSize / 2);
+        g2d.rotate(angle);
+        g2d.drawImage(shipImage, -gamePanel.tileSize / 2, -gamePanel.tileSize / 2, gamePanel.tileSize, gamePanel.tileSize, null);
 
         // Restore original transform
         g2d.setTransform(oldTransform);
