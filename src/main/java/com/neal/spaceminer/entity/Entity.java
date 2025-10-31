@@ -4,8 +4,8 @@ import java.awt.image.BufferedImage;
 
 public class Entity {
 
-    public int x, y;
-    public int speed;
+    public double x, y;
+    public double speed;
 
     public BufferedImage up, down, left, right, nw, ne, sw, se;
     public String direction;

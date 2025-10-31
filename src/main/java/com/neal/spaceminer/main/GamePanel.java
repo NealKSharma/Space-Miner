@@ -1,6 +1,7 @@
 package com.neal.spaceminer.main;
 
 import com.neal.spaceminer.entity.Ship;
+import com.neal.spaceminer.tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,13 +13,14 @@ public class GamePanel extends JPanel implements Runnable {
     final int scale = 4;
 
     public final int tileSize = originalTileSize * scale; // After Scaling becomes 64x64
-    final int maxScreenCol = 16;
-    final int maxScreenRow = 12;
-    final int screenWidth = tileSize * maxScreenCol; // 1024px (64x16)
-    final int screenHeight = tileSize * maxScreenRow; // 768px (64x12)
+    public final int maxScreenCol = 16;
+    public final int maxScreenRow = 12;
+    public final int screenWidth = tileSize * maxScreenCol; // 1024px (64x16)
+    public final int screenHeight = tileSize * maxScreenRow; // 768px (64x12)
 
     int FPS = 144;
 
+    TileManager tileManager = new TileManager(this);
     KeyHandler keyHandler = new KeyHandler();
     Thread gameThread;
     Ship ship = new Ship(this, keyHandler);
@@ -74,6 +76,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         Graphics2D g2 = (Graphics2D) g;
 
+        tileManager.draw(g2);
         ship.draw(g2);
 
         g2.dispose();
