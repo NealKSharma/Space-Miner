@@ -23,6 +23,9 @@ public class KeyHandler implements KeyListener {
         if (key == KeyEvent.VK_A) {
             left = true;
         }
+        if (key == KeyEvent.VK_S) {
+            down = true;
+        }
         if (key == KeyEvent.VK_D) {
             right = true;
         }
@@ -38,6 +41,9 @@ public class KeyHandler implements KeyListener {
         }
         if (key == KeyEvent.VK_A) {
             left = false;
+        }
+        if (key == KeyEvent.VK_S) {
+            down = false;
         }
         if (key == KeyEvent.VK_D) {
             right = false;
