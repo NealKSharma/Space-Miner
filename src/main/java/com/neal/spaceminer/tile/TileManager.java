@@ -13,8 +13,8 @@ import java.util.Objects;
 public class TileManager {
 
     GamePanel gamePanel;
-    Tile[] tile;
-    int mapTileNum[][];
+    public Tile[] tile;
+    public int mapTileNum[][];
 
     public TileManager(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -32,15 +32,19 @@ public class TileManager {
 
             tile[1] = new Tile();
             tile[1].img = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/testimages/wall.png")));
+            tile[1].collision = true;
 
             tile[2] = new Tile();
             tile[2].img = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/lava.png")));
+            tile[2].collision = true;
 
             tile[3] = new Tile();
             tile[3].img = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/drytree.png")));
+            tile[3].collision = true;
 
             tile[4] = new Tile();
             tile[4].img = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/rock1.png")));
+            tile[4].collision = true;
 
             tile[5] = new Tile();
             tile[5].img = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/path.png")));
