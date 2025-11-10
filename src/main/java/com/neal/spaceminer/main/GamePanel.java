@@ -1,6 +1,7 @@
 package com.neal.spaceminer.main;
 
 import com.neal.spaceminer.entity.Player;
+import com.neal.spaceminer.object.SuperObject;
 import com.neal.spaceminer.tile.TileManager;
 
 import javax.swing.*;
@@ -30,6 +31,8 @@ public class GamePanel extends JPanel implements Runnable {
     Thread gameThread;
     public Player player = new Player(this, keyHandler);
     public CollisionChecker collisionChecker = new CollisionChecker(this);
+    public SuperObject[] obj = new SuperObject[10];
+    public AssetSetter assetSetter = new AssetSetter(this);
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -37,6 +40,10 @@ public class GamePanel extends JPanel implements Runnable {
         this.setDoubleBuffered(true);
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
+    }
+
+    public void setupGame(){
+        assetSetter.setObject();
     }
 
     public void startGame() {
@@ -83,6 +90,13 @@ public class GamePanel extends JPanel implements Runnable {
         Graphics2D g2 = (Graphics2D) g;
 
         tileManager.draw(g2);
+
+        for (int i = 0; i < obj.length; i++) {
+            if(obj[i] != null) {
+                obj[i].draw(g2, this);
+            }
+        }
+
         player.draw(g2);
 
         g2.dispose();
