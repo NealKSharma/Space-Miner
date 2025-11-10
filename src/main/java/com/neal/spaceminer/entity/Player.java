@@ -16,6 +16,7 @@ public class Player extends Entity {
 
     public final int screenX;
     public final int screenY;
+    boolean use = false;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
         this.gamePanel = gamePanel;
@@ -24,7 +25,13 @@ public class Player extends Entity {
         screenX = gamePanel.screenWidth / 2 - gamePanel.tileSize / 2;
         screenY = gamePanel.screenHeight / 2 - gamePanel.tileSize / 2;
 
-        solidArea = new Rectangle(24, 24, gamePanel.tileSize -  40, gamePanel.tileSize - 40);
+        solidArea = new Rectangle();
+        solidArea.x = 24;
+        solidArea.y = 24;
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
+        solidArea.width = gamePanel.tileSize -  40;
+        solidArea.height = gamePanel.tileSize -  40;
 
         initialize();
         getImage();
@@ -71,6 +78,9 @@ public class Player extends Entity {
             collisionOn = false;
             gamePanel.collisionChecker.checkTile(this);
 
+            int objIndex = gamePanel.collisionChecker.checkObject(this, true);
+            if (objIndex != -1) pickUpObject(objIndex);
+
             // IF COLLISION IS FALSE, PLAYER CAN MOVE
             if (!collisionOn) {
                 switch (direction) {
@@ -94,6 +104,24 @@ public class Player extends Entity {
                 }
                 spriteCounter = 0;
             }
+        }
+        int objIndex = gamePanel.collisionChecker.checkObject(this, true);
+        if (objIndex != -1) pickUpObject(objIndex);
+    }
+
+    public void pickUpObject(int index) {
+        String objectName = gamePanel.obj[index].name;
+
+        switch(objectName){
+            case "Key":
+                if(keyHandler.use){
+
+                    gamePanel.obj[index] = null;
+                    use = true;
+
+                    keyHandler.use = false;
+                    }
+                break;
         }
     }
 
