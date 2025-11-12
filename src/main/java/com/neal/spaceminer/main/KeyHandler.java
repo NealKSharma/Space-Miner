@@ -5,7 +5,10 @@ import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
 
-    public boolean up, down, left, right;
+    public boolean up, down, left, right, use, escape;
+
+    public boolean usePressed = false;
+    public boolean escapePressed = false;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -23,8 +26,20 @@ public class KeyHandler implements KeyListener {
         if (key == KeyEvent.VK_A) {
             left = true;
         }
+        if (key == KeyEvent.VK_S) {
+            down = true;
+        }
         if (key == KeyEvent.VK_D) {
             right = true;
+        }
+
+        if (key == KeyEvent.VK_E && !usePressed) {
+            use = true;
+            usePressed = true;
+        }
+        if (key == KeyEvent.VK_ESCAPE && !escapePressed) {
+            escape = true;
+            escapePressed = true;
         }
     }
 
@@ -39,8 +54,20 @@ public class KeyHandler implements KeyListener {
         if (key == KeyEvent.VK_A) {
             left = false;
         }
+        if (key == KeyEvent.VK_S) {
+            down = false;
+        }
         if (key == KeyEvent.VK_D) {
             right = false;
+        }
+
+        if (key == KeyEvent.VK_E) {
+            use = false;
+            usePressed = false;
+        }
+        if (key == KeyEvent.VK_ESCAPE) {
+            escape = false;
+            escapePressed = false;
         }
     }
 }

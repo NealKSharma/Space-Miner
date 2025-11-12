@@ -1,6 +1,7 @@
 package com.neal.spaceminer.main;
 
-import com.neal.spaceminer.entity.Ship;
+import com.neal.spaceminer.entity.Player;
+import com.neal.spaceminer.object.SuperObject;
 import com.neal.spaceminer.tile.TileManager;
 
 import javax.swing.*;
@@ -18,12 +19,21 @@ public class GamePanel extends JPanel implements Runnable {
     public final int screenWidth = tileSize * maxScreenCol; // 1024px (64x16)
     public final int screenHeight = tileSize * maxScreenRow; // 768px (64x12)
 
+    public final int maxWorldCol = 50;
+    public final int maxWorldRow = 50;
+    public final int worldWidth = tileSize * maxWorldCol;
+    public final int worldHeight = tileSize * maxWorldRow;
+
     int FPS = 144;
 
     TileManager tileManager = new TileManager(this);
     KeyHandler keyHandler = new KeyHandler();
     Thread gameThread;
-    Ship ship = new Ship(this, keyHandler);
+    public Player player = new Player(this, keyHandler);
+    public CollisionChecker collisionChecker = new CollisionChecker(this);
+    public SuperObject[] obj = new SuperObject[10];
+    public AssetSetter assetSetter = new AssetSetter(this);
+    public UI ui = new UI(this);
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -31,6 +41,10 @@ public class GamePanel extends JPanel implements Runnable {
         this.setDoubleBuffered(true);
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
+    }
+
+    public void setupGame() {
+        assetSetter.setObject();
     }
 
     public void startGame() {
@@ -53,22 +67,21 @@ public class GamePanel extends JPanel implements Runnable {
                 double remainingTime = nextDrawTime - System.nanoTime();
                 remainingTime /= 1000000;
 
-                if(remainingTime < 0){
+                if (remainingTime < 0) {
                     remainingTime = 0;
                 }
 
-                Thread.sleep((long)remainingTime);
+                Thread.sleep((long) remainingTime);
 
                 nextDrawTime += drawInterval;
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public void update(){
-        ship.update();
+    public void update() {
+        player.update();
     }
 
     public void paintComponent(Graphics g) {
@@ -77,7 +90,16 @@ public class GamePanel extends JPanel implements Runnable {
         Graphics2D g2 = (Graphics2D) g;
 
         tileManager.draw(g2);
-        ship.draw(g2);
+
+        for (int i = 0; i < obj.length; i++) {
+            if (obj[i] != null) {
+                obj[i].draw(g2, this);
+            }
+        }
+
+        player.draw(g2);
+
+        ui.draw(g2);
 
         g2.dispose();
     }
