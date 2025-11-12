@@ -9,15 +9,15 @@ public class UI {
 
     public UI(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
-        arial_40 = new Font("Arial", Font.PLAIN, 20);
+        arial_40 = new Font("Arial", Font.PLAIN, 25);
     }
 
-    public void draw(Graphics2D g2){
+    public void draw(Graphics2D g2) {
 
         g2.setFont(arial_40);
         g2.setColor(Color.white);
-        if(gamePanel.player.canUse){
-            g2.drawString("Press E to interact with the object", 25, 384);
+        if (gamePanel.player.canUse) {
+            g2.drawString("Press E to interact", 25, gamePanel.screenHeight / 2);
         }
 
     }

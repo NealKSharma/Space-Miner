@@ -43,7 +43,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true);
     }
 
-    public void setupGame(){
+    public void setupGame() {
         assetSetter.setObject();
     }
 
@@ -67,21 +67,20 @@ public class GamePanel extends JPanel implements Runnable {
                 double remainingTime = nextDrawTime - System.nanoTime();
                 remainingTime /= 1000000;
 
-                if(remainingTime < 0){
+                if (remainingTime < 0) {
                     remainingTime = 0;
                 }
 
-                Thread.sleep((long)remainingTime);
+                Thread.sleep((long) remainingTime);
 
                 nextDrawTime += drawInterval;
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public void update(){
+    public void update() {
         player.update();
     }
 
@@ -93,7 +92,7 @@ public class GamePanel extends JPanel implements Runnable {
         tileManager.draw(g2);
 
         for (int i = 0; i < obj.length; i++) {
-            if(obj[i] != null) {
+            if (obj[i] != null) {
                 obj[i].draw(g2, this);
             }
         }

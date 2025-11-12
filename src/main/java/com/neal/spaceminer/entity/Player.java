@@ -2,6 +2,7 @@ package com.neal.spaceminer.entity;
 
 import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.main.KeyHandler;
+import com.neal.spaceminer.main.Utility;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -32,34 +33,42 @@ public class Player extends Entity {
         solidArea.y = 24;
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
-        solidArea.width = gamePanel.tileSize -  40;
-        solidArea.height = gamePanel.tileSize -  40;
+        solidArea.width = gamePanel.tileSize - 40;
+        solidArea.height = gamePanel.tileSize - 40;
 
         initialize();
         getImage();
     }
 
     public void initialize() {
-        worldX = gamePanel.tileSize * 23;
-        worldY = gamePanel.tileSize * 21;
+        worldX = gamePanel.tileSize * 24;
+        worldY = gamePanel.tileSize * 24;
         speed = 2;
         direction = "down";
     }
 
     public void getImage() {
+        up1 = setup("back1");
+        up2 = setup("back2");
+        down1 = setup("front1");
+        down2 = setup("front2");
+        left1 = setup("left1");
+        left2 = setup("left2");
+        right1 = setup("right1");
+        right2 = setup("right2");
+    }
+
+    public BufferedImage setup(String imageName) {
+        Utility utility = new Utility();
+        BufferedImage image = null;
         try {
-            up1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/astronaut/back1.png")));
-            up2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/astronaut/back2.png")));
-            down1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/astronaut/front1.png")));
-            down2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/astronaut/front2.png")));
-            left1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/astronaut/left1.png")));
-            left2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/astronaut/left2.png")));
-            right1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/astronaut/right1.png")));
-            right2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/astronaut/right2.png")));
+            image = ImageIO.read(Objects.requireNonNull(getClass().getResource("/astronaut/" + imageName + ".png")));
+            image = utility.scaleImage(image, gamePanel.tileSize, gamePanel.tileSize);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return image;
     }
 
     public void update() {
@@ -87,13 +96,17 @@ public class Player extends Entity {
             if (!collisionOn) {
                 switch (direction) {
                     case "up":
-                        worldY -= speed; break;
+                        worldY -= speed;
+                        break;
                     case "down":
-                        worldY += speed; break;
+                        worldY += speed;
+                        break;
                     case "left":
-                        worldX -= speed; break;
+                        worldX -= speed;
+                        break;
                     case "right":
-                        worldX += speed; break;
+                        worldX += speed;
+                        break;
                 }
             }
 
@@ -110,10 +123,10 @@ public class Player extends Entity {
         int objIndex = gamePanel.collisionChecker.checkObject(this, true);
         if (objIndex != -1) {
             interactObject(objIndex);
-            if(gamePanel.obj[objIndex].name.equals("Chest")){
+            if (gamePanel.obj[objIndex].name.equals("Chest")) {
                 canUse = true;
             }
-        } else{
+        } else {
             canUse = false;
         }
     }
@@ -121,15 +134,15 @@ public class Player extends Entity {
     public void interactObject(int index) {
         String objectName = gamePanel.obj[index].name;
 
-        switch(objectName){
+        switch (objectName) {
             case "Chest":
-                if(keyHandler.use){
+                if (keyHandler.use) {
 
                     use = true;
 
                     keyHandler.use = false;
-                    }
-                if(keyHandler.escape){
+                }
+                if (keyHandler.escape) {
 
                     escape = true;
 
@@ -176,6 +189,6 @@ public class Player extends Entity {
                 }
                 break;
         }
-        g2.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+        g2.drawImage(image, screenX, screenY, null);
     }
 }
