@@ -5,10 +5,16 @@ import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
 
+    GamePanel gamePanel;
+
     public boolean up, down, left, right, use, escape;
 
     public boolean usePressed = false;
     public boolean escapePressed = false;
+
+    public KeyHandler(GamePanel gamePanel) {
+        this.gamePanel = gamePanel;
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -33,6 +39,16 @@ public class KeyHandler implements KeyListener {
             right = true;
         }
 
+        // GAME STATE
+        if (key == KeyEvent.VK_P) {
+            if (gamePanel.gameState == gamePanel.playState) {
+                gamePanel.gameState = gamePanel.pauseState;
+            } else if (gamePanel.gameState == gamePanel.pauseState) {
+                gamePanel.gameState = gamePanel.playState;
+            }
+        }
+
+        // OBJECT INTERACTION
         if (key == KeyEvent.VK_E && !usePressed) {
             use = true;
             usePressed = true;
