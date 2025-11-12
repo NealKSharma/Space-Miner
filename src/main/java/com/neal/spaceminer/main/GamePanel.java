@@ -33,6 +33,7 @@ public class GamePanel extends JPanel implements Runnable {
     public CollisionChecker collisionChecker = new CollisionChecker(this);
     public SuperObject[] obj = new SuperObject[10];
     public AssetSetter assetSetter = new AssetSetter(this);
+    public UI ui = new UI(this);
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -98,6 +99,8 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         player.draw(g2);
+
+        ui.draw(g2);
 
         g2.dispose();
     }

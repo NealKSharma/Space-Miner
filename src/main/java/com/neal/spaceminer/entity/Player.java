@@ -17,6 +17,8 @@ public class Player extends Entity {
     public final int screenX;
     public final int screenY;
     boolean use = false;
+    public boolean canUse = false;
+    public boolean escape = false;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
         this.gamePanel = gamePanel;
@@ -79,7 +81,7 @@ public class Player extends Entity {
             gamePanel.collisionChecker.checkTile(this);
 
             int objIndex = gamePanel.collisionChecker.checkObject(this, true);
-            if (objIndex != -1) pickUpObject(objIndex);
+            if (objIndex != -1) interactObject(objIndex);
 
             // IF COLLISION IS FALSE, PLAYER CAN MOVE
             if (!collisionOn) {
@@ -106,21 +108,33 @@ public class Player extends Entity {
             }
         }
         int objIndex = gamePanel.collisionChecker.checkObject(this, true);
-        if (objIndex != -1) pickUpObject(objIndex);
+        if (objIndex != -1) {
+            interactObject(objIndex);
+            if(gamePanel.obj[objIndex].name.equals("Chest")){
+                canUse = true;
+            }
+        } else{
+            canUse = false;
+        }
     }
 
-    public void pickUpObject(int index) {
+    public void interactObject(int index) {
         String objectName = gamePanel.obj[index].name;
 
         switch(objectName){
-            case "Key":
+            case "Chest":
                 if(keyHandler.use){
 
-                    gamePanel.obj[index] = null;
                     use = true;
 
                     keyHandler.use = false;
                     }
+                if(keyHandler.escape){
+
+                    escape = true;
+
+                    keyHandler.escape = false;
+                }
                 break;
         }
     }
