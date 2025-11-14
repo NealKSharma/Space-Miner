@@ -19,32 +19,31 @@ public class UI {
     }
 
     public void draw(Graphics2D g2) {
+        this.g2 = g2;
+
+        Font originalFont = g2.getFont();
 
         g2.setFont(arial_40);
         g2.setColor(Color.white);
-        this.g2 = g2;
 
         if (gamePanel.gameState == gamePanel.playState) {
+
+            // MORE NORMAL GUI
+
             if (gamePanel.player.canUse) {
                 g2.drawString("Press E to interact", 10, gamePanel.screenHeight / 2);
             }
-        }
 
-        if (gamePanel.gameState == gamePanel.titleState){
+        } else if (gamePanel.gameState == gamePanel.titleState){
             drawTitleScreen();
-        }
-
-        if (gamePanel.gameState == gamePanel.pauseState) {
+        } else if (gamePanel.gameState == gamePanel.pauseState) {
             drawPauseScreen();
-        }
-
-        if(gamePanel.gameState == gamePanel.inventoryState){
+        } else if(gamePanel.gameState == gamePanel.inventoryState){
             drawInventory();
-        }
-
-        if(gamePanel.gameState == gamePanel.chestState){
+        } else if(gamePanel.gameState == gamePanel.chestState){
             drawChest();
         }
+        g2.setFont(originalFont);
     }
 
     public void drawTitleScreen() {

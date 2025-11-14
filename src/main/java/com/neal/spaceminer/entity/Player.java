@@ -2,13 +2,8 @@ package com.neal.spaceminer.entity;
 
 import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.main.KeyHandler;
-import com.neal.spaceminer.main.Utility;
-
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.Objects;
 
 public class Player extends Entity {
 
@@ -20,6 +15,9 @@ public class Player extends Entity {
     public boolean canUse = false;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
+
+        super(gamePanel);
+
         this.gamePanel = gamePanel;
         this.keyHandler = keyHandler;
 
@@ -27,12 +25,12 @@ public class Player extends Entity {
         screenY = gamePanel.screenHeight / 2 - gamePanel.tileSize / 2;
 
         solidArea = new Rectangle();
-        solidArea.x = 24;
-        solidArea.y = 24;
+        solidArea.x = 18;
+        solidArea.y = 15;
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
-        solidArea.width = gamePanel.tileSize - 40;
-        solidArea.height = gamePanel.tileSize - 40;
+        solidArea.width = gamePanel.tileSize - 35;
+        solidArea.height = gamePanel.tileSize - 25;
 
         initialize();
         getImage();
@@ -42,31 +40,17 @@ public class Player extends Entity {
         worldX = gamePanel.tileSize * 24;
         worldY = gamePanel.tileSize * 24;
         speed = 2;
-        direction = "down";
     }
 
     public void getImage() {
-        up1 = setup("back1");
-        up2 = setup("back2");
-        down1 = setup("front1");
-        down2 = setup("front2");
-        left1 = setup("left1");
-        left2 = setup("left2");
-        right1 = setup("right1");
-        right2 = setup("right2");
-    }
-
-    public BufferedImage setup(String imageName) {
-        Utility utility = new Utility();
-        BufferedImage image = null;
-        try {
-            image = ImageIO.read(Objects.requireNonNull(getClass().getResource("/astronaut/" + imageName + ".png")));
-            image = utility.scaleImage(image, gamePanel.tileSize, gamePanel.tileSize);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return image;
+        up1 = setup("/astronaut/back1");
+        up2 = setup("/astronaut/back2");
+        down1 = setup("/astronaut/front1");
+        down2 = setup("/astronaut/front2");
+        left1 = setup("/astronaut/left1");
+        left2 = setup("/astronaut/left2");
+        right1 = setup("/astronaut/right1");
+        right2 = setup("/astronaut/right2");
     }
 
     public void update() {
@@ -139,45 +123,5 @@ public class Player extends Entity {
                 }
                 break;
         }
-    }
-
-    public void draw(Graphics g2) {
-
-        BufferedImage image = null;
-        switch (direction) {
-            case "up":
-                if (spriteNum == 1) {
-                    image = up1;
-                }
-                if (spriteNum == 2) {
-                    image = up2;
-                }
-                break;
-            case "down":
-                if (spriteNum == 1) {
-                    image = down1;
-                }
-                if (spriteNum == 2) {
-                    image = down2;
-                }
-                break;
-            case "left":
-                if (spriteNum == 1) {
-                    image = left1;
-                }
-                if (spriteNum == 2) {
-                    image = left2;
-                }
-                break;
-            case "right":
-                if (spriteNum == 1) {
-                    image = right1;
-                }
-                if (spriteNum == 2) {
-                    image = right2;
-                }
-                break;
-        }
-        g2.drawImage(image, screenX, screenY, null);
     }
 }

@@ -1,11 +1,13 @@
 package com.neal.spaceminer.main;
 
+import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.entity.Player;
-import com.neal.spaceminer.object.SuperObject;
 import com.neal.spaceminer.tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -36,7 +38,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     // PLAYER AND OBJECTS
     public Player player = new Player(this, keyHandler);
-    public SuperObject[] obj = new SuperObject[10];
+    public Entity[] obj = new Entity[10];
+    ArrayList<Entity> entityList = new ArrayList<Entity>();
 
     // GAME STATE
     public int gameState;
@@ -122,13 +125,40 @@ public class GamePanel extends JPanel implements Runnable {
         else {
             tileManager.draw(g2);
 
-            for (int i = 0; i < obj.length; i++) {
-                if (obj[i] != null) {
-                    obj[i].draw(g2, this);
+            // ADD PLAYER TO LIST
+            entityList.add(player);
+
+            // ADD OBJECTS TO LIST
+            for (Entity value : obj) {
+                if (value != null) {
+                    entityList.add(value);
                 }
             }
 
-            player.draw(g2);
+            // SORTING - Objects with collision=true are drawn after (on top of) entities with collision=false
+            entityList.sort((e1, e2) -> {
+                // Chests (collision=true) always on top
+                if (e1.collision != e2.collision) {
+                    return e1.collision ? 1 : -1;
+                }
+
+                // Among non-collision entities, player always draws last
+                if (!e1.collision && !e2.collision) {
+                    if (e1 instanceof Player) return 1;  // Player draws after
+                    if (e2 instanceof Player) return -1; // Player draws after
+                    return e1.worldY - e2.worldY; // Other objects sort by Y
+                }
+
+                return e1.worldY - e2.worldY;
+            });
+
+            // DRAW ENTITIES
+            for (Entity entity : entityList) {
+                entity.draw(g2);
+            }
+
+            // EMPTY LIST
+            entityList.clear();
 
             ui.draw(g2);
         }
@@ -136,9 +166,13 @@ public class GamePanel extends JPanel implements Runnable {
         if (keyHandler.showDebug){
             long drawEndTime = System.nanoTime();
             long passed = drawEndTime - drawStartTime;
+
+            // Convert to microseconds for more consistent display
+            double drawTimeMs = passed / 1000000.0;
+
             g2.setColor(Color.white);
-            g2.drawString("Draw Time: " + passed, 10, 400);
-            System.out.println("Draw Time: " + passed);
+            g2.drawString(String.format("Draw Time: %.2f ms", drawTimeMs), 10, 20);
+            g2.drawString(String.format("FPS: %.0f", 1000.0 / drawTimeMs), 10, 40);
         }
 
         g2.dispose();
