@@ -42,6 +42,8 @@ public class GamePanel extends JPanel implements Runnable {
     public int gameState;
     public final int playState = 1;
     public final int pauseState = 2;
+    public final int inventoryState = 3;
+    public final int chestState = 4;
 
 
     public GamePanel() {
@@ -94,9 +96,11 @@ public class GamePanel extends JPanel implements Runnable {
 
         if(gameState == playState) {
             player.update();
-        }
+        } else if (gameState == pauseState){
 
-        if(gameState == pauseState) {
+        } else if(gameState == inventoryState){
+
+        } else if(gameState == chestState){
 
         }
     }

@@ -7,10 +7,9 @@ public class KeyHandler implements KeyListener {
 
     GamePanel gamePanel;
 
-    public boolean up, down, left, right, use, escape;
+    public boolean up, down, left, right, chest;
 
-    public boolean usePressed = false;
-    public boolean escapePressed = false;
+    boolean showDebug = false;
 
     public KeyHandler(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -26,6 +25,19 @@ public class KeyHandler implements KeyListener {
 
         int key = e.getKeyCode();
 
+        if (gamePanel.gameState == gamePanel.playState){
+            playState(key);
+        } else if (gamePanel.gameState == gamePanel.pauseState){
+            pauseState(key);
+        } else if (gamePanel.gameState == gamePanel.inventoryState){
+            inventoryState(key);
+        } else if (gamePanel.gameState == gamePanel.chestState){
+            chestState(key);
+        }
+    }
+
+    public void playState(int key){
+
         if (key == KeyEvent.VK_W) {
             up = true;
         }
@@ -39,23 +51,83 @@ public class KeyHandler implements KeyListener {
             right = true;
         }
 
-        // GAME STATE
-        if (key == KeyEvent.VK_P) {
-            if (gamePanel.gameState == gamePanel.playState) {
-                gamePanel.gameState = gamePanel.pauseState;
-            } else if (gamePanel.gameState == gamePanel.pauseState) {
-                gamePanel.gameState = gamePanel.playState;
+        if(key == KeyEvent.VK_P){
+            gamePanel.gameState = gamePanel.pauseState;
+        }
+
+        if(key == KeyEvent.VK_E){
+            if (gamePanel.player.canUse){
+                gamePanel.gameState = gamePanel.chestState;
+            } else {
+                gamePanel.gameState = gamePanel.inventoryState;
             }
         }
 
-        // OBJECT INTERACTION
-        if (key == KeyEvent.VK_E && !usePressed) {
-            use = true;
-            usePressed = true;
+        if(key == KeyEvent.VK_F3){
+            showDebug = !showDebug;
         }
-        if (key == KeyEvent.VK_ESCAPE && !escapePressed) {
-            escape = true;
-            escapePressed = true;
+    }
+
+    public void pauseState(int key) {
+        if (key == KeyEvent.VK_P) {
+            gamePanel.gameState = gamePanel.playState;
+        }
+    }
+
+    public void inventoryState(int key) {
+
+        if (key == KeyEvent.VK_E) {
+            gamePanel.gameState = gamePanel.playState;
+        }
+
+        if (key == KeyEvent.VK_W) {
+            if(gamePanel.ui.slotRow != 0) {
+                gamePanel.ui.slotRow--;
+            }
+        }
+        if (key == KeyEvent.VK_A) {
+            if(gamePanel.ui.slotCol != 0) {
+                gamePanel.ui.slotCol--;
+            }
+        }
+        if (key == KeyEvent.VK_S) {
+            if(gamePanel.ui.slotRow != 3) {
+                gamePanel.ui.slotRow++;
+            }
+        }
+        if (key == KeyEvent.VK_D) {
+            if(gamePanel.ui.slotCol != 4) {
+                gamePanel.ui.slotCol++;
+            }
+        }
+    }
+
+    public void chestState(int key) {
+
+        if (key == KeyEvent.VK_E) {
+            gamePanel.gameState = gamePanel.playState;
+            chest = false;
+        }
+
+        if (key == KeyEvent.VK_W) {
+            if(gamePanel.ui.slotRow != 0) {
+                gamePanel.ui.slotRow--;
+            }
+        }
+        if (key == KeyEvent.VK_A) {
+            if(gamePanel.ui.slotCol != 0) {
+                gamePanel.ui.slotCol--;
+            }
+        }
+        if (key == KeyEvent.VK_S) {
+            if(gamePanel.ui.slotRow != 3) {
+                gamePanel.ui.slotRow++;
+            }
+        }
+        if (key == KeyEvent.VK_D) {
+            if(gamePanel.ui.slotCol != 4) {
+                gamePanel.ui.slotCol++;
+            }
         }
     }
 
@@ -75,15 +147,6 @@ public class KeyHandler implements KeyListener {
         }
         if (key == KeyEvent.VK_D) {
             right = false;
-        }
-
-        if (key == KeyEvent.VK_E) {
-            use = false;
-            usePressed = false;
-        }
-        if (key == KeyEvent.VK_ESCAPE) {
-            escape = false;
-            escapePressed = false;
         }
     }
 }

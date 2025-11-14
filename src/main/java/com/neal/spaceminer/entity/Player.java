@@ -17,9 +17,7 @@ public class Player extends Entity {
 
     public final int screenX;
     public final int screenY;
-    boolean use = false;
     public boolean canUse = false;
-    public boolean escape = false;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
         this.gamePanel = gamePanel;
@@ -136,17 +134,8 @@ public class Player extends Entity {
 
         switch (objectName) {
             case "Chest":
-                if (keyHandler.use) {
-
-                    use = true;
-
-                    keyHandler.use = false;
-                }
-                if (keyHandler.escape) {
-
-                    escape = true;
-
-                    keyHandler.escape = false;
+                if (keyHandler.chest) {
+                    gamePanel.gameState = gamePanel.chestState;
                 }
                 break;
         }
