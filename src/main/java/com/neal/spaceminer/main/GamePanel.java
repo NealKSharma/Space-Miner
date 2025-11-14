@@ -40,6 +40,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     // GAME STATE
     public int gameState;
+    public final int titleState = 0;
     public final int playState = 1;
     public final int pauseState = 2;
     public final int inventoryState = 3;
@@ -56,7 +57,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void setupGame() {
         assetSetter.setObject();
-        gameState = playState;
+        gameState = titleState;
     }
 
     public void startGame() {
@@ -107,20 +108,38 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         Graphics2D g2 = (Graphics2D) g;
 
-        tileManager.draw(g2);
-
-        for (int i = 0; i < obj.length; i++) {
-            if (obj[i] != null) {
-                obj[i].draw(g2, this);
-            }
+        long drawStartTime = 0;
+        if(keyHandler.showDebug){
+            drawStartTime = System.nanoTime();
         }
 
-        player.draw(g2);
+        // TITLE SCREEN
+        if (gameState == titleState){
+            ui.draw(g2);
+        }
+        else {
+            tileManager.draw(g2);
 
-        ui.draw(g2);
+            for (int i = 0; i < obj.length; i++) {
+                if (obj[i] != null) {
+                    obj[i].draw(g2, this);
+                }
+            }
+
+            player.draw(g2);
+
+            ui.draw(g2);
+        }
+
+        if (keyHandler.showDebug){
+            long drawEndTime = System.nanoTime();
+            long passed = drawEndTime - drawStartTime;
+            g2.setColor(Color.white);
+            g2.drawString("Draw Time: " + passed, 10, 400);
+            System.out.println("Draw Time: " + passed);
+        }
 
         g2.dispose();
     }

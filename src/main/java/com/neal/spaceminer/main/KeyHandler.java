@@ -25,7 +25,9 @@ public class KeyHandler implements KeyListener {
 
         int key = e.getKeyCode();
 
-        if (gamePanel.gameState == gamePanel.playState){
+        if (gamePanel.gameState == gamePanel.titleState){
+            titleState(key);
+        } else if (gamePanel.gameState == gamePanel.playState){
             playState(key);
         } else if (gamePanel.gameState == gamePanel.pauseState){
             pauseState(key);
@@ -33,6 +35,31 @@ public class KeyHandler implements KeyListener {
             inventoryState(key);
         } else if (gamePanel.gameState == gamePanel.chestState){
             chestState(key);
+        }
+    }
+
+    public void titleState(int key){
+        if (key == KeyEvent.VK_W) {
+            gamePanel.ui.commandNum--;
+            if(gamePanel.ui.commandNum < 0){
+                gamePanel.ui.commandNum = 2;
+            }
+        }
+        if (key == KeyEvent.VK_S) {
+            gamePanel.ui.commandNum++;
+            if(gamePanel.ui.commandNum > 2){
+                gamePanel.ui.commandNum = 0;
+            }
+        }
+
+        if(key ==KeyEvent.VK_ENTER){
+            if(gamePanel.ui.commandNum == 0){
+                gamePanel.gameState = gamePanel.playState;
+            } else if(gamePanel.ui.commandNum == 1){
+                // ADD LATER
+            } else if(gamePanel.ui.commandNum == 2){
+                System.exit(0);
+            }
         }
     }
 
@@ -51,7 +78,7 @@ public class KeyHandler implements KeyListener {
             right = true;
         }
 
-        if(key == KeyEvent.VK_P){
+        if(key == KeyEvent.VK_ESCAPE){
             gamePanel.gameState = gamePanel.pauseState;
         }
 
@@ -69,7 +96,7 @@ public class KeyHandler implements KeyListener {
     }
 
     public void pauseState(int key) {
-        if (key == KeyEvent.VK_P) {
+        if (key == KeyEvent.VK_ESCAPE) {
             gamePanel.gameState = gamePanel.playState;
         }
     }

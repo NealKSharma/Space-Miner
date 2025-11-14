@@ -8,6 +8,8 @@ public class UI {
     Graphics2D g2;
     Font arial_40;
 
+    public int commandNum = 0;
+
     public int slotCol = 0;
     public int slotRow = 0;
 
@@ -18,15 +20,18 @@ public class UI {
 
     public void draw(Graphics2D g2) {
 
-        this.g2 = g2;
-
         g2.setFont(arial_40);
         g2.setColor(Color.white);
+        this.g2 = g2;
 
         if (gamePanel.gameState == gamePanel.playState) {
             if (gamePanel.player.canUse) {
-                g2.drawString("Press E to interact", 25, gamePanel.screenHeight / 2);
+                g2.drawString("Press E to interact", 10, gamePanel.screenHeight / 2);
             }
+        }
+
+        if (gamePanel.gameState == gamePanel.titleState){
+            drawTitleScreen();
         }
 
         if (gamePanel.gameState == gamePanel.pauseState) {
@@ -40,6 +45,73 @@ public class UI {
         if(gamePanel.gameState == gamePanel.chestState){
             drawChest();
         }
+    }
+
+    public void drawTitleScreen() {
+
+        g2.setColor(new Color(20, 0, 20));
+        g2.fillRect(0,0,gamePanel.screenWidth, gamePanel.screenHeight);
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 96F));
+        String text = "Space Miner";
+        int x = getXforCenteredText(text);
+        int y = gamePanel.tileSize * 3;
+
+        g2.setColor(Color.DARK_GRAY);
+        g2.drawString(text, x+5, y+5);
+
+        g2.setColor(Color.WHITE);
+        g2.drawString(text, x, y);
+
+        // IMAGE
+        x = gamePanel.screenWidth/2 - (gamePanel.tileSize*2) / 2;
+        y +=  gamePanel.tileSize;
+        g2.drawImage(gamePanel.player.down1, x, y, gamePanel.tileSize*2, gamePanel.tileSize*2, null);
+
+        // MENU
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
+        text = "NEW GAME";
+        x = getXforCenteredText(text);
+        y += gamePanel.tileSize * 3.5;
+        if(commandNum == 0){
+            g2.drawString(">", x-gamePanel.tileSize, y);
+        }
+
+        g2.setColor(Color.DARK_GRAY);
+        g2.drawString(text, x+5, y+5);
+
+        g2.setColor(Color.WHITE);
+        g2.drawString(text, x, y);
+
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
+        text = "LOAD GAME";
+        x = getXforCenteredText(text);
+        y += gamePanel.tileSize;
+        if(commandNum == 1){
+            g2.drawString(">", x-gamePanel.tileSize, y);
+        }
+
+        g2.setColor(Color.DARK_GRAY);
+        g2.drawString(text, x+5, y+5);
+
+        g2.setColor(Color.WHITE);
+        g2.drawString(text, x, y);
+
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
+        text = "QUIT";
+        x = getXforCenteredText(text);
+        y += gamePanel.tileSize;
+        if(commandNum == 2){
+            g2.drawString(">", x-gamePanel.tileSize, y);
+        }
+
+        g2.setColor(Color.DARK_GRAY);
+        g2.drawString(text, x+5, y+5);
+
+        g2.setColor(Color.WHITE);
+        g2.drawString(text, x, y);
     }
 
     public void drawPauseScreen() {
