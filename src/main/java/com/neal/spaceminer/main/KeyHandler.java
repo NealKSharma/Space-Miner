@@ -105,25 +105,27 @@ public class KeyHandler implements KeyListener {
 
         if (key == KeyEvent.VK_E) {
             gamePanel.gameState = gamePanel.playState;
+            gamePanel.ui.slotRow = 0;
+            gamePanel.ui.slotCol = 0;
         }
 
         if (key == KeyEvent.VK_W) {
-            if(gamePanel.ui.slotRow != 0) {
+            if(gamePanel.ui.slotRow > 0) {
                 gamePanel.ui.slotRow--;
             }
         }
         if (key == KeyEvent.VK_A) {
-            if(gamePanel.ui.slotCol != 0) {
+            if(gamePanel.ui.slotCol > 0) {
                 gamePanel.ui.slotCol--;
             }
         }
         if (key == KeyEvent.VK_S) {
-            if(gamePanel.ui.slotRow != 3) {
+            if(gamePanel.ui.slotRow < 3) {
                 gamePanel.ui.slotRow++;
             }
         }
         if (key == KeyEvent.VK_D) {
-            if(gamePanel.ui.slotCol != 4) {
+            if(gamePanel.ui.slotCol < 4) {
                 gamePanel.ui.slotCol++;
             }
         }
@@ -133,27 +135,40 @@ public class KeyHandler implements KeyListener {
 
         if (key == KeyEvent.VK_E) {
             gamePanel.gameState = gamePanel.playState;
+            gamePanel.ui.slotRow = 0;
+            gamePanel.ui.slotCol = 0;
             chest = false;
         }
 
         if (key == KeyEvent.VK_W) {
-            if(gamePanel.ui.slotRow != 0) {
+            if(gamePanel.ui.slotRow > 0) {
                 gamePanel.ui.slotRow--;
             }
         }
         if (key == KeyEvent.VK_A) {
-            if(gamePanel.ui.slotCol != 0) {
+            if(gamePanel.ui.slotCol > 0) {
                 gamePanel.ui.slotCol--;
+                if(gamePanel.ui.slotCol == 7) {
+                    gamePanel.ui.slotCol = 5;
+                }
             }
         }
         if (key == KeyEvent.VK_S) {
-            if(gamePanel.ui.slotRow != 3) {
+            if(gamePanel.ui.slotRow < 6 && gamePanel.ui.slotCol < 6) {
+                gamePanel.ui.slotRow++;
+            } else if (gamePanel.ui.slotRow < 3 && gamePanel.ui.slotCol > 7) {
                 gamePanel.ui.slotRow++;
             }
         }
         if (key == KeyEvent.VK_D) {
-            if(gamePanel.ui.slotCol != 4) {
+            if(gamePanel.ui.slotCol < 12) {
                 gamePanel.ui.slotCol++;
+                if(gamePanel.ui.slotCol == 6) {
+                    gamePanel.ui.slotCol = 8;
+                }
+                if(gamePanel.ui.slotCol > 7 && gamePanel.ui.slotRow > 2) {
+                    gamePanel.ui.slotRow = 3;
+                }
             }
         }
     }

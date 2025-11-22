@@ -2,8 +2,12 @@ package com.neal.spaceminer.entity;
 
 import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.main.KeyHandler;
+import com.neal.spaceminer.object.OBJ_Chest;
+import com.neal.spaceminer.object.OBJ_Pickaxe;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class Player extends Entity {
 
@@ -13,6 +17,8 @@ public class Player extends Entity {
     public final int screenX;
     public final int screenY;
     public boolean canUse = false;
+    public ArrayList<Entity> inventory = new ArrayList<>();
+    public final int maxInventorySize = 20;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
 
@@ -34,12 +40,14 @@ public class Player extends Entity {
 
         initialize();
         getImage();
+        setItems();
     }
 
     public void initialize() {
         worldX = gamePanel.tileSize * 24;
         worldY = gamePanel.tileSize * 24;
         speed = 2;
+
     }
 
     public void getImage() {
@@ -51,6 +59,32 @@ public class Player extends Entity {
         left2 = setup("/astronaut/left2");
         right1 = setup("/astronaut/right1");
         right2 = setup("/astronaut/right2");
+    }
+
+    public void interactObject(int index) {
+        String objectName = gamePanel.obj[index].name;
+
+        switch (objectName) {
+            case "Chest":
+                if (keyHandler.chest) {
+                    gamePanel.gameState = gamePanel.chestState;
+                }
+                break;
+        }
+    }
+
+    public void setItems(){
+        inventory.add(new OBJ_Pickaxe(gamePanel));
+        inventory.add(new OBJ_Pickaxe(gamePanel));
+        inventory.add(new OBJ_Pickaxe(gamePanel));
+        inventory.add(new OBJ_Pickaxe(gamePanel));
+        inventory.add(new OBJ_Pickaxe(gamePanel));
+        inventory.add(new OBJ_Pickaxe(gamePanel));
+        inventory.add(new OBJ_Pickaxe(gamePanel));
+        inventory.add(new OBJ_Pickaxe(gamePanel));
+        inventory.add(new OBJ_Pickaxe(gamePanel));
+        inventory.add(new OBJ_Pickaxe(gamePanel));
+        inventory.add(new OBJ_Pickaxe(gamePanel));
     }
 
     public void update() {
@@ -110,18 +144,6 @@ public class Player extends Entity {
             }
         } else {
             canUse = false;
-        }
-    }
-
-    public void interactObject(int index) {
-        String objectName = gamePanel.obj[index].name;
-
-        switch (objectName) {
-            case "Chest":
-                if (keyHandler.chest) {
-                    gamePanel.gameState = gamePanel.chestState;
-                }
-                break;
         }
     }
 }

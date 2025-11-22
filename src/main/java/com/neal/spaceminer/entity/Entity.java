@@ -25,9 +25,13 @@ public class Entity {
     public String name;
     public boolean collision = false;
 
+    // COLLISION
     public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
     public int solidAreaDefaultX, solidAreaDefaultY;
     public boolean collisionOn = false;
+
+    // ITEM ATTRIBUTES
+    public String description = "";
 
     public Entity(GamePanel gamePanel){
         this.gamePanel = gamePanel;
