@@ -109,6 +109,7 @@ public class KeyHandler implements KeyListener {
             gamePanel.ui.slotCol = 0;
         }
 
+        // CURSOR MOVEMENT
         if (key == KeyEvent.VK_W) {
             if(gamePanel.ui.slotRow > 0) {
                 gamePanel.ui.slotRow--;
@@ -128,6 +129,23 @@ public class KeyHandler implements KeyListener {
             if(gamePanel.ui.slotCol < 4) {
                 gamePanel.ui.slotCol++;
             }
+        }
+
+        // SWAPS
+        if (key == KeyEvent.VK_1) {
+            gamePanel.player.swapItems(gamePanel.ui.getItemIndexOnSlotInventory(), 0);
+        }
+        if (key == KeyEvent.VK_2) {
+            gamePanel.player.swapItems(gamePanel.ui.getItemIndexOnSlotInventory(), 1);
+        }
+        if (key == KeyEvent.VK_3) {
+            gamePanel.player.swapItems(gamePanel.ui.getItemIndexOnSlotInventory(), 2);
+        }
+        if (key == KeyEvent.VK_4) {
+            gamePanel.player.swapItems(gamePanel.ui.getItemIndexOnSlotInventory(), 3);
+        }
+        if (key == KeyEvent.VK_5) {
+            gamePanel.player.swapItems(gamePanel.ui.getItemIndexOnSlotInventory(), 4);
         }
     }
 

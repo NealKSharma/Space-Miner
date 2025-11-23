@@ -1,5 +1,7 @@
 package com.neal.spaceminer.main;
 
+import com.neal.spaceminer.entity.Entity;
+
 import java.awt.*;
 
 public class UI {
@@ -27,13 +29,7 @@ public class UI {
         g2.setColor(Color.white);
 
         if (gamePanel.gameState == gamePanel.playState) {
-
-            // MORE NORMAL GUI
-
-            if (gamePanel.player.canUse) {
-                g2.drawString("Press E to interact", 10, gamePanel.screenHeight / 2);
-            }
-
+            drawPlayScreen();
         } else if (gamePanel.gameState == gamePanel.titleState){
             drawTitleScreen();
         } else if (gamePanel.gameState == gamePanel.pauseState) {
@@ -70,7 +66,7 @@ public class UI {
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
         text = "NEW GAME";
         x = getXforCenteredText(text);
-        y += gamePanel.tileSize * 3.5;
+        y += (int) (gamePanel.tileSize * 3.5);
         if(commandNum == 0){
             g2.drawString(">", x-gamePanel.tileSize, y);
         }
@@ -111,6 +107,34 @@ public class UI {
         g2.setColor(Color.WHITE);
         g2.drawString(text, x, y);
     }
+    public void drawPlayScreen() {
+        int frameX = (gamePanel.tileSize * 10) + 10;
+        int frameY = (gamePanel.tileSize * 10) + 10;
+        int frameWidth = (gamePanel.tileSize * 6) - 30;
+        int frameHeight = (gamePanel.tileSize * 2) - 35;
+
+        // SLOTS
+        final int slotXstart = frameX + 15;
+        final int slotYstart = frameY + 10;
+        int slotX = slotXstart;
+        int slotY = slotYstart;
+        int slotSize = gamePanel.tileSize+3;
+
+        drawSubWindow(frameX, frameY, frameWidth, frameHeight);
+
+        // DRAW PLAYER'S ITEMS
+        for (int i = 0; i < 5; i++) {
+            Entity item = gamePanel.player.inventory.get(i);
+            if(item != null){
+                g2.drawImage(item.down1, slotX, slotY,null);
+            }
+            slotX += slotSize;
+        }
+
+        if (gamePanel.player.canUse) {
+            g2.drawString("Press E to interact", 10, gamePanel.screenHeight / 2);
+        }
+    }
     public void drawPauseScreen() {
 
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 80));
@@ -140,7 +164,10 @@ public class UI {
 
         // DRAW PLAYER'S ITEMS
         for (int i = 0; i < gamePanel.player.inventory.size(); i++) {
-            g2.drawImage(gamePanel.player.inventory.get(i).down1, slotX, slotY,null);
+            Entity item = gamePanel.player.inventory.get(i);
+            if(item != null){
+                g2.drawImage(item.down1, slotX, slotY,null);
+            }
 
             slotX += slotSize;
 
@@ -166,25 +193,24 @@ public class UI {
         int dFrameY = frameY + frameHeight + 10;
         int dFrameWidth = frameWidth;
         int dFrameHeight = gamePanel.tileSize*3;
-        drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
+
         // DRAW DESCRIPTION TEXT
         int textX = dFrameX + 20;
         int textY = dFrameY + gamePanel.tileSize-20;
         g2.setFont(g2.getFont().deriveFont(28F));
 
-        int itemIndex = slotCol + (slotRow*5);
+        int itemIndex = getItemIndexOnSlotInventory();
+        Entity item = gamePanel.player.inventory.get(itemIndex);
 
-        if(itemIndex < gamePanel.player.inventory.size()){
-
+        if(item != null){
+            drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
             for(String line: gamePanel.player.inventory.get(itemIndex).description.split("\n")){
                 g2.drawString(line, textX, textY);
                 textY += 32;
             }
         }
-
     }
     public void drawChest() {
-
         // Inventory
         int frameX = gamePanel.tileSize * 9;
         int frameY = gamePanel.tileSize;
@@ -225,6 +251,9 @@ public class UI {
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(3));
         g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
+    }
+    public int getItemIndexOnSlotInventory(){
+        return slotCol + (slotRow*5);
     }
     public void drawSubWindow(int x, int y, int width, int height) {
 

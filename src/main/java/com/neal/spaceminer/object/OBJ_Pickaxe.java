@@ -7,7 +7,7 @@ public class OBJ_Pickaxe extends Entity {
         super(gamePanel);
 
         name = "Pickaxe";
-        collision = true;
+        collision = false;
 
         solidArea.x = 8;
         solidArea.y = 16;

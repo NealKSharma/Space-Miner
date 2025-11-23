@@ -2,11 +2,9 @@ package com.neal.spaceminer.entity;
 
 import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.main.KeyHandler;
-import com.neal.spaceminer.object.OBJ_Chest;
 import com.neal.spaceminer.object.OBJ_Pickaxe;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class Player extends Entity {
@@ -40,6 +38,10 @@ public class Player extends Entity {
 
         initialize();
         getImage();
+
+        for(int i = 0; i < maxInventorySize; i++) {
+            inventory.add(null);
+        }
         setItems();
     }
 
@@ -49,7 +51,6 @@ public class Player extends Entity {
         speed = 2;
 
     }
-
     public void getImage() {
         up1 = setup("/astronaut/back1");
         up2 = setup("/astronaut/back2");
@@ -60,33 +61,38 @@ public class Player extends Entity {
         right1 = setup("/astronaut/right1");
         right2 = setup("/astronaut/right2");
     }
-
     public void interactObject(int index) {
         String objectName = gamePanel.obj[index].name;
-
         switch (objectName) {
             case "Chest":
                 if (keyHandler.chest) {
                     gamePanel.gameState = gamePanel.chestState;
                 }
                 break;
+            case "Pickaxe":
+                if (getFirstEmptySlot() != -1) {
+                    inventory.set(getFirstEmptySlot(), gamePanel.obj[index]);
+                    gamePanel.obj[index] = null;
+                }
         }
     }
-
     public void setItems(){
-        inventory.add(new OBJ_Pickaxe(gamePanel));
-        inventory.add(new OBJ_Pickaxe(gamePanel));
-        inventory.add(new OBJ_Pickaxe(gamePanel));
-        inventory.add(new OBJ_Pickaxe(gamePanel));
-        inventory.add(new OBJ_Pickaxe(gamePanel));
-        inventory.add(new OBJ_Pickaxe(gamePanel));
-        inventory.add(new OBJ_Pickaxe(gamePanel));
-        inventory.add(new OBJ_Pickaxe(gamePanel));
-        inventory.add(new OBJ_Pickaxe(gamePanel));
-        inventory.add(new OBJ_Pickaxe(gamePanel));
-        inventory.add(new OBJ_Pickaxe(gamePanel));
+        inventory.set(0, new OBJ_Pickaxe(gamePanel));
     }
+    public void swapItems(int at, int to){
+        if (at < 0 || at >= maxInventorySize) return;
+        if (to < 0 || to >= maxInventorySize) return;
 
+        Entity item = inventory.get(at);
+        inventory.set(at, inventory.get(to));
+        inventory.set(to, item);
+    }
+    public int getFirstEmptySlot() {
+        for (int i = 0; i < maxInventorySize; i++) {
+            if (inventory.get(i) == null) return i;
+        }
+        return -1;  // inventory full
+    }
     public void update() {
         if (keyHandler.up || keyHandler.down || keyHandler.left || keyHandler.right) {
             if (keyHandler.up) {
@@ -137,9 +143,9 @@ public class Player extends Entity {
             }
         }
         int objIndex = gamePanel.collisionChecker.checkObject(this, true);
-        if (objIndex != -1) {
+        if (objIndex != -1 && gamePanel.obj[objIndex] != null) {
             interactObject(objIndex);
-            if (gamePanel.obj[objIndex].name.equals("Chest")) {
+            if (gamePanel.obj[objIndex] != null && "Chest".equals(gamePanel.obj[objIndex].name)) {
                 canUse = true;
             }
         } else {
