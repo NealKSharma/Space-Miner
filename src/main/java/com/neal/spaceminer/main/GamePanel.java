@@ -6,17 +6,17 @@ import com.neal.spaceminer.tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Comparator;
 
 public class GamePanel extends JPanel implements Runnable {
-
     // Screen Settings
     final int originalTileSize = 16; // 16x16 Tile
     final int scale = 4;
 
     public final int tileSize = originalTileSize * scale; // After Scaling becomes 64x64
-    public final int maxScreenCol = 16;
+    public final int maxScreenCol = 20;
     public final int maxScreenRow = 12;
     public final int screenWidth = tileSize * maxScreenCol; // 1024px (64x16)
     public final int screenHeight = tileSize * maxScreenRow; // 768px (64x12)
@@ -25,6 +25,12 @@ public class GamePanel extends JPanel implements Runnable {
     public final int maxWorldRow = 50;
     public final int worldWidth = tileSize * maxWorldCol;
     public final int worldHeight = tileSize * maxWorldRow;
+
+    // FULLSCREEN
+    int screenWidth2 = screenWidth;
+    int screenHeight2 = screenHeight;
+    BufferedImage tempScreen;
+    Graphics2D g2;
 
     int FPS = 144;
 
@@ -61,13 +67,26 @@ public class GamePanel extends JPanel implements Runnable {
     public void setupGame() {
         assetSetter.setObject();
         gameState = titleState;
-    }
 
+        tempScreen = new BufferedImage(screenWidth2, screenHeight2, BufferedImage.TYPE_INT_ARGB);
+        g2 =  (Graphics2D) tempScreen.getGraphics();
+
+        setFullScreen();
+    }
+    public void setFullScreen(){
+        // GET LOCAL SCREEN DEVICE
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice gd = ge.getDefaultScreenDevice();
+        gd.setFullScreenWindow(Main.window);
+
+        // GET FULL SCREEN WIDTH AND HEIGHT
+        screenWidth2 = Main.window.getWidth();
+        screenHeight2 = Main.window.getHeight();
+    }
     public void startGame() {
         gameThread = new Thread(this);
         gameThread.start();
     }
-
     @Override
     public void run() {
 
@@ -77,7 +96,8 @@ public class GamePanel extends JPanel implements Runnable {
         while (gameThread.isAlive()) {
 
             update();
-            repaint();
+            drawToTempScreen();
+            drawToScreen();
 
             try {
                 double remainingTime = nextDrawTime - System.nanoTime();
@@ -95,7 +115,6 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
     }
-
     public void update() {
 
         if(gameState == playState) {
@@ -108,11 +127,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         }
     }
-
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-
+    public void drawToTempScreen(){
         long drawStartTime = 0;
         if(keyHandler.showDebug){
             drawStartTime = System.nanoTime();
@@ -171,10 +186,16 @@ public class GamePanel extends JPanel implements Runnable {
             double drawTimeMs = passed / 1000000.0;
 
             g2.setColor(Color.white);
-            g2.drawString(String.format("Draw Time: %.2f ms", drawTimeMs), 10, 20);
-            g2.drawString(String.format("FPS: %.0f", 1000.0 / drawTimeMs), 10, 40);
+            g2.drawString(String.format("FPS: %.0f", 1000.0 / drawTimeMs), 10, 20);
+            g2.drawString("WorldX: " + player.worldX, 10, 40);
+            g2.drawString("WorldY: " + player.worldY, 10, 60);
+            g2.drawString("Col: " + (player.worldX/tileSize), 10, 80);
+            g2.drawString("Row: " + (player.worldY/tileSize), 10, 100);
         }
-
-        g2.dispose();
+    }
+    public void drawToScreen(){
+        Graphics g = getGraphics();
+        g.drawImage(tempScreen, 0, 0, screenWidth2, screenHeight2, null);
+        g.dispose();
     }
 }

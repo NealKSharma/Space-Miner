@@ -108,7 +108,7 @@ public class UI {
         g2.drawString(text, x, y);
     }
     public void drawPlayScreen() {
-        int frameX = (gamePanel.tileSize * 10) + 10;
+        int frameX = (gamePanel.tileSize * 14) + 10;
         int frameY = (gamePanel.tileSize * 10) + 10;
         int frameWidth = (gamePanel.tileSize * 6) - 30;
         int frameHeight = (gamePanel.tileSize * 2) - 35;
@@ -144,8 +144,8 @@ public class UI {
     }
     public void drawInventory() {
 
-        int frameX = gamePanel.tileSize * 9;
-        int frameY = gamePanel.tileSize;
+        int frameX = gamePanel.tileSize * 13;
+        int frameY = gamePanel.tileSize * 2;
         int frameWidth = gamePanel.tileSize * 6;
         int frameHeight = gamePanel.tileSize * 5;
 
@@ -212,8 +212,8 @@ public class UI {
     }
     public void drawChest() {
         // Inventory
-        int frameX = gamePanel.tileSize * 9;
-        int frameY = gamePanel.tileSize;
+        int frameX = gamePanel.tileSize * 13;
+        int frameY = gamePanel.tileSize * 2;
         int frameWidth = gamePanel.tileSize * 6;
         int frameHeight = gamePanel.tileSize * 5;
 
@@ -224,8 +224,8 @@ public class UI {
         drawSubWindow(frameX, frameY, frameWidth, frameHeight);
 
         // Chest
-        int frameChestX = gamePanel.tileSize;
-        int frameChestY = gamePanel.tileSize;
+        int frameChestX = gamePanel.tileSize * 5;
+        int frameChestY = gamePanel.tileSize * 2;
         int frameChestWidth = gamePanel.tileSize * 7;
         int frameChestHeight = gamePanel.tileSize * 8;
 
