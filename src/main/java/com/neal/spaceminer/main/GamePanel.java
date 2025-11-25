@@ -31,6 +31,7 @@ public class GamePanel extends JPanel implements Runnable {
     int screenHeight2 = screenHeight;
     BufferedImage tempScreen;
     Graphics2D g2;
+    public boolean fullScreen = true;
 
     int FPS = 144;
 
@@ -54,7 +55,6 @@ public class GamePanel extends JPanel implements Runnable {
     public final int pauseState = 2;
     public final int inventoryState = 3;
     public final int chestState = 4;
-
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));

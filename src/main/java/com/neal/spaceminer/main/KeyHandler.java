@@ -19,7 +19,6 @@ public class KeyHandler implements KeyListener {
     public void keyTyped(KeyEvent e) {
 
     }
-
     @Override
     public void keyPressed(KeyEvent e) {
 
@@ -37,7 +36,6 @@ public class KeyHandler implements KeyListener {
             chestState(key);
         }
     }
-
     public void titleState(int key){
         if (key == KeyEvent.VK_W) {
             gamePanel.ui.commandNum--;
@@ -52,7 +50,7 @@ public class KeyHandler implements KeyListener {
             }
         }
 
-        if(key ==KeyEvent.VK_ENTER){
+        if(key == KeyEvent.VK_ENTER){
             if(gamePanel.ui.commandNum == 0){
                 gamePanel.gameState = gamePanel.playState;
             } else if(gamePanel.ui.commandNum == 1){
@@ -62,7 +60,6 @@ public class KeyHandler implements KeyListener {
             }
         }
     }
-
     public void playState(int key){
 
         if (key == KeyEvent.VK_W) {
@@ -83,24 +80,106 @@ public class KeyHandler implements KeyListener {
         }
 
         if(key == KeyEvent.VK_E){
-            if (gamePanel.player.canUse){
-                gamePanel.gameState = gamePanel.chestState;
-            } else {
-                gamePanel.gameState = gamePanel.inventoryState;
-            }
+            gamePanel.gameState = gamePanel.inventoryState;
+        }
+
+        if(key == KeyEvent.VK_F && gamePanel.player.canUse){
+            gamePanel.gameState = gamePanel.chestState;
         }
 
         if(key == KeyEvent.VK_F3){
             showDebug = !showDebug;
         }
     }
-
     public void pauseState(int key) {
         if (key == KeyEvent.VK_ESCAPE) {
             gamePanel.gameState = gamePanel.playState;
+            gamePanel.ui.commandNum = 0;
+            gamePanel.ui.subState = 0;
+        }
+
+        if (key == KeyEvent.VK_W && gamePanel.ui.subState==0) {
+            gamePanel.ui.commandNum--;
+            if(gamePanel.ui.commandNum < 0){
+                gamePanel.ui.commandNum = 4;
+            }
+        }
+        if (key == KeyEvent.VK_S && gamePanel.ui.subState==0) {
+            gamePanel.ui.commandNum++;
+            if(gamePanel.ui.commandNum > 4){
+                gamePanel.ui.commandNum = 0;
+            }
+        }
+
+        if (key == KeyEvent.VK_A && gamePanel.ui.commandNum == 1 && gamePanel.ui.subState==0) {
+            if(gamePanel.ui.volume > 0){
+                gamePanel.ui.volume--;
+            }
+        }
+        if (key == KeyEvent.VK_D  && gamePanel.ui.commandNum == 1 && gamePanel.ui.subState==0) {
+            if(gamePanel.ui.volume <= 5){
+                gamePanel.ui.volume++;
+            }
+        }
+
+        if (key == KeyEvent.VK_W && gamePanel.ui.subState==3) {
+            gamePanel.ui.commandNum--;
+            if(gamePanel.ui.commandNum < 0){
+                gamePanel.ui.commandNum = 1;
+            }
+        }
+        if (key == KeyEvent.VK_S && gamePanel.ui.subState==3) {
+            gamePanel.ui.commandNum++;
+            if(gamePanel.ui.commandNum > 1){
+                gamePanel.ui.commandNum = 0;
+            }
+        }
+
+        if (key == KeyEvent.VK_W && gamePanel.ui.subState==1) {
+            gamePanel.ui.commandNum--;
+            if(gamePanel.ui.commandNum < 0){
+                gamePanel.ui.commandNum = 1;
+            }
+        }
+        if (key == KeyEvent.VK_S && gamePanel.ui.subState==1) {
+            gamePanel.ui.commandNum++;
+            if(gamePanel.ui.commandNum > 1){
+                gamePanel.ui.commandNum = 0;
+            }
+        }
+
+        if(key == KeyEvent.VK_ENTER && gamePanel.ui.subState == 0){
+            if(gamePanel.ui.commandNum == 0){
+                gamePanel.ui.subState = 1;
+                gamePanel.ui.commandNum = 1;
+            } else if(gamePanel.ui.commandNum == 2){
+                gamePanel.ui.subState = 2;
+            } else if (gamePanel.ui.commandNum == 3){
+                gamePanel.ui.subState = 3;
+                gamePanel.ui.commandNum = 1;
+            } else if (gamePanel.ui.commandNum == 4) {
+                gamePanel.gameState = gamePanel.playState;
+                gamePanel.ui.commandNum = 0;
+            }
+        } else if(key == KeyEvent.VK_ENTER && gamePanel.ui.subState == 1){
+            if(gamePanel.ui.commandNum == 0){
+                gamePanel.fullScreen = !gamePanel.fullScreen;
+                System.exit(0);
+            } else if(gamePanel.ui.commandNum == 1){
+                gamePanel.ui.subState = 0;
+                gamePanel.ui.commandNum = 0;
+            }
+        } else if(key == KeyEvent.VK_ENTER && gamePanel.ui.subState == 2){
+            gamePanel.ui.subState = 0;
+        } else if(key == KeyEvent.VK_ENTER && gamePanel.ui.subState == 3){
+            if(gamePanel.ui.commandNum == 0){
+                gamePanel.gameState = gamePanel.titleState;
+            } else if(gamePanel.ui.commandNum == 1){
+                gamePanel.ui.subState = 0;
+                gamePanel.ui.commandNum = 3;
+            }
         }
     }
-
     public void inventoryState(int key) {
 
         if (key == KeyEvent.VK_E) {
@@ -148,10 +227,9 @@ public class KeyHandler implements KeyListener {
             gamePanel.player.swapItems(gamePanel.ui.getItemIndexOnSlotInventory(), 4);
         }
     }
-
     public void chestState(int key) {
 
-        if (key == KeyEvent.VK_E) {
+        if (key == KeyEvent.VK_F) {
             gamePanel.gameState = gamePanel.playState;
             gamePanel.ui.slotRow = 0;
             gamePanel.ui.slotCol = 0;
@@ -190,7 +268,6 @@ public class KeyHandler implements KeyListener {
             }
         }
     }
-
     @Override
     public void keyReleased(KeyEvent e) {
 
