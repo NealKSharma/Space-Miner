@@ -213,6 +213,7 @@ public class UI {
         g2.drawRect(textX, textY, (gamePanel.tileSize*3) + 9, gamePanel.tileSize/2);
         int volumeWidth = (gamePanel.tileSize/2) * volume; // TEMPORARY VARIABLE
         g2.fillRect(textX + 5, textY + 5, volumeWidth, (gamePanel.tileSize/2) - 9);
+        gamePanel.config.saveConfig();
     }
     public void options_fullScreenNotification(int frameX, int frameY){
         int textX = frameX + gamePanel.tileSize;
@@ -236,7 +237,6 @@ public class UI {
         if(commandNum == 1){
             g2.drawString(">", textX-32, textY);
         }
-
     }
     public void options_controls(int frameX, int frameY){
         String text = "CONTROLS";

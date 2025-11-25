@@ -91,6 +91,7 @@ public class KeyHandler implements KeyListener {
             showDebug = !showDebug;
         }
     }
+    // NEEDS OPTIMIZATIONS
     public void pauseState(int key) {
         if (key == KeyEvent.VK_ESCAPE) {
             gamePanel.gameState = gamePanel.playState;
@@ -164,6 +165,7 @@ public class KeyHandler implements KeyListener {
         } else if(key == KeyEvent.VK_ENTER && gamePanel.ui.subState == 1){
             if(gamePanel.ui.commandNum == 0){
                 gamePanel.fullScreen = !gamePanel.fullScreen;
+                gamePanel.config.saveConfig();
                 System.exit(0);
             } else if(gamePanel.ui.commandNum == 1){
                 gamePanel.ui.subState = 0;

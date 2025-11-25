@@ -8,7 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class GamePanel extends JPanel implements Runnable {
     // Screen Settings
@@ -41,6 +40,7 @@ public class GamePanel extends JPanel implements Runnable {
     public CollisionChecker collisionChecker = new CollisionChecker(this);
     public AssetSetter assetSetter = new AssetSetter(this);
     public UI ui = new UI(this);
+    Config config = new Config(this);
     Thread gameThread;
 
     // PLAYER AND OBJECTS
@@ -71,7 +71,9 @@ public class GamePanel extends JPanel implements Runnable {
         tempScreen = new BufferedImage(screenWidth2, screenHeight2, BufferedImage.TYPE_INT_ARGB);
         g2 =  (Graphics2D) tempScreen.getGraphics();
 
-        setFullScreen();
+        if(fullScreen) {
+            setFullScreen();
+        }
     }
     public void setFullScreen(){
         // GET LOCAL SCREEN DEVICE

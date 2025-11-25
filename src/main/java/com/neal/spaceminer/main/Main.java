@@ -11,10 +11,12 @@ public class Main {
         window = new JFrame("Space Miner");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
-        window.setUndecorated(true);
 
         GamePanel gamePanel = new GamePanel();
         window.add(gamePanel);
+
+        gamePanel.config.loadConfig();
+        window.setUndecorated(gamePanel.fullScreen);
 
         window.pack();
 
