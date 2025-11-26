@@ -86,7 +86,8 @@ public class KeyHandler implements KeyListener {
         }
 
         if(key == KeyEvent.VK_F && gamePanel.player.canUse){
-            gamePanel.gameState = gamePanel.chestState;
+            chest = true;
+            gamePanel.player.interactWithNearbyChest();
         }
 
         if(key == KeyEvent.VK_F3){
@@ -236,43 +237,61 @@ public class KeyHandler implements KeyListener {
         }
     }
     public void chestState(int key) {
-        if (key == KeyEvent.VK_F) {
+        if (key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_F) {
             gamePanel.gameState = gamePanel.playState;
             gamePanel.ui.slotRow = 0;
             gamePanel.ui.slotCol = 0;
+            gamePanel.player.currentChest = null;
             chest = false;
         }
 
+        // Navigation
         if (key == KeyEvent.VK_W) {
             if(gamePanel.ui.slotRow > 0) {
                 gamePanel.ui.slotRow--;
             }
         }
+
+        if (key == KeyEvent.VK_S) {
+            // In chest (0-5 columns, max 6 rows)
+            if(gamePanel.ui.slotCol < 6 && gamePanel.ui.slotRow < 6) {
+                gamePanel.ui.slotRow++;
+            }
+            // In inventory (8-12 columns, max 3 rows)
+            else if(gamePanel.ui.slotCol >= 8 && gamePanel.ui.slotRow < 3) {
+                gamePanel.ui.slotRow++;
+            }
+        }
+
         if (key == KeyEvent.VK_A) {
             if(gamePanel.ui.slotCol > 0) {
                 gamePanel.ui.slotCol--;
-                if(gamePanel.ui.slotCol == 7) {
-                    gamePanel.ui.slotCol = 5;
+                // Jump the gap between chest and inventory
+                if(gamePanel.ui.slotCol == 6 || gamePanel.ui.slotCol == 7) {
+                    gamePanel.ui.slotCol = 5; // Move to last chest column
+                    if(gamePanel.ui.slotRow > 6) {
+                        gamePanel.ui.slotRow = 6; // Adjust row if needed
+                    }
                 }
             }
         }
-        if (key == KeyEvent.VK_S) {
-            if(gamePanel.ui.slotRow < 6 && gamePanel.ui.slotCol < 6) {
-                gamePanel.ui.slotRow++;
-            } else if (gamePanel.ui.slotRow < 3 && gamePanel.ui.slotCol > 7) {
-                gamePanel.ui.slotRow++;
-            }
-        }
+
         if (key == KeyEvent.VK_D) {
             if(gamePanel.ui.slotCol < 12) {
                 gamePanel.ui.slotCol++;
-                if(gamePanel.ui.slotCol == 6) {
-                    gamePanel.ui.slotCol = 8;
-                }
-                if(gamePanel.ui.slotCol > 7 && gamePanel.ui.slotRow > 2) {
-                    gamePanel.ui.slotRow = 3;
+                // Jump the gap between chest and inventory
+                if(gamePanel.ui.slotCol == 6 || gamePanel.ui.slotCol == 7) {
+                    gamePanel.ui.slotCol = 8; // Move to first inventory column
+                    if(gamePanel.ui.slotRow > 3) {
+                        gamePanel.ui.slotRow = 3; // Adjust row if needed
+                    }
                 }
             }
+        }
+
+        // Item transfer
+        if (key == KeyEvent.VK_ENTER) {
+            gamePanel.player.transferChestItem(gamePanel.ui.slotCol, gamePanel.ui.slotRow);
         }
     }
     @Override

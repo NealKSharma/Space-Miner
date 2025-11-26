@@ -16,10 +16,14 @@ public class AssetSetter {
         gamePanel.obj[0] = new OBJ_Chest(gamePanel);
         gamePanel.obj[0].worldX = 24 * gamePanel.tileSize;
         gamePanel.obj[0].worldY = 22 * gamePanel.tileSize;
+        OBJ_Chest chest1 = (OBJ_Chest) gamePanel.obj[0];
+        chest1.chestInv.set(0, new OBJ_Pickaxe(gamePanel));
 
         gamePanel.obj[1] = new OBJ_Chest(gamePanel);
         gamePanel.obj[1].worldX = 24 * gamePanel.tileSize;
         gamePanel.obj[1].worldY = 26 * gamePanel.tileSize;
+        OBJ_Chest chest2 = (OBJ_Chest) gamePanel.obj[1];
+        chest2.chestInv.set(1, new OBJ_Pickaxe(gamePanel));
 
         gamePanel.obj[2] = new OBJ_Astronaut(gamePanel);
         gamePanel.obj[2].worldX = 26 * gamePanel.tileSize;

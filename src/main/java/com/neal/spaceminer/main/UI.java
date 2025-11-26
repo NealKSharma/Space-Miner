@@ -1,6 +1,7 @@
 package com.neal.spaceminer.main;
 
 import com.neal.spaceminer.entity.Entity;
+import com.neal.spaceminer.object.OBJ_Chest;
 
 import java.awt.*;
 
@@ -374,46 +375,128 @@ public class UI {
         }
     }
     public void drawChest() {
-        // Inventory
-        int frameX = gamePanel.tileSize * 13;
-        int frameY = gamePanel.tileSize * 2;
-        int frameWidth = gamePanel.tileSize * 6;
-        int frameHeight = gamePanel.tileSize * 5;
+        // GET THE CURRENT CHEST OBJECT
+        OBJ_Chest chest = (OBJ_Chest) gamePanel.player.currentChest;
 
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 50));
-        String text = "Inventory";
-        g2.drawString(text, frameX + 85, frameY + frameHeight + 50);
-
-        drawSubWindow(frameX, frameY, frameWidth, frameHeight);
-
-        // Chest
         int frameChestX = gamePanel.tileSize * 5;
         int frameChestY = gamePanel.tileSize * 2;
         int frameChestWidth = gamePanel.tileSize * 7;
         int frameChestHeight = gamePanel.tileSize * 8;
 
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 50));
-        text = "Chest";
-        g2.drawString(text, frameChestX + 160, frameChestY + frameChestHeight + 50);
+        String text = "Chest";
+        g2.drawString(text, frameChestX, frameChestY - 15);
 
         drawSubWindow(frameChestX, frameChestY, frameChestWidth, frameChestHeight);
 
-        // SLOTS
-        final int slotXstart = frameChestX + 20;
-        final int slotYstart = frameChestY + 20;
-        int slotX = slotXstart;
-        int slotY = slotYstart;
+        // PLAYER INVENTORY WINDOW (Right side - 5 cols x 4 rows)
+        int frameX = gamePanel.tileSize * 13;
+        int frameY = gamePanel.tileSize * 2;
+        int frameWidth = gamePanel.tileSize * 6;
+        int frameHeight = gamePanel.tileSize * 5;
 
-        // CURSOR
-        int cursorX = slotXstart + (gamePanel.tileSize * slotCol);
-        int cursorY = slotYstart + (gamePanel.tileSize * slotRow);
-        int cursorWidth = gamePanel.tileSize;
-        int cursorHeight = gamePanel.tileSize;
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 50));
+        text = "Inventory";
+        g2.drawString(text, frameX, frameY - 15);
+
+        drawSubWindow(frameX, frameY, frameWidth, frameHeight);
+
+        // DRAW CHEST ITEMS (6x7 grid)
+        final int chestSlotXstart = frameChestX + 20;
+        final int chestSlotYstart = frameChestY + 20;
+        int slotSize = gamePanel.tileSize + 3;
+
+        int slotX = chestSlotXstart;
+        int slotY = chestSlotYstart;
+
+        for (int i = 0; i < chest.chestInv.size(); i++) {
+            Entity item = chest.chestInv.get(i);
+            if(item != null){
+                g2.drawImage(item.down1, slotX, slotY, gamePanel.tileSize, gamePanel.tileSize, null);
+            }
+
+            slotX += slotSize;
+
+            if ((i + 1) % 6 == 0) { // 6 columns
+                slotX = chestSlotXstart;
+                slotY += slotSize;
+            }
+        }
+
+        // DRAW PLAYER INVENTORY ITEMS (5x4 grid)
+        final int invSlotXstart = frameX + 20;
+        final int invSlotYstart = frameY + 20;
+
+        slotX = invSlotXstart;
+        slotY = invSlotYstart;
+
+        for (int i = 0; i < gamePanel.player.inventory.size(); i++) {
+            Entity item = gamePanel.player.inventory.get(i);
+            if(item != null){
+                g2.drawImage(item.down1, slotX, slotY, gamePanel.tileSize, gamePanel.tileSize, null);
+            }
+
+            slotX += slotSize;
+
+            if (i == 4 || i == 9 || i == 14 || i == 19) { // 5 columns
+                slotX = invSlotXstart;
+                slotY += slotSize;
+            }
+        }
 
         // DRAW CURSOR
+        int cursorX, cursorY;
+
+        if(slotCol < 6) {
+            // Cursor is in chest area
+            cursorX = chestSlotXstart + (slotSize * slotCol);
+            cursorY = chestSlotYstart + (slotSize * slotRow);
+        } else {
+            // Cursor is in inventory area (offset by 8 to account for gap)
+            cursorX = invSlotXstart + (slotSize * (slotCol - 8));
+            cursorY = invSlotYstart + (slotSize * slotRow);
+        }
+
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(3));
-        g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
+        g2.drawRoundRect(cursorX, cursorY, gamePanel.tileSize, gamePanel.tileSize, 10, 10);
+
+        // DESCRIPTION FRAME
+        int dFrameX = frameX;
+        int dFrameY = frameY + frameHeight + 10;
+        int dFrameWidth = frameWidth;
+        int dFrameHeight = gamePanel.tileSize * 3;
+
+        // DRAW DESCRIPTION TEXT
+        int textX = dFrameX + 20;
+        int textY = dFrameY + gamePanel.tileSize - 20;
+        g2.setFont(g2.getFont().deriveFont(28F));
+
+        Entity item = null;
+
+        // Determine which item to show based on cursor position
+        if(slotCol < 6) {
+            // Cursor is in chest area
+            int chestIndex = slotCol + (slotRow * 6);
+            if(chestIndex < chest.chestInv.size()) {
+                item = chest.chestInv.get(chestIndex);
+            }
+        } else {
+            // Cursor is in inventory area
+            int invIndex = (slotCol - 8) + (slotRow * 5);
+            if(invIndex < gamePanel.player.inventory.size()) {
+                item = gamePanel.player.inventory.get(invIndex);
+            }
+        }
+
+        // Draw description if item exists
+        if(item != null){
+            drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
+            for(String line: item.description.split("\n")){
+                g2.drawString(line, textX, textY);
+                textY += 32;
+            }
+        }
     }
     public int getItemIndexOnSlotInventory(){
         return slotCol + (slotRow*5);

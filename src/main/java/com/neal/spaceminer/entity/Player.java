@@ -2,6 +2,7 @@ package com.neal.spaceminer.entity;
 
 import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.main.KeyHandler;
+import com.neal.spaceminer.object.OBJ_Chest;
 import com.neal.spaceminer.object.OBJ_Pickaxe;
 
 import java.awt.*;
@@ -17,6 +18,8 @@ public class Player extends Entity {
     public boolean canUse = false;
     public ArrayList<Entity> inventory = new ArrayList<>();
     public final int maxInventorySize = 20;
+
+    public Entity currentChest = null;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
         super(gamePanel);
@@ -58,14 +61,18 @@ public class Player extends Entity {
         right1 = setup("/astronaut/right1");
         right2 = setup("/astronaut/right2");
     }
+    public void interactWithNearbyChest(){
+        int objIndex = gamePanel.collisionChecker.checkObject(this, true);
+        if(objIndex != -1 && gamePanel.obj[objIndex] != null){
+            if ("Chest".equals(gamePanel.obj[objIndex].name)) {
+                currentChest = gamePanel.obj[objIndex];
+                gamePanel.gameState = gamePanel.chestState;
+            }
+        }
+    }
     public void interactObject(int index) {
         String objectName = gamePanel.obj[index].name;
         switch (objectName) {
-            case "Chest":
-                if (keyHandler.chest) {
-                    gamePanel.gameState = gamePanel.chestState;
-                }
-                break;
             case "Pickaxe":
                 if (getFirstEmptySlot() != -1) {
                     inventory.set(getFirstEmptySlot(), gamePanel.obj[index]);
@@ -89,6 +96,41 @@ public class Player extends Entity {
             if (inventory.get(i) == null) return i;
         }
         return -1;  // inventory full
+    }
+    public void transferChestItem(int slotCol, int slotRow){
+        if(currentChest == null) return;
+        OBJ_Chest chest = (OBJ_Chest) currentChest;
+
+        if(slotCol < 6) {
+            // Taking from chest
+            int chestIndex = slotCol + (slotRow * 6);
+            if(chestIndex < chest.chestInv.size()) {
+                Entity item = chest.chestInv.get(chestIndex);
+                if(item != null) {
+                    int emptySlot = getFirstEmptySlot();
+                    if(emptySlot != -1) {
+                        inventory.set(emptySlot, item);
+                        chest.chestInv.set(chestIndex, null);
+                    }
+                }
+            }
+        } else {
+            // Putting into chest
+            int invIndex = (slotCol - 8) + (slotRow * 5);
+            if(invIndex < inventory.size()) {
+                Entity item = inventory.get(invIndex);
+                if(item != null) {
+                    // Find first empty chest slot
+                    for(int i = 0; i < chest.chestInv.size(); i++) {
+                        if(chest.chestInv.get(i) == null) {
+                            chest.chestInv.set(i, item);
+                            inventory.set(invIndex, null);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
     public void update() {
         if (keyHandler.up || keyHandler.down || keyHandler.left || keyHandler.right) {
