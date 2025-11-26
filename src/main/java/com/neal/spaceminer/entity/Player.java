@@ -19,7 +19,6 @@ public class Player extends Entity {
     public final int maxInventorySize = 20;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
-
         super(gamePanel);
 
         this.gamePanel = gamePanel;
@@ -44,12 +43,10 @@ public class Player extends Entity {
         }
         setItems();
     }
-
     public void initialize() {
         worldX = gamePanel.tileSize * 24;
         worldY = gamePanel.tileSize * 24;
         speed = 2;
-
     }
     public void getImage() {
         up1 = setup("/astronaut/back1");

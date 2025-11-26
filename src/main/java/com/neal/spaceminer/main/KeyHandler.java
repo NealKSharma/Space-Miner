@@ -7,7 +7,7 @@ public class KeyHandler implements KeyListener {
 
     GamePanel gamePanel;
 
-    public boolean up, down, left, right, chest;
+    public boolean up, down, left, right, chest, saved;
 
     boolean showDebug = false;
 
@@ -53,15 +53,17 @@ public class KeyHandler implements KeyListener {
         if(key == KeyEvent.VK_ENTER){
             if(gamePanel.ui.commandNum == 0){
                 gamePanel.gameState = gamePanel.playState;
+                gamePanel.ui.subState = 0;
             } else if(gamePanel.ui.commandNum == 1){
-                // ADD LATER
+                gamePanel.saveLoad.load();
+                gamePanel.gameState = gamePanel.playState;
+                gamePanel.ui.subState = 0;
             } else if(gamePanel.ui.commandNum == 2){
                 System.exit(0);
             }
         }
     }
     public void playState(int key){
-
         if (key == KeyEvent.VK_W) {
             up = true;
         }
@@ -97,17 +99,18 @@ public class KeyHandler implements KeyListener {
             gamePanel.gameState = gamePanel.playState;
             gamePanel.ui.commandNum = 0;
             gamePanel.ui.subState = 0;
+            saved = false;
         }
 
         if (key == KeyEvent.VK_W && gamePanel.ui.subState==0) {
             gamePanel.ui.commandNum--;
             if(gamePanel.ui.commandNum < 0){
-                gamePanel.ui.commandNum = 4;
+                gamePanel.ui.commandNum = 5;
             }
         }
         if (key == KeyEvent.VK_S && gamePanel.ui.subState==0) {
             gamePanel.ui.commandNum++;
-            if(gamePanel.ui.commandNum > 4){
+            if(gamePanel.ui.commandNum > 5){
                 gamePanel.ui.commandNum = 0;
             }
         }
@@ -155,10 +158,14 @@ public class KeyHandler implements KeyListener {
                 gamePanel.ui.commandNum = 1;
             } else if(gamePanel.ui.commandNum == 2){
                 gamePanel.ui.subState = 2;
-            } else if (gamePanel.ui.commandNum == 3){
+            } else if(gamePanel.ui.commandNum == 3){
+                gamePanel.saveLoad.save();
+                saved = true;
+            }
+            else if (gamePanel.ui.commandNum == 4){
                 gamePanel.ui.subState = 3;
                 gamePanel.ui.commandNum = 1;
-            } else if (gamePanel.ui.commandNum == 4) {
+            } else if (gamePanel.ui.commandNum == 5) {
                 gamePanel.gameState = gamePanel.playState;
                 gamePanel.ui.commandNum = 0;
             }
@@ -183,7 +190,6 @@ public class KeyHandler implements KeyListener {
         }
     }
     public void inventoryState(int key) {
-
         if (key == KeyEvent.VK_E) {
             gamePanel.gameState = gamePanel.playState;
             gamePanel.ui.slotRow = 0;
@@ -230,7 +236,6 @@ public class KeyHandler implements KeyListener {
         }
     }
     public void chestState(int key) {
-
         if (key == KeyEvent.VK_F) {
             gamePanel.gameState = gamePanel.playState;
             gamePanel.ui.slotRow = 0;

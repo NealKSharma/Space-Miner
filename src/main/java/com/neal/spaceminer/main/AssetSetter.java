@@ -32,5 +32,13 @@ public class AssetSetter {
         gamePanel.obj[4] = new OBJ_Pickaxe(gamePanel);
         gamePanel.obj[4].worldX = 21 * gamePanel.tileSize;
         gamePanel.obj[4].worldY = 23 * gamePanel.tileSize;
+
+        gamePanel.obj[5] = new OBJ_Pickaxe(gamePanel);
+        gamePanel.obj[5].worldX = 20 * gamePanel.tileSize;
+        gamePanel.obj[5].worldY = 23 * gamePanel.tileSize;
+
+        gamePanel.obj[6] = new OBJ_Pickaxe(gamePanel);
+        gamePanel.obj[6].worldX = 19 * gamePanel.tileSize;
+        gamePanel.obj[6].worldY = 23 * gamePanel.tileSize;
     }
 }

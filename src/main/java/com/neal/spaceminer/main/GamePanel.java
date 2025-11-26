@@ -1,5 +1,6 @@
 package com.neal.spaceminer.main;
 
+import com.neal.spaceminer.data.SaveLoad;
 import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.entity.Player;
 import com.neal.spaceminer.tile.TileManager;
@@ -41,6 +42,7 @@ public class GamePanel extends JPanel implements Runnable {
     public AssetSetter assetSetter = new AssetSetter(this);
     public UI ui = new UI(this);
     Config config = new Config(this);
+    SaveLoad saveLoad = new SaveLoad(this);
     Thread gameThread;
 
     // PLAYER AND OBJECTS

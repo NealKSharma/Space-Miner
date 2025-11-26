@@ -44,7 +44,6 @@ public class UI {
         g2.setFont(originalFont);
     }
     public void drawTitleScreen() {
-
         g2.setColor(new Color(20, 0, 20));
         g2.fillRect(0,0,gamePanel.screenWidth, gamePanel.screenHeight);
 
@@ -185,17 +184,24 @@ public class UI {
             g2.drawString(">", textX-32, textY);
         }
 
+        // SAVE GAME
+        textY += gamePanel.tileSize;
+        g2.drawString("Save Game", textX, textY);
+        if(commandNum == 3){
+            g2.drawString(">", textX-32, textY);
+        }
+
         // QUIT
         textY += gamePanel.tileSize;
         g2.drawString("Quit", textX, textY);
-        if(commandNum == 3){
+        if(commandNum == 4){
             g2.drawString(">", textX-32, textY);
         }
 
         // BACK
         textY = frameY + gamePanel.tileSize*9;
         g2.drawString("Back", textX, textY);
-        if(commandNum == 4){
+        if(commandNum == 5){
             g2.drawString(">", textX-32, textY);
         }
 
@@ -214,6 +220,12 @@ public class UI {
         int volumeWidth = (gamePanel.tileSize/2) * volume; // TEMPORARY VARIABLE
         g2.fillRect(textX + 5, textY + 5, volumeWidth, (gamePanel.tileSize/2) - 9);
         gamePanel.config.saveConfig();
+
+        // GAME SAVE
+        if(gamePanel.keyHandler.saved){
+            textY += (int) (gamePanel.tileSize*2.5);
+            g2.drawString("Saved!", textX, textY);
+        }
     }
     public void options_fullScreenNotification(int frameX, int frameY){
         int textX = frameX + gamePanel.tileSize;
