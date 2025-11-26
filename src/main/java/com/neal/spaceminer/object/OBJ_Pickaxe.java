@@ -2,18 +2,18 @@ package com.neal.spaceminer.object;
 import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.entity.Entity;
 
-public class OBJ_Chest extends Entity {
-    public OBJ_Chest(GamePanel gamePanel) {
+public class OBJ_Pickaxe extends Entity {
+    public OBJ_Pickaxe(GamePanel gamePanel) {
         super(gamePanel);
 
-        name = "Chest";
-        collision = true;
+        name = "Pickaxe";
+        collision = false;
 
         solidArea.x = 8;
         solidArea.y = 16;
         solidAreaDefaultX = 8;
         solidAreaDefaultY = 16;
-        down1 = setup("/objects/Chest");
-        description = "[" + name + "]\nChest can be used to store items.";
+        down1 = setup("/objects/pickaxe");
+        description = "[" + name + "]\nA simple pickaxe.\nCan mine normal rocks.";
     }
 }

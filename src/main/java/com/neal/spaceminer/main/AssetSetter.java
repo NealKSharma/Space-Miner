@@ -2,6 +2,7 @@ package com.neal.spaceminer.main;
 
 import com.neal.spaceminer.object.OBJ_Astronaut;
 import com.neal.spaceminer.object.OBJ_Chest;
+import com.neal.spaceminer.object.OBJ_Pickaxe;
 
 public class AssetSetter {
 
@@ -27,5 +28,17 @@ public class AssetSetter {
         gamePanel.obj[3] = new OBJ_Astronaut(gamePanel);
         gamePanel.obj[3].worldX = 22 * gamePanel.tileSize;
         gamePanel.obj[3].worldY = 24 * gamePanel.tileSize;
+
+        gamePanel.obj[4] = new OBJ_Pickaxe(gamePanel);
+        gamePanel.obj[4].worldX = 21 * gamePanel.tileSize;
+        gamePanel.obj[4].worldY = 23 * gamePanel.tileSize;
+
+        gamePanel.obj[5] = new OBJ_Pickaxe(gamePanel);
+        gamePanel.obj[5].worldX = 20 * gamePanel.tileSize;
+        gamePanel.obj[5].worldY = 23 * gamePanel.tileSize;
+
+        gamePanel.obj[6] = new OBJ_Pickaxe(gamePanel);
+        gamePanel.obj[6].worldX = 19 * gamePanel.tileSize;
+        gamePanel.obj[6].worldY = 23 * gamePanel.tileSize;
     }
 }

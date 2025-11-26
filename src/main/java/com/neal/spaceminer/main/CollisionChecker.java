@@ -121,8 +121,8 @@ public class CollisionChecker {
                 }
                 entity.solidArea.x = entity.solidAreaDefaultX;
                 entity.solidArea.y = entity.solidAreaDefaultY;
-                gamePanel.obj[i].solidArea.x = entity.solidAreaDefaultX;
-                gamePanel.obj[i].solidArea.y = entity.solidAreaDefaultY;
+                gamePanel.obj[i].solidArea.x = gamePanel.obj[i].solidAreaDefaultX;
+                gamePanel.obj[i].solidArea.y = gamePanel.obj[i].solidAreaDefaultY;
             }
         }
         return index;
