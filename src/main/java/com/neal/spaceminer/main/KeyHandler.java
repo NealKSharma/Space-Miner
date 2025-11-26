@@ -52,11 +52,11 @@ public class KeyHandler implements KeyListener {
 
         if(key == KeyEvent.VK_ENTER){
             if(gamePanel.ui.commandNum == 0){
-                gamePanel.gameState = gamePanel.playState;
+                gamePanel.gameState = gamePanel.transitionState;
                 gamePanel.ui.subState = 0;
             } else if(gamePanel.ui.commandNum == 1){
                 gamePanel.saveLoad.load();
-                gamePanel.gameState = gamePanel.playState;
+                gamePanel.gameState = gamePanel.transitionState;
                 gamePanel.ui.subState = 0;
             } else if(gamePanel.ui.commandNum == 2){
                 System.exit(0);

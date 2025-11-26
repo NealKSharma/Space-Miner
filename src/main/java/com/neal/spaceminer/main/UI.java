@@ -3,7 +3,11 @@ package com.neal.spaceminer.main;
 import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.object.OBJ_Chest;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Objects;
 
 public class UI {
 
@@ -11,9 +15,12 @@ public class UI {
     Graphics2D g2;
     Font arial_40;
 
+    BufferedImage titleScreenBackground;
+
     public int commandNum = 0;
     public int subState = 0;
     public int volume = 0;
+    int counter = 0;
 
     public int slotCol = 0;
     public int slotRow = 0;
@@ -21,6 +28,8 @@ public class UI {
     public UI(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         arial_40 = new Font("Arial", Font.PLAIN, 25);
+
+        loadTitleBackground();
     }
 
     public void draw(Graphics2D g2) {
@@ -41,79 +50,86 @@ public class UI {
             drawInventory();
         } else if(gamePanel.gameState == gamePanel.chestState){
             drawChest();
+        } else if(gamePanel.gameState == gamePanel.transitionState){
+            drawTransition();
         }
         g2.setFont(originalFont);
     }
     public void drawTitleScreen() {
-        g2.setColor(new Color(20, 0, 20));
-        g2.fillRect(0,0,gamePanel.screenWidth, gamePanel.screenHeight);
 
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 96F));
-        String text = "Space Miner";
-        int x = getXforCenteredText(text);
-        int y = gamePanel.tileSize * 3;
+        g2.drawImage(titleScreenBackground, 0, 0, gamePanel.screenWidth, gamePanel.screenHeight, null);
 
+        // HEADING
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 64F));
+        String text = "SPACE-MINER";
+        int x = gamePanel.tileSize;
+        int y = gamePanel.tileSize * 2;
         g2.setColor(Color.DARK_GRAY);
-        g2.drawString(text, x+5, y+5);
-
+        g2.drawString(text, x+3, y+3);
         g2.setColor(Color.WHITE);
         g2.drawString(text, x, y);
 
-        // IMAGE
-        x = gamePanel.screenWidth/2 - (gamePanel.tileSize*2) / 2;
-        y +=  gamePanel.tileSize;
-        g2.drawImage(gamePanel.player.down1, x, y, gamePanel.tileSize*2, gamePanel.tileSize*2, null);
-
         // MENU
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
-        text = "NEW GAME";
-        x = getXforCenteredText(text);
-        y += (int) (gamePanel.tileSize * 3.5);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
+        text = "New Game";
+        y += gamePanel.tileSize * 2;
         if(commandNum == 0){
             g2.drawString(">", x - (gamePanel.tileSize/2), y);
         }
-
         g2.setColor(Color.DARK_GRAY);
-        g2.drawString(text, x+5, y+5);
-
+        g2.drawString(text, x+3, y+3);
         g2.setColor(Color.WHITE);
         g2.drawString(text, x, y);
 
 
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
-        text = "LOAD GAME";
-        x = getXforCenteredText(text);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
+        text = "Load Game";
         y += gamePanel.tileSize;
         if(commandNum == 1){
             g2.drawString(">", x - (gamePanel.tileSize/2), y);
         }
-
         g2.setColor(Color.DARK_GRAY);
-        g2.drawString(text, x+5, y+5);
-
+        g2.drawString(text, x+3, y+3);
         g2.setColor(Color.WHITE);
         g2.drawString(text, x, y);
 
 
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
-        text = "QUIT";
-        x = getXforCenteredText(text);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
+        text = "Quit";
         y += gamePanel.tileSize;
         if(commandNum == 2){
             g2.drawString(">", x - (gamePanel.tileSize/2), y);
         }
-
         g2.setColor(Color.DARK_GRAY);
-        g2.drawString(text, x+5, y+5);
-
+        g2.drawString(text, x+3, y+3);
         g2.setColor(Color.WHITE);
         g2.drawString(text, x, y);
+    }
+    public void loadTitleBackground() {
+        try {
+            titleScreenBackground = ImageIO.read(
+                    Objects.requireNonNull(getClass().getResourceAsStream("/tiles/titleBackground.png"))
+            );
+            Utility utility = new Utility();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void drawTransition(){
+        counter++;
+        g2.setColor(new Color(0, 0,0,counter*3));
+        g2.fillRect(0, 0, gamePanel.screenWidth, gamePanel.screenHeight);
+
+        if(counter == 85){
+            counter = 0;
+            gamePanel.gameState = gamePanel.playState;
+        }
     }
     public void drawPlayScreen() {
         int frameX = (gamePanel.tileSize * 14) + 10;
         int frameY = (gamePanel.tileSize * 10) + 10;
-        int frameWidth = (gamePanel.tileSize * 6) - 30;
-        int frameHeight = (gamePanel.tileSize * 2) - 35;
+        int frameWidth = (gamePanel.tileSize * 6) - 25;
+        int frameHeight = (gamePanel.tileSize * 2) - 45;
 
         // SLOTS
         final int slotXstart = frameX + 15;

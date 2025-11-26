@@ -57,6 +57,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int pauseState = 2;
     public final int inventoryState = 3;
     public final int chestState = 4;
+    public final int transitionState = 5;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -120,15 +121,8 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
     public void update() {
-
         if(gameState == playState) {
             player.update();
-        } else if (gameState == pauseState){
-
-        } else if(gameState == inventoryState){
-
-        } else if(gameState == chestState){
-
         }
     }
     public void drawToTempScreen(){
@@ -138,7 +132,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         // TITLE SCREEN
-        if (gameState == titleState){
+        if (gameState == titleState || gameState == transitionState) {
             ui.draw(g2);
         }
         else {

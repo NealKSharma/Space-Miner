@@ -1,80 +1,93 @@
 # 🌌 Space-Miner
 
-### 🚀 Status: Early Prototype
-> This game is in **very early development** and will be expanded a lot further. Expect missing features, placeholder graphics, and unbalanced gameplay.  
+![Java](https://img.shields.io/badge/Language-Java-orange?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Early_Prototype-red?style=flat-square)
+![Genre](https://img.shields.io/badge/Genre-Survival_Sandbox-blue?style=flat-square)
+
+> **Current Version:** Alpha 0.1.5
+> **Developer:** Neal Kaushik Sharma
 
 ---
 
-## 🪐 Theme
+## 🪐 The Mission: PSR B1257+12
 
-You are an **astronaut** whose ship has crash-landed on a barely habitable alien planet.  
-The terrain is harsh, oxygen is scarce, and the native lifeforms are not exactly friendly.  
+You are stranded. Your ship has crash-landed in the **PSR B1257+12 system**—a real-world star system orbited by a massive **Pulsar**.
 
-You’ll explore the planet tile by tile — uncovering new areas, finding resources, and learning how to survive in a world that doesn’t want you there.  
-Use the materials you collect to **repair your ship** or **build a new one** from the ground up.  
+The environment is hostile. Bathed in constant radiation from the dead star, oxygen is scarce, and the planet's surface is unforgiving. You must explore the grid, scavenge resources, and reconstruct your technology to survive the "Lich" star's gaze.
 
-It’s a game about **exploration**, **survival**, and **adaptation** in an unknown world.
+This is a game about **exploration**, **logistics**, and **survival** built entirely from scratch.
 
 ---
 
-## 🎮 Gameplay (Prototype)
+## 📸 Gallery
 
-- Explore the alien surface  
-- Move around freely across a scrolling map  
-- Smooth player movement and basic animations  
-- Early tile-based world rendering system
-- Collision detection
-
-Planned features:
-- Resource mining & crafting  
-- Oxygen / Hunger / Health system  
-- Base construction  
-- Hostile creatures & combat  
-- Procedural planet generation  
-- **Multiple maps and planetary environments coming soon**
+![img.png](img.png)
 
 ---
 
-## 🧩 Tech Overview
+## 🎮 Key Features
 
-**Language:** Java  
-**Graphics:** Java2D  
-**Framework:** Native Java (Swing + AWT)  
-**Tile Size:** 16×16 base (scaled ×4 for display)
+### 🎒 Deep Inventory Management
+Survival requires organization. The game features a complete **slot-based inventory system**.
+* **Drag & Swap:** Organize your backpack efficiently.
+* **Storage Containers:** Find chests scattered across the world to store excess materials.
+* **Smart Transfer:** Instantly move items between your inventory and storage containers with a single click.
 
-The world is grid-based, rendered via a tile manager that reads from a `.txt` map file.  
-Each tile can define collisions, allowing for walls, obstacles, and interactive areas.  
-Future updates will include multiple maps and different biomes to explore.
+### 🗺️ Interactive World
+The world isn't just a static background.
+* **Precise Physics:** The game uses a custom collision system, allowing for smooth movement around obstacles rather than snapping to a rigid grid.
+* **Context-Sensitive Actions:** Interact with specific objects in the world—open crates, pick up tools off the ground, or inspect machinery—dynamically based on where you are facing.
+
+### ⚙️ Smooth Performance
+* **High Refresh Rate:** Running on a custom game loop optimized for **144 FPS**, providing fluid character animations and responsive controls.
+* **Save/Load System:** Your progress is persistent. Save your location, inventory, and world state and pick up exactly where you left off.
+* **Custom Settings:** Adjust audio levels, toggle fullscreen, and manage controls via a persistent configuration menu.
 
 ---
 
-## 🧰 Future Development
+## ⌨️ Controls
 
-- Inventory & resource system  
-- Crafting UI  
-- Weather & day/night cycle  
-- Alien fauna and flora  
-- Storyline progression  
-- Save/load system  
-- **Additional maps and new planetary regions**
+| Key | Action |
+| :--- | :--- |
+| **W, A, S, D** | Movement |
+| **F** | **Interact** (Open Chests, Pick up items) |
+| **E** | Open **Inventory** |
+| **ESC** | Pause / Options Menu |
+| **1 - 5** | Select Hotbar Slot |
+| **Enter** | Confirm Selection |
+| **F3** | Toggle Debug Overlay |
+
+---
+
+## 🧩 Tech Stack
+
+This project is a showcase of **Native Java Development**. It was built without the use of external game engines (like Unity or Godot) to demonstrate core programming concepts.
+
+* **Language:** Java (JDK 8+)
+* **Rendering:** Java2D (Swing + AWT)
+* **Architecture:** Custom Entity-Component-style system
+* **Data Persistence:** File I/O for saving world states and configurations
+
+---
+
+## 🧰 Roadmap
+
+The foundation is complete. The following features are in active development:
+
+- [ ] **Oxygen & Hunger Systems:** Survival mechanics tied to the harsh environment.
+- [ ] **Crafting UI:** Combine resources to repair your ship.
+- [ ] **Combat:** Hostile alien fauna.
+- [ ] **Procedural Generation:** Randomly generated planetary biomes.
+- [ ] **Weather:** Radiation storms and day/night cycles.
 
 ---
 
 ## 🪙 Credits
 
-Developed by **Neal Kaushik Sharma**  
-Sprites and assets — custom and placeholder (temporary)  
-Built purely in **Java** as a learning and passion project  
-
----
-
-## 🧑‍🚀 Screenshot (placeholder)
-
-*(Coming soon — once visuals are stable!)*
+* **Development:** Neal Kaushik Sharma
+* **Assets:** Custom pixel art and placeholder assets.
 
 ---
 
 ### ⚠️ Note
-
-This project is still experimental and many features are being tested.  
-Feedback and suggestions are welcome as development continues!
+*This project is currently in active development. Features are subject to change and optimization.*

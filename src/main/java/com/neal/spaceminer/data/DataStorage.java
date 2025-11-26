@@ -23,5 +23,4 @@ public class DataStorage implements Serializable {
     HashMap<Integer, ArrayList<String>> chestItemNames = new HashMap<>();
     HashMap<Integer, ArrayList<Integer>> chestItemSlots = new HashMap<>();
 
-
 }
