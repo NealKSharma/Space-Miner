@@ -39,8 +39,12 @@ public class Player extends Entity {
         solidArea.width = gamePanel.tileSize - 35;
         solidArea.height = gamePanel.tileSize - 25;
 
+        swingArea.width = gamePanel.tileSize - 16;
+        swingArea.height = gamePanel.tileSize - 16;
+
         initialize();
         getImage();
+        getMineImage();
 
         for(int i = 0; i < maxInventorySize; i++) {
             inventory.add(null);
@@ -53,14 +57,24 @@ public class Player extends Entity {
         speed = 2;
     }
     public void getImage() {
-        up1 = setup("/astronaut/back1");
-        up2 = setup("/astronaut/back2");
-        down1 = setup("/astronaut/front1");
-        down2 = setup("/astronaut/front2");
-        left1 = setup("/astronaut/left1");
-        left2 = setup("/astronaut/left2");
-        right1 = setup("/astronaut/right1");
-        right2 = setup("/astronaut/right2");
+        up1 = setup("/astronaut/back1", gamePanel.tileSize, gamePanel.tileSize);
+        up2 = setup("/astronaut/back2", gamePanel.tileSize, gamePanel.tileSize);
+        down1 = setup("/astronaut/front1", gamePanel.tileSize, gamePanel.tileSize);
+        down2 = setup("/astronaut/front2", gamePanel.tileSize, gamePanel.tileSize);
+        left1 = setup("/astronaut/left1", gamePanel.tileSize, gamePanel.tileSize);
+        left2 = setup("/astronaut/left2", gamePanel.tileSize, gamePanel.tileSize);
+        right1 = setup("/astronaut/right1", gamePanel.tileSize, gamePanel.tileSize);
+        right2 = setup("/astronaut/right2", gamePanel.tileSize, gamePanel.tileSize);
+    }
+    public void getMineImage(){
+        mineUp1 = setup("/astronaut_pickaxing/pickaxe_back1", gamePanel.tileSize, gamePanel.tileSize*2);
+        mineUp2 = setup("/astronaut_pickaxing/pickaxe_back2", gamePanel.tileSize, gamePanel.tileSize*2);
+        mineDown1 = setup("/astronaut_pickaxing/pickaxe_front1", gamePanel.tileSize, gamePanel.tileSize*2);
+        mineDown2 = setup("/astronaut_pickaxing/pickaxe_front2", gamePanel.tileSize, gamePanel.tileSize*2);
+        mineLeft1 = setup("/astronaut_pickaxing/pickaxe_left1", gamePanel.tileSize*2, gamePanel.tileSize);
+        mineLeft2 = setup("/astronaut_pickaxing/pickaxe_left2", gamePanel.tileSize*2, gamePanel.tileSize);
+        mineRight1 = setup("/astronaut_pickaxing/pickaxe_right1", gamePanel.tileSize*2, gamePanel.tileSize);
+        mineRight2 = setup("/astronaut_pickaxing/pickaxe_right2", gamePanel.tileSize*2, gamePanel.tileSize);
     }
     public void interactWithObject(int index) {
         if(gamePanel.obj[index] != null){
@@ -133,13 +147,7 @@ public class Player extends Entity {
     }
     public void itemBehaviour(){
         boolean wasHoldingLight = hasLight;
-        // LIGHT
-        if (searchHotbar("Lumen Cell")) {
-            hasLight = true;
-        } else {
-            hasLight = false;
-        }
-
+        hasLight = searchHotbar("Lumen Cell");
         if (wasHoldingLight != hasLight) {
             gamePanel.environmentManager.refreshLightMap();
         }
@@ -160,8 +168,17 @@ public class Player extends Entity {
         }
         return false;
     }
+    public void useHotbarItem(int index){
+        // MINING
+        if(inventory.get(index) != null && inventory.get(index).name.equals("Iron Pickaxe")) {
+            mining = true;
+            spriteCounter = 0;
+        }
+    }
     public void update() {
-        if (keyHandler.up || keyHandler.down || keyHandler.left || keyHandler.right) {
+        if(mining){
+            mining();
+        } else if (keyHandler.up || keyHandler.down || keyHandler.left || keyHandler.right) {
             if (keyHandler.up) direction = "up";
             if (keyHandler.down) direction = "down";
             if (keyHandler.left) direction = "left";
@@ -196,5 +213,50 @@ public class Player extends Entity {
         }
         int objIndex = gamePanel.collisionChecker.checkObject(this, true);
         if (objIndex != -1) interactWithObject(objIndex);
+    }
+    public void mining(){
+        spriteCounter++;
+        if(spriteCounter <= 5){
+            spriteNum = 1;
+        }
+        if(spriteCounter > 5 && spriteCounter <= 25){
+            spriteNum = 2;
+
+            int currentWorldX = worldX;
+            int currentWorldY = worldY;
+            int solidAreaWidth = solidArea.width;
+            int solidAreaHeight = solidArea.height;
+
+            // ADJUST PLAYER's WORLD X/Y FOR THE ATTACK AREA
+            switch(direction){
+                case "up": worldY -= swingArea.height; break;
+                case "down": worldY += swingArea.height; break;
+                case "left": worldX -= swingArea.width; break;
+                case "right": worldX += swingArea.width; break;
+            }
+            // SWING AREA BECOMES THE SOLID AREA
+            solidArea.width = swingArea.width;
+            solidArea.height = swingArea.height;
+
+            int objectIndex = gamePanel.collisionChecker.checkObject(this, true);
+            if(objectIndex != -1) mineObject(objectIndex);
+
+            // AFTER CHECKING FOR COLLISION RESTORE ORIGINAL DATA
+            worldX = currentWorldX;
+            worldY = currentWorldY;
+            solidArea.width = solidAreaWidth;
+            solidArea.height = solidAreaHeight;
+        }
+        if(spriteCounter > 25 && spriteCounter <= 50){
+            spriteNum = 1;
+            spriteCounter = 0;
+            mining = false;
+        }
+    }
+    public void mineObject(int objectIndex){
+
+        // TODO
+
+        System.out.println("Hit Detected on" + gamePanel.obj[objectIndex].name);
     }
 }

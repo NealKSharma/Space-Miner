@@ -17,16 +17,19 @@ public class Entity {
     public int speed;
 
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
+    public BufferedImage mineUp1, mineUp2, mineDown1, mineDown2, mineLeft1,  mineLeft2, mineRight1, mineRight2;
     public String direction = "down";
 
     public int spriteCounter = 0;
     public int spriteNum = 1;
+    boolean mining = false;
 
     public String name;
     public boolean collision = false;
 
     // COLLISION
     public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
+    public Rectangle swingArea = new Rectangle(0, 0, 0, 0);
     public int solidAreaDefaultX, solidAreaDefaultY;
     public boolean collisionOn = false;
 
@@ -39,10 +42,11 @@ public class Entity {
         this.gamePanel = gamePanel;
     }
     public void draw(Graphics2D g2){
-
         BufferedImage image = null;
         int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
         int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
+        int tempScreenX = screenX;
+        int tempScreenY = screenY;
 
         // Only draw if visible on screen
         if (worldX + gamePanel.tileSize > gamePanel.player.worldX - gamePanel.player.screenX &&
@@ -51,10 +55,36 @@ public class Entity {
                 worldY - gamePanel.tileSize < gamePanel.player.worldY + gamePanel.player.screenY) {
 
             switch (direction) {
-                case "up":    image = (spriteNum == 1) ? up1 : up2;       break;
-                case "down":  image = (spriteNum == 1) ? down1 : down2;   break;
-                case "left":  image = (spriteNum == 1) ? left1 : left2;   break;
-                case "right": image = (spriteNum == 1) ? right1 : right2; break;
+                case "up":
+                    if(!mining){
+                        image = (spriteNum == 1) ? up1 : up2;
+                    } else {
+                        tempScreenY = screenY - gamePanel.tileSize;
+                        image = (spriteNum == 1) ? mineUp1 : mineUp2;
+                    }
+                    break;
+                case "down":
+                    if(!mining){
+                        image = (spriteNum == 1) ? down1 : down2;
+                    } else {
+                        image = (spriteNum == 1) ? mineDown1 : mineDown2;
+                    }
+                    break;
+                case "left":
+                    if(!mining){
+                        image = (spriteNum == 1) ? left1 : left2;
+                    } else {
+                        tempScreenX = screenX - gamePanel.tileSize;
+                        image = (spriteNum == 1) ? mineLeft1 : mineLeft2;
+                    }
+                    break;
+                case "right":
+                    if(!mining){
+                        image = (spriteNum == 1) ? right1 : right2;
+                    } else {
+                        image = (spriteNum == 1) ? mineRight1 : mineRight2;
+                    }
+                    break;
             }
 
             if(image != null) {
@@ -71,20 +101,16 @@ public class Entity {
                     displayHeight = image.getHeight();
                 }
 
-                // Calculate Center Offset
-                int offsetX = (gamePanel.tileSize - displayWidth) / 2;
-                int offsetY = (gamePanel.tileSize - displayHeight) / 2;
-
-                g2.drawImage(image, screenX + offsetX, screenY + offsetY, displayWidth, displayHeight, null);
+                g2.drawImage(image, tempScreenX, tempScreenY, displayWidth, displayHeight, null);
             }
         }
     }
-    public BufferedImage setup(String imagePath) {
+    public BufferedImage setup(String imagePath, int width, int height) {
         Utility utility = new Utility();
         BufferedImage image = null;
         try {
             image = ImageIO.read(Objects.requireNonNull(getClass().getResource(imagePath + ".png")));
-            image = utility.scaleImage(image, gamePanel.tileSize, gamePanel.tileSize);
+            image = utility.scaleImage(image, width, height);
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -19,7 +19,7 @@ public class OBJ_LumenCell extends Entity {
         solidArea.y = 16;
         solidAreaDefaultX = 8;
         solidAreaDefaultY = 16;
-        down1 = setup("/objects/Lumen_Cell");
+        down1 = setup("/objects/Lumen_Cell", gamePanel.tileSize, gamePanel.tileSize);
         description = "[" + name + "]\nSimple, effective. \nA cell that produces light.";
     }
 }

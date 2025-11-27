@@ -152,7 +152,7 @@ public class UI {
         }
 
         if (gamePanel.player.canOpen) {
-            g2.drawString("Press F to interact", 10, gamePanel.screenHeight / 2);
+            g2.drawString("Press E to interact", 10, gamePanel.screenHeight / 2);
         }
     }
     public void drawPauseScreen() {

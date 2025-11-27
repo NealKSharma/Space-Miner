@@ -19,6 +19,6 @@ public class OBJ_Astronaut extends Entity {
         solidArea.y = 8;
         solidAreaDefaultX = 8;
         solidAreaDefaultY = 8;
-        down1 = setup("/objects/dead_astronaut");
+        down1 = setup("/objects/dead_astronaut", gamePanel.tileSize, gamePanel.tileSize);
     }
 }

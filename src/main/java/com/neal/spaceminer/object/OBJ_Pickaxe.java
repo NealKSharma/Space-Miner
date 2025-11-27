@@ -18,7 +18,7 @@ public class OBJ_Pickaxe extends Entity {
         solidArea.y = 16;
         solidAreaDefaultX = 8;
         solidAreaDefaultY = 16;
-        down1 = setup("/objects/pickaxe");
+        down1 = setup("/objects/pickaxe", gamePanel.tileSize, gamePanel.tileSize);
         description = "[" + name + "]\nA simple pickaxe.\nCan mine normal rocks.";
     }
 }
