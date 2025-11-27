@@ -94,6 +94,9 @@ public class Entity {
                 if (shrink) {
                     displayWidth = gamePanel.tileSize / 2;
                     displayHeight = gamePanel.tileSize / 2;
+
+                    tempScreenX += (gamePanel.tileSize - displayWidth) / 2;
+                    tempScreenY += (gamePanel.tileSize - displayHeight) / 2;
                 }
                 // If it's a big object (like a Chest), use the image's actual size
                 else {
@@ -104,6 +107,8 @@ public class Entity {
                 g2.drawImage(image, tempScreenX, tempScreenY, displayWidth, displayHeight, null);
             }
         }
+        g2.setColor(Color.red);
+        g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
     }
     public BufferedImage setup(String imagePath, int width, int height) {
         Utility utility = new Utility();

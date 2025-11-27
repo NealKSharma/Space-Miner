@@ -21,8 +21,11 @@ public class OBJ_Chest extends Entity {
 
         solidArea.x = 8;
         solidArea.y = 16;
-        solidAreaDefaultX = 8;
-        solidAreaDefaultY = 16;
+        solidArea.width = 48;
+        solidArea.height = 48;
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
+
         down1 = setup("/objects/Chest", gamePanel.tileSize, gamePanel.tileSize);
         description = "[" + name + "]\nUsed to store items.";
 

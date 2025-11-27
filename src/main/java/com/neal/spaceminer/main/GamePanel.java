@@ -35,7 +35,7 @@ public class GamePanel extends JPanel implements Runnable {
     public boolean fullScreen = true;
 
     // FPS
-    int FPS = 144;
+    int FPS = 265;
     public int currentFPS = 0;
 
     // SYSTEM
@@ -53,7 +53,7 @@ public class GamePanel extends JPanel implements Runnable {
     // PLAYER AND OBJECTS
     public Player player = new Player(this, keyHandler);
     public Entity[] obj = new Entity[10];
-    ArrayList<Entity> entityList = new ArrayList<Entity>();
+    ArrayList<Entity> entityList = new ArrayList<Entity>(20);
 
     // GAME STATE
     public int gameState;
@@ -76,17 +76,11 @@ public class GamePanel extends JPanel implements Runnable {
         assetSetter.setObject();
         environmentManager.setup();
 
-        tempScreen = new BufferedImage(screenWidth2, screenHeight2, BufferedImage.TYPE_INT_ARGB);
-        g2 =  (Graphics2D) tempScreen.getGraphics();
-
-        if(fullScreen) {
-            setFullScreen();
-        }
+        if(fullScreen) setFullScreen();
 
         // DRY RUN TO LOAD ASSETS
         gameState = playState;
         update();
-        drawToTempScreen();
 
         gameState = titleState;
     }
@@ -121,8 +115,7 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (delta >= 1) {
                 update();
-                drawToTempScreen();
-                drawToScreen();
+                repaint();
                 delta--;
                 drawCount++;
             }
@@ -143,7 +136,23 @@ public class GamePanel extends JPanel implements Runnable {
             player.update();
         }
     }
-    public void drawToTempScreen(){
+    @Override
+    public void paintComponent(Graphics g){
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g;
+
+        // CALCULATE SCALING
+        double drawWidth = screenWidth2;
+        double drawHeight = screenHeight2;
+        double scaleX = drawWidth / screenWidth;
+        double scaleY = drawHeight / screenHeight;
+
+        g2.scale(scaleX, scaleY);
+
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+
         // TITLE SCREEN
         if (gameState == titleState || gameState == transitionState) {
             ui.draw(g2);
@@ -202,10 +211,5 @@ public class GamePanel extends JPanel implements Runnable {
             g2.drawString("Col: " + (player.worldX/tileSize), 10, 80);
             g2.drawString("Row: " + (player.worldY/tileSize), 10, 100);
         }
-    }
-    public void drawToScreen(){
-        Graphics g = getGraphics();
-        g.drawImage(tempScreen, 0, 0, screenWidth2, screenHeight2, null);
-        g.dispose();
     }
 }

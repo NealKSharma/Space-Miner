@@ -54,37 +54,31 @@ public class Lighting {
         setLightSource();
     }
     public void setLightSource(){
-        if (darknessFilter == null) {
-            darknessFilter = new BufferedImage(gamePanel.screenWidth, gamePanel.screenHeight, BufferedImage.TYPE_INT_ARGB);
-        }
-        Graphics2D g2 = (Graphics2D) darknessFilter.getGraphics();
+        BufferedImage newFilter = new BufferedImage(gamePanel.screenWidth, gamePanel.screenHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = (Graphics2D) newFilter.getGraphics();
 
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f));
-        g2.fillRect(0, 0, gamePanel.screenWidth, gamePanel.screenHeight);
-
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
-
-        if(!gamePanel.player.hasLight){
-            g2.setColor(new Color(0, 0, 0.1f, 0.98f));
-        } else {
-            // GET THE CENTER X AND Y OF THE LIGHT CIRCLE
+        if (gamePanel.player.hasLight) {
+            // CENTER
             int centerX = gamePanel.screenWidth / 2;
             int centerY = gamePanel.screenHeight / 2;
 
-            // CREATING A GRADIENT PAINT SETTING FOR THE LGIHT CIRCLE
+            // GRADIENT
             RadialGradientPaint gPaint = new RadialGradientPaint(centerX, centerY, 450/2, fraction, color);
-
-            // SET GRADIENT DATA ON G2
             g2.setPaint(gPaint);
+        } else {
+            // NO LIGHT -> Pitch black
+            g2.setColor(new Color(0, 0, 0.1f, 0.98f));
         }
+
         g2.fillRect(0, 0, gamePanel.screenWidth, gamePanel.screenHeight);
         g2.dispose();
+        darknessFilter = newFilter;
     }
     public void update(){
         // CHECK THE STATE OF THE DAY
         if(dayState == day){
             dayCounter++;
-            if(dayCounter > 600){
+            if(dayCounter > 60000){
                 dayState = dusk;
                 dayCounter = 0;
             }
@@ -98,7 +92,7 @@ public class Lighting {
         }
         if(dayState == night){
             dayCounter++;
-            if(dayCounter > 600){
+            if(dayCounter > 100){
                 dayState = dawn;
                 dayCounter = 0;
             }

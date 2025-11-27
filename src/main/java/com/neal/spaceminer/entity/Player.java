@@ -54,7 +54,7 @@ public class Player extends Entity {
     public void initialize() {
         worldX = gamePanel.tileSize * 24;
         worldY = gamePanel.tileSize * 24;
-        speed = 2;
+        speed = 1;
     }
     public void getImage() {
         up1 = setup("/astronaut/back1", gamePanel.tileSize, gamePanel.tileSize);
@@ -78,14 +78,13 @@ public class Player extends Entity {
     }
     public void interactWithObject(int index) {
         if(gamePanel.obj[index] != null){
-            int objIndex = gamePanel.collisionChecker.checkObject(this, true);
             if (gamePanel.obj[index].canPickup && getFirstEmptySlot() != -1) {
                 inventory.set(getFirstEmptySlot(), gamePanel.obj[index]);
                 gamePanel.obj[index] = null;
                 itemBehaviour();
-            } else if ("Chest".equals(gamePanel.obj[objIndex].name)) {
+            } else if ("Chest".equals(gamePanel.obj[index].name)) {
                 canOpen = true;
-                currentChest = gamePanel.obj[objIndex];
+                currentChest = gamePanel.obj[index];
             }
         }
     }
@@ -177,8 +176,10 @@ public class Player extends Entity {
     }
     public void update() {
         if(mining){
+            // PLAYER IS MINING
             mining();
         } else if (keyHandler.up || keyHandler.down || keyHandler.left || keyHandler.right) {
+            // PLAYER IS MOVING
             if (keyHandler.up) direction = "up";
             if (keyHandler.down) direction = "down";
             if (keyHandler.left) direction = "left";
@@ -202,7 +203,7 @@ public class Player extends Entity {
             }
 
             spriteCounter++;
-            if (spriteCounter > 12) {
+            if (spriteCounter > 32) {
                 if (spriteNum == 1) {
                     spriteNum = 2;
                 } else if (spriteNum == 2) {
@@ -210,16 +211,18 @@ public class Player extends Entity {
                 }
                 spriteCounter = 0;
             }
+        } else {
+            // PLAYER IS STANDING STILL
+            int objIndex = gamePanel.collisionChecker.checkObject(this, true);
+            if (objIndex != -1) interactWithObject(objIndex);
         }
-        int objIndex = gamePanel.collisionChecker.checkObject(this, true);
-        if (objIndex != -1) interactWithObject(objIndex);
     }
     public void mining(){
         spriteCounter++;
-        if(spriteCounter <= 5){
+        if(spriteCounter <= 10){
             spriteNum = 1;
         }
-        if(spriteCounter > 5 && spriteCounter <= 25){
+        if(spriteCounter > 10 && spriteCounter <= 50){
             spriteNum = 2;
 
             int currentWorldX = worldX;
@@ -247,7 +250,7 @@ public class Player extends Entity {
             solidArea.width = solidAreaWidth;
             solidArea.height = solidAreaHeight;
         }
-        if(spriteCounter > 25 && spriteCounter <= 50){
+        if(spriteCounter > 50 && spriteCounter <= 100){
             spriteNum = 1;
             spriteCounter = 0;
             mining = false;
