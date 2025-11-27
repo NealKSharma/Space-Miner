@@ -7,7 +7,7 @@ public class KeyHandler implements KeyListener {
 
     GamePanel gamePanel;
 
-    public boolean up, down, left, right, chest, saved;
+    public boolean up, down, left, right, chestOpened, saved;
 
     boolean showDebug = false;
 
@@ -85,9 +85,8 @@ public class KeyHandler implements KeyListener {
             gamePanel.gameState = gamePanel.inventoryState;
         }
 
-        if(key == KeyEvent.VK_F && gamePanel.player.canUse){
-            chest = true;
-            gamePanel.player.interactWithNearbyChest();
+        if(key == KeyEvent.VK_F && gamePanel.player.canOpen){
+            gamePanel.gameState = gamePanel.chestState;
         }
 
         if(key == KeyEvent.VK_F3){
@@ -242,7 +241,6 @@ public class KeyHandler implements KeyListener {
             gamePanel.ui.slotRow = 0;
             gamePanel.ui.slotCol = 0;
             gamePanel.player.currentChest = null;
-            chest = false;
         }
 
         // Navigation

@@ -149,7 +149,7 @@ public class UI {
             slotX += slotSize;
         }
 
-        if (gamePanel.player.canUse) {
+        if (gamePanel.player.canOpen) {
             g2.drawString("Press F to interact", 10, gamePanel.screenHeight / 2);
         }
     }

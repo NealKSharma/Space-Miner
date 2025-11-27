@@ -32,61 +32,53 @@ public class Entity {
 
     // ITEM ATTRIBUTES
     public String description = "";
+    public boolean shrink = false;
+    public boolean canPickup;
 
     public Entity(GamePanel gamePanel){
         this.gamePanel = gamePanel;
     }
-
     public void draw(Graphics2D g2){
 
         BufferedImage image = null;
         int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
         int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
 
+        // Only draw if visible on screen
         if (worldX + gamePanel.tileSize > gamePanel.player.worldX - gamePanel.player.screenX &&
                 worldX - gamePanel.tileSize < gamePanel.player.worldX + gamePanel.player.screenX &&
                 worldY + gamePanel.tileSize > gamePanel.player.worldY - gamePanel.player.screenY &&
                 worldY - gamePanel.tileSize < gamePanel.player.worldY + gamePanel.player.screenY) {
 
             switch (direction) {
-                case "up":
-                    if (spriteNum == 1) {
-                        image = up1;
-                    }
-                    if (spriteNum == 2) {
-                        image = up2;
-                    }
-                    break;
-                case "down":
-                    if (spriteNum == 1) {
-                        image = down1;
-                    }
-                    if (spriteNum == 2) {
-                        image = down2;
-                    }
-                    break;
-                case "left":
-                    if (spriteNum == 1) {
-                        image = left1;
-                    }
-                    if (spriteNum == 2) {
-                        image = left2;
-                    }
-                    break;
-                case "right":
-                    if (spriteNum == 1) {
-                        image = right1;
-                    }
-                    if (spriteNum == 2) {
-                        image = right2;
-                    }
-                    break;
+                case "up":    image = (spriteNum == 1) ? up1 : up2;       break;
+                case "down":  image = (spriteNum == 1) ? down1 : down2;   break;
+                case "left":  image = (spriteNum == 1) ? left1 : left2;   break;
+                case "right": image = (spriteNum == 1) ? right1 : right2; break;
             }
 
-            g2.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+            if(image != null) {
+                int displayWidth, displayHeight;
+
+                // If this entity is flagged to be drawn small (like a Pickaxe on floor)
+                if (shrink) {
+                    displayWidth = gamePanel.tileSize / 2;
+                    displayHeight = gamePanel.tileSize / 2;
+                }
+                // If it's a big object (like a Chest), use the image's actual size
+                else {
+                    displayWidth = image.getWidth();
+                    displayHeight = image.getHeight();
+                }
+
+                // Calculate Center Offset
+                int offsetX = (gamePanel.tileSize - displayWidth) / 2;
+                int offsetY = (gamePanel.tileSize - displayHeight) / 2;
+
+                g2.drawImage(image, screenX + offsetX, screenY + offsetY, displayWidth, displayHeight, null);
+            }
         }
     }
-
     public BufferedImage setup(String imagePath) {
         Utility utility = new Utility();
         BufferedImage image = null;

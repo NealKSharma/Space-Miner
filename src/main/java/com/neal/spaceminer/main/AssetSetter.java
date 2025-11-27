@@ -2,6 +2,7 @@ package com.neal.spaceminer.main;
 
 import com.neal.spaceminer.object.OBJ_Astronaut;
 import com.neal.spaceminer.object.OBJ_Chest;
+import com.neal.spaceminer.object.OBJ_LumenCell;
 import com.neal.spaceminer.object.OBJ_Pickaxe;
 
 public class AssetSetter {
@@ -13,36 +14,34 @@ public class AssetSetter {
     }
 
     public void setObject() {
-        gamePanel.obj[0] = new OBJ_Chest(gamePanel);
-        gamePanel.obj[0].worldX = 24 * gamePanel.tileSize;
-        gamePanel.obj[0].worldY = 22 * gamePanel.tileSize;
-        OBJ_Chest chest1 = (OBJ_Chest) gamePanel.obj[0];
+        int i = 0;
+        gamePanel.obj[i] = new OBJ_Chest(gamePanel);
+        gamePanel.obj[i].worldX = 24 * gamePanel.tileSize;
+        gamePanel.obj[i].worldY = 22 * gamePanel.tileSize;
+        OBJ_Chest chest1 = (OBJ_Chest) gamePanel.obj[i];
         chest1.chestInv.set(0, new OBJ_Pickaxe(gamePanel));
+        i++;
 
-        gamePanel.obj[1] = new OBJ_Chest(gamePanel);
-        gamePanel.obj[1].worldX = 24 * gamePanel.tileSize;
-        gamePanel.obj[1].worldY = 26 * gamePanel.tileSize;
-        OBJ_Chest chest2 = (OBJ_Chest) gamePanel.obj[1];
+        gamePanel.obj[i] = new OBJ_Chest(gamePanel);
+        gamePanel.obj[i].worldX = 22 * gamePanel.tileSize;
+        gamePanel.obj[i].worldY = 22 * gamePanel.tileSize;
+        OBJ_Chest chest2 = (OBJ_Chest) gamePanel.obj[i];
         chest2.chestInv.set(1, new OBJ_Pickaxe(gamePanel));
+        i++;
 
-        gamePanel.obj[2] = new OBJ_Astronaut(gamePanel);
-        gamePanel.obj[2].worldX = 26 * gamePanel.tileSize;
-        gamePanel.obj[2].worldY = 24 * gamePanel.tileSize;
+        gamePanel.obj[i] = new OBJ_Astronaut(gamePanel);
+        gamePanel.obj[i].worldX = 24 * gamePanel.tileSize;
+        gamePanel.obj[i].worldY = 20 * gamePanel.tileSize;
+        i++;
 
-        gamePanel.obj[3] = new OBJ_Astronaut(gamePanel);
-        gamePanel.obj[3].worldX = 22 * gamePanel.tileSize;
-        gamePanel.obj[3].worldY = 24 * gamePanel.tileSize;
+        gamePanel.obj[i] = new OBJ_Pickaxe(gamePanel);
+        gamePanel.obj[i].worldX = 21 * gamePanel.tileSize;
+        gamePanel.obj[i].worldY = 23 * gamePanel.tileSize;
+        i++;
 
-        gamePanel.obj[4] = new OBJ_Pickaxe(gamePanel);
-        gamePanel.obj[4].worldX = 21 * gamePanel.tileSize;
-        gamePanel.obj[4].worldY = 23 * gamePanel.tileSize;
-
-        gamePanel.obj[5] = new OBJ_Pickaxe(gamePanel);
-        gamePanel.obj[5].worldX = 20 * gamePanel.tileSize;
-        gamePanel.obj[5].worldY = 23 * gamePanel.tileSize;
-
-        gamePanel.obj[6] = new OBJ_Pickaxe(gamePanel);
-        gamePanel.obj[6].worldX = 19 * gamePanel.tileSize;
-        gamePanel.obj[6].worldY = 23 * gamePanel.tileSize;
+        gamePanel.obj[i] = new OBJ_LumenCell(gamePanel);
+        gamePanel.obj[i].worldX = 20 * gamePanel.tileSize;
+        gamePanel.obj[i].worldY = 23 * gamePanel.tileSize;
+        i++;
     }
 }

@@ -3,6 +3,7 @@ package com.neal.spaceminer.main;
 import com.neal.spaceminer.data.SaveLoad;
 import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.entity.Player;
+import com.neal.spaceminer.environment.EnvironmentManager;
 import com.neal.spaceminer.tile.TileManager;
 
 import javax.swing.*;
@@ -33,7 +34,9 @@ public class GamePanel extends JPanel implements Runnable {
     Graphics2D g2;
     public boolean fullScreen = true;
 
+    // FPS
     int FPS = 144;
+    public int currentFPS = 0;
 
     // SYSTEM
     TileManager tileManager = new TileManager(this);
@@ -43,6 +46,7 @@ public class GamePanel extends JPanel implements Runnable {
     public UI ui = new UI(this);
     Config config = new Config(this);
     SaveLoad saveLoad = new SaveLoad(this);
+    public EnvironmentManager environmentManager = new EnvironmentManager(this);
     Thread gameThread;
 
     // PLAYER AND OBJECTS
@@ -69,6 +73,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void setupGame() {
         assetSetter.setObject();
+        environmentManager.setup();
+
         gameState = titleState;
 
         tempScreen = new BufferedImage(screenWidth2, screenHeight2, BufferedImage.TYPE_INT_ARGB);
@@ -94,29 +100,32 @@ public class GamePanel extends JPanel implements Runnable {
     }
     @Override
     public void run() {
-
         double drawInterval = 1000000000.0 / FPS;
-        double nextDrawTime = System.nanoTime() + drawInterval;
+        double delta = 0;
+        long lastTime = System.nanoTime();
+        long currentTime;
+        long timer = 0;
+        int drawCount = 0;
 
-        while (gameThread.isAlive()) {
+        while (gameThread != null) {
+            currentTime = System.nanoTime();
+            delta += (currentTime - lastTime) / drawInterval;
+            timer += (currentTime - lastTime);
+            lastTime = currentTime;
 
-            update();
-            drawToTempScreen();
-            drawToScreen();
+            if (delta >= 1) {
+                update();
+                drawToTempScreen();
+                drawToScreen();
+                delta--;
+                drawCount++;
+            }
 
-            try {
-                double remainingTime = nextDrawTime - System.nanoTime();
-                remainingTime /= 1000000;
-
-                if (remainingTime < 0) {
-                    remainingTime = 0;
-                }
-
-                Thread.sleep((long) remainingTime);
-
-                nextDrawTime += drawInterval;
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            // SAVE FPS TO THE VARIABLE
+            if (timer >= 1000000000) {
+                currentFPS = drawCount;
+                drawCount = 0;
+                timer = timer % 1000000000;
             }
         }
     }
@@ -126,11 +135,6 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
     public void drawToTempScreen(){
-        long drawStartTime = 0;
-        if(keyHandler.showDebug){
-            drawStartTime = System.nanoTime();
-        }
-
         // TITLE SCREEN
         if (gameState == titleState || gameState == transitionState) {
             ui.draw(g2);
@@ -173,18 +177,17 @@ public class GamePanel extends JPanel implements Runnable {
             // EMPTY LIST
             entityList.clear();
 
+            // ENVIRONMENT
+            environmentManager.draw(g2);
+
+            // UI
             ui.draw(g2);
         }
 
+        // DEBUG UI
         if (keyHandler.showDebug){
-            long drawEndTime = System.nanoTime();
-            long passed = drawEndTime - drawStartTime;
-
-            // Convert to microseconds for more consistent display
-            double drawTimeMs = passed / 1000000.0;
-
             g2.setColor(Color.white);
-            g2.drawString(String.format("FPS: %.0f", 1000.0 / drawTimeMs), 10, 20);
+            g2.drawString("FPS: " + currentFPS, 10, 20);
             g2.drawString("WorldX: " + player.worldX, 10, 40);
             g2.drawString("WorldY: " + player.worldY, 10, 60);
             g2.drawString("Col: " + (player.worldX/tileSize), 10, 80);

@@ -9,6 +9,8 @@ public class OBJ_Astronaut extends Entity {
 
         name = "Astronaut";
         collision = false;
+        shrink = false;
+        canPickup = false;
 
         solidArea.x = 8;
         solidArea.y = 8;

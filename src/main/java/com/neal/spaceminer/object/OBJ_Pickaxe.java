@@ -8,6 +8,8 @@ public class OBJ_Pickaxe extends Entity {
 
         name = "Pickaxe";
         collision = false;
+        shrink = true;
+        canPickup = true;
 
         solidArea.x = 8;
         solidArea.y = 16;
