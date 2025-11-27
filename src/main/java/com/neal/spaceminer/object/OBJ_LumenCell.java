@@ -5,10 +5,12 @@ import com.neal.spaceminer.main.GamePanel;
 
 public class OBJ_LumenCell extends Entity {
 
+    public static final String objName = "Lumen Cell";
+
     public OBJ_LumenCell(GamePanel gamePanel) {
         super(gamePanel);
 
-        name = "Lumen_Cell";
+        name = objName;
         collision = false;
         shrink = true;
         canPickup = true;

@@ -17,6 +17,9 @@ public class EnvironmentManager {
     }
     public void update(){
         if(lighting == null) return;
+        lighting.update();
+    }
+    public void refreshLightMap() {
         lighting.setLightSource();
     }
     public void draw(Graphics2D g2){

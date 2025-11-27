@@ -1,6 +1,7 @@
 package com.neal.spaceminer.data;
 
 import com.neal.spaceminer.entity.Entity;
+import com.neal.spaceminer.main.EntityGenerator;
 import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.object.OBJ_Astronaut;
 import com.neal.spaceminer.object.OBJ_Chest;
@@ -15,17 +16,6 @@ public class SaveLoad {
 
     public SaveLoad(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
-    }
-    public Entity getObject(String name){
-        Entity obj = null;
-
-        switch(name){
-            case "Pickaxe": obj = new OBJ_Pickaxe(gamePanel); break;
-            case "Astronaut": obj = new OBJ_Astronaut(gamePanel); break;
-            case "Chest": obj = new OBJ_Chest(gamePanel); break;
-        }
-
-        return obj;
     }
     public void save() {
         try{
@@ -95,13 +85,13 @@ public class SaveLoad {
                 gamePanel.player.inventory.set(i, null);
             }
             for(int i = 0; i < ds.itemNames.size(); i++){
-                gamePanel.player.inventory.set(ds.itemSlot.get(i), getObject(ds.itemNames.get(i)));
+                gamePanel.player.inventory.set(ds.itemSlot.get(i), gamePanel.entityGenerator.getObject(ds.itemNames.get(i)));
             }
 
             // OBJECTS ON MAP
             for (int i = 0; i < gamePanel.obj.length; i++){
                 if(ds.mapObjectNames[i] != null){
-                    gamePanel.obj[i] = getObject(ds.mapObjectNames[i]);
+                    gamePanel.obj[i] = gamePanel.entityGenerator.getObject(ds.mapObjectNames[i]);
                     gamePanel.obj[i].worldX = ds.mapObjectWorldX[i];
                     gamePanel.obj[i].worldY = ds.mapObjectWorldY[i];
 
@@ -121,7 +111,7 @@ public class SaveLoad {
 
                             for(int j = 0; j < chestItems.size(); j++) {
                                 int slot = chestSlots.get(j);
-                                Entity item = getObject(chestItems.get(j));
+                                Entity item = gamePanel.entityGenerator.getObject(chestItems.get(j));
                                 chest.chestInv.set(slot, item);
                             }
                         }
@@ -130,7 +120,6 @@ public class SaveLoad {
                     gamePanel.obj[i] = null;
                 }
             }
-
         } catch (Exception e){
             e.printStackTrace();
         }

@@ -4,10 +4,13 @@ import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.entity.Entity;
 
 public class OBJ_Astronaut extends Entity {
+
+    public static final String objName = "Astronaut";
+
     public OBJ_Astronaut(GamePanel gamePanel) {
         super(gamePanel);
 
-        name = "Astronaut";
+        name = objName;
         collision = false;
         shrink = false;
         canPickup = false;

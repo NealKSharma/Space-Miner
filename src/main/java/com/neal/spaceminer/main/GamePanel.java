@@ -47,6 +47,7 @@ public class GamePanel extends JPanel implements Runnable {
     Config config = new Config(this);
     SaveLoad saveLoad = new SaveLoad(this);
     public EnvironmentManager environmentManager = new EnvironmentManager(this);
+    public EntityGenerator entityGenerator = new EntityGenerator(this);
     Thread gameThread;
 
     // PLAYER AND OBJECTS
@@ -75,14 +76,19 @@ public class GamePanel extends JPanel implements Runnable {
         assetSetter.setObject();
         environmentManager.setup();
 
-        gameState = titleState;
-
         tempScreen = new BufferedImage(screenWidth2, screenHeight2, BufferedImage.TYPE_INT_ARGB);
         g2 =  (Graphics2D) tempScreen.getGraphics();
 
         if(fullScreen) {
             setFullScreen();
         }
+
+        // DRY RUN TO LOAD ASSETS
+        gameState = playState;
+        update();
+        drawToTempScreen();
+
+        gameState = titleState;
     }
     public void setFullScreen(){
         // GET LOCAL SCREEN DEVICE
@@ -130,6 +136,9 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
     public void update() {
+        if(gameState != titleState && gameState != transitionState){
+            environmentManager.update();
+        }
         if(gameState == playState) {
             player.update();
         }

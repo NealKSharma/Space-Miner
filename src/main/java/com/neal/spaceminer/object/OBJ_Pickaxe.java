@@ -3,10 +3,13 @@ import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.entity.Entity;
 
 public class OBJ_Pickaxe extends Entity {
+
+    public static final String objName = "Iron Pickaxe";
+
     public OBJ_Pickaxe(GamePanel gamePanel) {
         super(gamePanel);
 
-        name = "Pickaxe";
+        name = objName;
         collision = false;
         shrink = true;
         canPickup = true;

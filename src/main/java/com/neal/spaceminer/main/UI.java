@@ -16,6 +16,8 @@ public class UI {
     Font arial_40;
 
     BufferedImage titleScreenBackground;
+    Color subWindowBackground = new Color(0, 0, 0, 170);
+    BasicStroke borderStroke = new BasicStroke(5);
 
     public int commandNum = 0;
     public int subState = 0;
@@ -518,17 +520,12 @@ public class UI {
         return slotCol + (slotRow*5);
     }
     public void drawSubWindow(int x, int y, int width, int height) {
-
-        Color color = new Color(0, 0, 0, 170);
-        g2.setColor(color);
-
+        g2.setColor(subWindowBackground);
         g2.fillRoundRect(x, y, width, height, 35, 35);
 
-        color = new Color(255, 255, 255);
-        g2.setColor(color);
-        g2.setStroke(new BasicStroke(5));
+        g2.setColor(Color.white);
+        g2.setStroke(borderStroke);
         g2.drawRoundRect(x+5, y+5, width-10, height-10, 25, 25);
-
     }
     public int getXforCenteredText(String text) {
 

@@ -132,13 +132,16 @@ public class Player extends Entity {
         itemBehaviour();
     }
     public void itemBehaviour(){
+        boolean wasHoldingLight = hasLight;
         // LIGHT
-        if(searchHotbar("Lumen_Cell")){
+        if (searchHotbar("Lumen Cell")) {
             hasLight = true;
-            gamePanel.environmentManager.update();
         } else {
             hasLight = false;
-            gamePanel.environmentManager.update();
+        }
+
+        if (wasHoldingLight != hasLight) {
+            gamePanel.environmentManager.refreshLightMap();
         }
     }
     public boolean searchHotbar(String name){
