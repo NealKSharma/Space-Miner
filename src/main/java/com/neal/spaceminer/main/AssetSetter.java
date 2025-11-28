@@ -1,6 +1,7 @@
 package com.neal.spaceminer.main;
 
 import com.neal.spaceminer.object.*;
+import com.neal.spaceminer.tiles_interactive.IT_Rock;
 
 public class AssetSetter {
 
@@ -36,17 +37,17 @@ public class AssetSetter {
         gamePanel.obj[i].worldY = 80 * gamePanel.tileSize;
         i++;
 
-        gamePanel.obj[i] = new OBJ_Ship_Front(gamePanel);
+        gamePanel.obj[i] = new OBJ_ShipFront(gamePanel);
         gamePanel.obj[i].worldX = 12 * gamePanel.tileSize;
         gamePanel.obj[i].worldY = 90 * gamePanel.tileSize;
         i++;
 
-        gamePanel.obj[i] = new OBJ_Ship_Middle(gamePanel);
+        gamePanel.obj[i] = new OBJ_ShipMiddle(gamePanel);
         gamePanel.obj[i].worldX = 16 * gamePanel.tileSize;
         gamePanel.obj[i].worldY = 86 * gamePanel.tileSize;
         i++;
 
-        gamePanel.obj[i] = new OBJ_Ship_Back(gamePanel);
+        gamePanel.obj[i] = new OBJ_ShipBack(gamePanel);
         gamePanel.obj[i].worldX = 21 * gamePanel.tileSize;
         gamePanel.obj[i].worldY = 82 * gamePanel.tileSize;
         i++;
@@ -64,6 +65,16 @@ public class AssetSetter {
         gamePanel.obj[i] = new OBJ_Astronaut(gamePanel);
         gamePanel.obj[i].worldX = 11 * gamePanel.tileSize;
         gamePanel.obj[i].worldY = 90 * gamePanel.tileSize;
+        i++;
+
+        gamePanel.obj[i] = new OBJ_SuitGenerator(gamePanel);
+        gamePanel.obj[i].worldX = 72 * gamePanel.tileSize;
+        gamePanel.obj[i].worldY = 76 * gamePanel.tileSize;
+        i++;
+
+        gamePanel.obj[i] = new IT_Rock(gamePanel);
+        gamePanel.obj[i].worldX = 74 * gamePanel.tileSize;
+        gamePanel.obj[i].worldY = 80 * gamePanel.tileSize;
         i++;
     }
 }

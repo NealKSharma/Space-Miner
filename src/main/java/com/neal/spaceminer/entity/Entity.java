@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public class Entity {
 
-    GamePanel gamePanel;
+    protected GamePanel gamePanel;
 
     public int worldX, worldY;
     public int speed;
@@ -24,9 +24,6 @@ public class Entity {
     public int spriteNum = 1;
     boolean mining = false;
 
-    public String name;
-    public boolean collision = false;
-
     // COLLISION
     public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
     public Rectangle swingArea = new Rectangle(0, 0, 0, 0);
@@ -35,8 +32,13 @@ public class Entity {
 
     // ITEM ATTRIBUTES
     public String description = "";
+    public String name;
+    public boolean collision = false;
     public boolean shrink = false;
-    public boolean canPickup;
+    public boolean canPickup = false;
+    public boolean isBreakable = false;
+    public int strength;
+    public boolean alive = true;
 
     public Entity(GamePanel gamePanel){
         this.gamePanel = gamePanel;
@@ -114,6 +116,9 @@ public class Entity {
             }
         }
     }
+    public void update() {
+
+    }
     public BufferedImage setup(String imagePath, int width, int height) {
         Utility utility = new Utility();
         BufferedImage image = null;
@@ -125,5 +130,32 @@ public class Entity {
             e.printStackTrace();
         }
         return image;
+    }
+    public Entity getDrop(){
+        return null;
+    }
+    public void generateParticle(Entity generator, Entity target){
+        Color color = generator.getParticleColor();
+        int size = generator.getParticleSize();
+        int duration = generator.getParticleDuration();
+
+        Particle p1 = new Particle(gamePanel, generator, color, size, duration, -2, -1);
+        Particle p2 = new Particle(gamePanel, generator, color, size, duration, 2, -1);
+        Particle p3 = new Particle(gamePanel, generator, color, size, duration, -2, 1);
+        Particle p4 = new Particle(gamePanel, generator, color, size, duration, 2, 1);
+        gamePanel.particleList.add(p1);
+        gamePanel.particleList.add(p2);
+        gamePanel.particleList.add(p3);
+        gamePanel.particleList.add(p4);
+    }
+
+    public Color getParticleColor(){
+        return null;
+    }
+    public int getParticleSize(){
+        return -1;
+    }
+    public int getParticleDuration(){
+        return -1;
     }
 }

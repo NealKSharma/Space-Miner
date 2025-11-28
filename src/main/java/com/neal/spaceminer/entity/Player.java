@@ -3,7 +3,9 @@ package com.neal.spaceminer.entity;
 import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.main.KeyHandler;
 import com.neal.spaceminer.object.OBJ_Chest;
+import com.neal.spaceminer.object.OBJ_LumenCell;
 import com.neal.spaceminer.object.OBJ_Pickaxe;
+import com.neal.spaceminer.tiles_interactive.IT_Rock;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ public class Player extends Entity {
     public Entity currentChest = null;
     public boolean canOpen;
     public boolean hasLight = false;
+    public int mineCount = 0;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
         super(gamePanel);
@@ -169,7 +172,7 @@ public class Player extends Entity {
     }
     public void useHotbarItem(int index){
         // MINING
-        if(inventory.get(index) != null && inventory.get(index).name.equals("Iron Pickaxe")) {
+        if(inventory.get(index) != null && inventory.get(index).name.equals("Pickaxe")) {
             mining = true;
             spriteCounter = 0;
         }
@@ -242,7 +245,7 @@ public class Player extends Entity {
             solidArea.height = swingArea.height;
 
             int objectIndex = gamePanel.collisionChecker.checkObject(this, true);
-            if(objectIndex != -1) mineObject(objectIndex);
+            if(objectIndex != -1 && gamePanel.obj[objectIndex].isBreakable) mineObject(objectIndex);
 
             // AFTER CHECKING FOR COLLISION RESTORE ORIGINAL DATA
             worldX = currentWorldX;
@@ -256,10 +259,17 @@ public class Player extends Entity {
             mining = false;
         }
     }
-    public void mineObject(int objectIndex){
-
-        // TODO
-
-        System.out.println("Hit Detected on" + gamePanel.obj[objectIndex].name);
+    public void mineObject(int i){
+        // MULTIPLIED BY 39 SINCE IT'S CALLED MULTIPLE TIMES WHILE THE ANIMATION IS HAPPENING
+        if(mineCount >= gamePanel.obj[i].strength * 39){
+            generateParticle(gamePanel.obj[i], gamePanel.obj[i]);
+            gamePanel.obj[i] = gamePanel.obj[i].getDrop();
+            mineCount = 0;
+        } else {
+            mineCount++;
+            if(mineCount % 40 == 0){
+                generateParticle(gamePanel.obj[i], gamePanel.obj[i]);
+            }
+        }
     }
 }

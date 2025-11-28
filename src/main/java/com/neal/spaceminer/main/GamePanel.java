@@ -2,6 +2,7 @@ package com.neal.spaceminer.main;
 
 import com.neal.spaceminer.data.SaveLoad;
 import com.neal.spaceminer.entity.Entity;
+import com.neal.spaceminer.entity.Particle;
 import com.neal.spaceminer.entity.Player;
 import com.neal.spaceminer.environment.EnvironmentManager;
 import com.neal.spaceminer.tile.TileManager;
@@ -55,6 +56,7 @@ public class GamePanel extends JPanel implements Runnable {
     public Player player = new Player(this, keyHandler);
     public Entity[] obj = new Entity[20];
     ArrayList<Entity> entityList = new ArrayList<Entity>(20);
+    public ArrayList<Entity> particleList = new  ArrayList<>();
 
     // GAME STATE
     public int gameState;
@@ -135,6 +137,16 @@ public class GamePanel extends JPanel implements Runnable {
         }
         if(gameState == playState) {
             player.update();
+
+            for (int i = 0; i < particleList.size(); i++) {
+                if(particleList.get(i) != null) {
+                    if(particleList.get(i).alive){
+                        particleList.get(i).update();
+                    } else {
+                        particleList.remove(i);
+                    }
+                }
+            }
         }
     }
     @Override
@@ -171,8 +183,23 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
-            // Sort by the bottom of the collision box (The place where the object touches the ground)
-            entityList.sort(Comparator.comparingInt(e -> e.worldY + e.solidArea.y + e.solidArea.height));
+            // PARTICLES
+            for (Entity particle: particleList){
+                if(particle != null) {
+                    entityList.add(particle);
+                }
+            }
+
+            // SORTING
+            entityList.sort(Comparator.comparingInt(e -> {
+                if (e.isBreakable) {
+                    // For breakable blocks: Sort using the TOP of the collision box.
+                    return e.worldY + e.solidArea.y;
+                } else {
+                    // For everything else sort using the FEET (Bottom).
+                    return e.worldY + e.solidArea.y + e.solidArea.height;
+                }
+            }));
 
             // DRAW ENTITIES
             for (Entity entity : entityList) {

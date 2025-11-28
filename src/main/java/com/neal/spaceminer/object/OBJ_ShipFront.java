@@ -2,11 +2,11 @@ package com.neal.spaceminer.object;
 import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.entity.Entity;
 
-public class OBJ_Ship_Front extends Entity {
+public class OBJ_ShipFront extends Entity {
 
     public static final String objName = "Ship Front";
 
-    public OBJ_Ship_Front(GamePanel gamePanel) {
+    public OBJ_ShipFront(GamePanel gamePanel) {
         super(gamePanel);
 
         name = objName;

@@ -4,7 +4,7 @@ import com.neal.spaceminer.entity.Entity;
 
 public class OBJ_Pickaxe extends Entity {
 
-    public static final String objName = "Iron Pickaxe";
+    public static final String objName = "Pickaxe";
 
     public OBJ_Pickaxe(GamePanel gamePanel) {
         super(gamePanel);
@@ -22,6 +22,6 @@ public class OBJ_Pickaxe extends Entity {
         solidAreaDefaultY = solidArea.y;
 
         down1 = setup("/objects/pickaxe", gamePanel.tileSize, gamePanel.tileSize);
-        description = "[" + name + "]\nA simple pickaxe.\nCan mine normal rocks.";
+        description = "[" + name + "]\nCan mine normal rocks.";
     }
 }
