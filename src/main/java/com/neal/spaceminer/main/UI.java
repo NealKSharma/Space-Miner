@@ -110,9 +110,8 @@ public class UI {
     public void loadTitleBackground() {
         try {
             titleScreenBackground = ImageIO.read(
-                    Objects.requireNonNull(getClass().getResourceAsStream("/tiles/titleBackground.png"))
+                    Objects.requireNonNull(getClass().getResourceAsStream("/misc/titleBackground.png"))
             );
-            Utility utility = new Utility();
         } catch (IOException e) {
             e.printStackTrace();
         }

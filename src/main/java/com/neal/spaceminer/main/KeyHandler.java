@@ -9,7 +9,7 @@ public class KeyHandler implements KeyListener {
 
     public boolean up, down, left, right, saved;
 
-    boolean showDebug = false;
+    public boolean showDebug = false;
 
     public KeyHandler(GamePanel gamePanel) {
         this.gamePanel = gamePanel;

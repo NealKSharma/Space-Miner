@@ -52,8 +52,8 @@ public class Player extends Entity {
         setItems();
     }
     public void initialize() {
-        worldX = gamePanel.tileSize * 24;
-        worldY = gamePanel.tileSize * 24;
+        worldX = gamePanel.tileSize * 75;
+        worldY = gamePanel.tileSize * 80;
         speed = 1;
     }
     public void getImage() {

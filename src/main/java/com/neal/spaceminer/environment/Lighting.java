@@ -78,13 +78,13 @@ public class Lighting {
         // CHECK THE STATE OF THE DAY
         if(dayState == day){
             dayCounter++;
-            if(dayCounter > 60000){
+            if(dayCounter > 60*265){ // SECONDS AT 265 FPS
                 dayState = dusk;
                 dayCounter = 0;
             }
         }
         if(dayState == dusk){
-            filterAlpha += 0.001f;
+            filterAlpha += 0.0003f;
             if(filterAlpha > 1f){
                 filterAlpha = 1f;
                 dayState = night;
@@ -92,13 +92,13 @@ public class Lighting {
         }
         if(dayState == night){
             dayCounter++;
-            if(dayCounter > 100){
+            if(dayCounter > 10*265){ // SECONDS AT 265 FPS
                 dayState = dawn;
                 dayCounter = 0;
             }
         }
         if(dayState == dawn){
-            filterAlpha -= 0.001f;
+            filterAlpha -= 0.0003f;
             if(filterAlpha < 0f){
                 filterAlpha = 0f;
                 dayState = day;

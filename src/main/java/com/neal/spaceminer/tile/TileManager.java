@@ -16,7 +16,7 @@ public class TileManager {
 
     GamePanel gamePanel;
     public Tile[] tile;
-    public int mapTileNum[][];
+    public int[][] mapTileNum;
 
     public TileManager(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -24,15 +24,9 @@ public class TileManager {
         mapTileNum = new int[gamePanel.maxWorldCol][gamePanel.maxWorldRow];
 
         getTileImage();
-        loadMap("/maps/map01.txt");
+        loadMap("/maps/map02.txt");
     }
     public void getTileImage() {
-        // Surface
-        setup(15, "surface", false);
-
-        // Obstacles
-        setup(14, "rock", true);
-
         // Lava
         setup(0, "lava00", true);
         setup(1, "lava01", true);
@@ -48,6 +42,9 @@ public class TileManager {
         setup(11, "lava11", true);
         setup(12, "lava12", true);
         setup(13, "lava13", true);
+
+        // Surface
+        setup(14, "surface", false);
     }
     public void setup(int index, String imageName, boolean collision) {
         Utility utility = new Utility();

@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class GamePanel extends JPanel implements Runnable {
     // Screen Settings
@@ -22,8 +23,8 @@ public class GamePanel extends JPanel implements Runnable {
     public final int screenWidth = tileSize * maxScreenCol; // 1024px (64x16)
     public final int screenHeight = tileSize * maxScreenRow; // 768px (64x12)
 
-    public final int maxWorldCol = 50;
-    public final int maxWorldRow = 50;
+    public final int maxWorldCol = 100;
+    public final int maxWorldRow = 100;
     public final int worldWidth = tileSize * maxWorldCol;
     public final int worldHeight = tileSize * maxWorldRow;
 
@@ -40,7 +41,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     // SYSTEM
     TileManager tileManager = new TileManager(this);
-    KeyHandler keyHandler = new KeyHandler(this);
+    public KeyHandler keyHandler = new KeyHandler(this);
     public CollisionChecker collisionChecker = new CollisionChecker(this);
     public AssetSetter assetSetter = new AssetSetter(this);
     public UI ui = new UI(this);
@@ -52,7 +53,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     // PLAYER AND OBJECTS
     public Player player = new Player(this, keyHandler);
-    public Entity[] obj = new Entity[10];
+    public Entity[] obj = new Entity[20];
     ArrayList<Entity> entityList = new ArrayList<Entity>(20);
 
     // GAME STATE
@@ -170,22 +171,8 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
-            // SORTING - Objects with collision=true are drawn after (on top of) entities with collision=false
-            entityList.sort((e1, e2) -> {
-                // Chests (collision=true) always on top
-                if (e1.collision != e2.collision) {
-                    return e1.collision ? 1 : -1;
-                }
-
-                // Among non-collision entities, player always draws last
-                if (!e1.collision && !e2.collision) {
-                    if (e1 instanceof Player) return 1;  // Player draws after
-                    if (e2 instanceof Player) return -1; // Player draws after
-                    return e1.worldY - e2.worldY; // Other objects sort by Y
-                }
-
-                return e1.worldY - e2.worldY;
-            });
+            // Sort by the bottom of the collision box (The place where the object touches the ground)
+            entityList.sort(Comparator.comparingInt(e -> e.worldY + e.solidArea.y + e.solidArea.height));
 
             // DRAW ENTITIES
             for (Entity entity : entityList) {
