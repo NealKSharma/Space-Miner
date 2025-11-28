@@ -16,8 +16,6 @@ public class OBJ_Chest extends Entity {
 
         name = objName;
         collision = true;
-        shrink = false;
-        canPickup = false;
 
         solidArea.x = 8;
         solidArea.y = 16;

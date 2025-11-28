@@ -113,7 +113,7 @@ public class KeyHandler implements KeyListener {
             }
         }
         if (key == KeyEvent.VK_D  && gamePanel.ui.commandNum == 1 && gamePanel.ui.subState==0) {
-            if(gamePanel.ui.volume <= 5){
+            if(gamePanel.ui.volume < 5){
                 gamePanel.ui.volume++;
             }
         }
@@ -192,21 +192,29 @@ public class KeyHandler implements KeyListener {
         if (key == KeyEvent.VK_W) {
             if(gamePanel.ui.slotRow > 0) {
                 gamePanel.ui.slotRow--;
+            } else {
+                gamePanel.ui.slotRow = 3;
             }
         }
         if (key == KeyEvent.VK_A) {
             if(gamePanel.ui.slotCol > 0) {
                 gamePanel.ui.slotCol--;
+            } else {
+                gamePanel.ui.slotCol = 4;
             }
         }
         if (key == KeyEvent.VK_S) {
             if(gamePanel.ui.slotRow < 3) {
                 gamePanel.ui.slotRow++;
+            } else {
+                gamePanel.ui.slotRow = 0;
             }
         }
         if (key == KeyEvent.VK_D) {
             if(gamePanel.ui.slotCol < 4) {
                 gamePanel.ui.slotCol++;
+            } else {
+                gamePanel.ui.slotCol = 0;
             }
         }
 
@@ -239,6 +247,13 @@ public class KeyHandler implements KeyListener {
         if (key == KeyEvent.VK_W) {
             if(gamePanel.ui.slotRow > 0) {
                 gamePanel.ui.slotRow--;
+            } else {
+                // IN CHEST
+                if (gamePanel.ui.slotCol < 6){
+                    gamePanel.ui.slotRow = 6;
+                } else {
+                    gamePanel.ui.slotRow = 3;
+                }
             }
         }
 
@@ -250,6 +265,8 @@ public class KeyHandler implements KeyListener {
             // In inventory (8-12 columns, max 3 rows)
             else if(gamePanel.ui.slotCol >= 8 && gamePanel.ui.slotRow < 3) {
                 gamePanel.ui.slotRow++;
+            } else {
+                gamePanel.ui.slotRow = 0;
             }
         }
 
@@ -259,10 +276,12 @@ public class KeyHandler implements KeyListener {
                 // Jump the gap between chest and inventory
                 if(gamePanel.ui.slotCol == 6 || gamePanel.ui.slotCol == 7) {
                     gamePanel.ui.slotCol = 5; // Move to last chest column
-                    if(gamePanel.ui.slotRow > 6) {
-                        gamePanel.ui.slotRow = 6; // Adjust row if needed
-                    }
                 }
+            } else {
+                if(gamePanel.ui.slotRow > 3) {
+                    gamePanel.ui.slotRow = 3;
+                }
+                gamePanel.ui.slotCol = 12;
             }
         }
 
@@ -276,6 +295,8 @@ public class KeyHandler implements KeyListener {
                         gamePanel.ui.slotRow = 3; // Adjust row if needed
                     }
                 }
+            }  else {
+                gamePanel.ui.slotCol = 0;
             }
         }
 

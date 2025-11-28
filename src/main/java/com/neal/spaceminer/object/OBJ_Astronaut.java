@@ -11,9 +11,6 @@ public class OBJ_Astronaut extends Entity {
         super(gamePanel);
 
         name = objName;
-        collision = false;
-        shrink = false;
-        canPickup = false;
 
         solidArea.x = 4;
         solidArea.y = 16;

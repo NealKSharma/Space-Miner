@@ -54,6 +54,7 @@ public class Player extends Entity {
         }
         setItems();
     }
+
     public void initialize() {
         worldX = gamePanel.tileSize * 75;
         worldY = gamePanel.tileSize * 80;
@@ -81,10 +82,15 @@ public class Player extends Entity {
     }
     public void interactWithObject(int index) {
         if(gamePanel.obj[index] != null){
-            if (gamePanel.obj[index].canPickup && getFirstEmptySlot() != -1) {
-                inventory.set(getFirstEmptySlot(), gamePanel.obj[index]);
-                gamePanel.obj[index] = null;
-                itemBehaviour();
+            if (gamePanel.obj[index].canPickup) {
+                int emptySlot = getFirstEmptySlot();
+                if (emptySlot != -1) {
+                    inventory.set(emptySlot, gamePanel.obj[index]);
+                    gamePanel.obj[index] = null;
+                    itemBehaviour();
+                } else {
+                    // INVENTORY FULL
+                }
             } else if ("Chest".equals(gamePanel.obj[index].name)) {
                 canOpen = true;
                 currentChest = gamePanel.obj[index];

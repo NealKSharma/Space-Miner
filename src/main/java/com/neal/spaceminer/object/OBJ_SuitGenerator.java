@@ -11,8 +11,6 @@ public class OBJ_SuitGenerator extends Entity {
 
         name = objName;
         collision = true;
-        shrink = false;
-        canPickup = false;
 
         solidArea.x = 24;
         solidArea.y = 64;

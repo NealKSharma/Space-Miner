@@ -1,80 +1,75 @@
 package com.neal.spaceminer.main;
 
+import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.object.*;
 import com.neal.spaceminer.tiles_interactive.IT_Rock;
 
 public class AssetSetter {
 
     GamePanel gamePanel;
+    int i;
 
     public AssetSetter(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
     }
 
     public void setObject() {
-        int i = 0;
-        gamePanel.obj[i] = new OBJ_Chest(gamePanel);
-        gamePanel.obj[i].worldX = 76 * gamePanel.tileSize;
-        gamePanel.obj[i].worldY = 79 * gamePanel.tileSize;
-        OBJ_Chest chest1 = (OBJ_Chest) gamePanel.obj[i];
+        i = 0;
+
+        // CHESTS
+        OBJ_Chest chest1 = (OBJ_Chest) place(new OBJ_Chest(gamePanel), 76, 79);
         chest1.chestInv.set(0, new OBJ_Pickaxe(gamePanel));
-        i++;
 
-        gamePanel.obj[i] = new OBJ_Chest(gamePanel);
-        gamePanel.obj[i].worldX = 76 * gamePanel.tileSize;
-        gamePanel.obj[i].worldY = 81 * gamePanel.tileSize;
-        OBJ_Chest chest2 = (OBJ_Chest) gamePanel.obj[i];
+        OBJ_Chest chest2 = (OBJ_Chest) place(new OBJ_Chest(gamePanel), 76, 81);
         chest2.chestInv.set(1, new OBJ_Pickaxe(gamePanel));
-        i++;
+        chest2.chestInv.set(2, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(3, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(4, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(5, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(6, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(7, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(8, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(9, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(10, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(11, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(12, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(13, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(14, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(15, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(16, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(17, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(18, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(19, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(20, new OBJ_Pickaxe(gamePanel));
 
-        gamePanel.obj[i] = new OBJ_Pickaxe(gamePanel);
-        gamePanel.obj[i].worldX = 72 * gamePanel.tileSize;
-        gamePanel.obj[i].worldY = 80 * gamePanel.tileSize;
-        i++;
+        // ITEMS
+        place(new OBJ_Pickaxe(gamePanel), 72, 80);
+        place(new OBJ_LumenCell(gamePanel), 73, 80);
+        place(new OBJ_SuitGenerator(gamePanel), 72, 76);
 
-        gamePanel.obj[i] = new OBJ_LumenCell(gamePanel);
-        gamePanel.obj[i].worldX = 73 * gamePanel.tileSize;
-        gamePanel.obj[i].worldY = 80 * gamePanel.tileSize;
-        i++;
+        // SHIP
+        place(new OBJ_ShipFront(gamePanel), 12, 90);
+        place(new OBJ_ShipMiddle(gamePanel), 16, 86);
+        place(new OBJ_ShipBack(gamePanel), 21, 82);
 
-        gamePanel.obj[i] = new OBJ_ShipFront(gamePanel);
-        gamePanel.obj[i].worldX = 12 * gamePanel.tileSize;
-        gamePanel.obj[i].worldY = 90 * gamePanel.tileSize;
-        i++;
+        // MISC
+        place(new OBJ_Astronaut(gamePanel), 18, 90);
+        place(new OBJ_Astronaut(gamePanel), 18, 84);
+        place(new OBJ_Astronaut(gamePanel), 11, 90);
 
-        gamePanel.obj[i] = new OBJ_ShipMiddle(gamePanel);
-        gamePanel.obj[i].worldX = 16 * gamePanel.tileSize;
-        gamePanel.obj[i].worldY = 86 * gamePanel.tileSize;
-        i++;
-
-        gamePanel.obj[i] = new OBJ_ShipBack(gamePanel);
-        gamePanel.obj[i].worldX = 21 * gamePanel.tileSize;
-        gamePanel.obj[i].worldY = 82 * gamePanel.tileSize;
-        i++;
-
-        gamePanel.obj[i] = new OBJ_Astronaut(gamePanel);
-        gamePanel.obj[i].worldX = 18 * gamePanel.tileSize;
-        gamePanel.obj[i].worldY = 90 * gamePanel.tileSize;
-        i++;
-
-        gamePanel.obj[i] = new OBJ_Astronaut(gamePanel);
-        gamePanel.obj[i].worldX = 18 * gamePanel.tileSize;
-        gamePanel.obj[i].worldY = 84 * gamePanel.tileSize;
-        i++;
-
-        gamePanel.obj[i] = new OBJ_Astronaut(gamePanel);
-        gamePanel.obj[i].worldX = 11 * gamePanel.tileSize;
-        gamePanel.obj[i].worldY = 90 * gamePanel.tileSize;
-        i++;
-
-        gamePanel.obj[i] = new OBJ_SuitGenerator(gamePanel);
-        gamePanel.obj[i].worldX = 72 * gamePanel.tileSize;
-        gamePanel.obj[i].worldY = 76 * gamePanel.tileSize;
-        i++;
-
-        gamePanel.obj[i] = new IT_Rock(gamePanel);
-        gamePanel.obj[i].worldX = 74 * gamePanel.tileSize;
-        gamePanel.obj[i].worldY = 80 * gamePanel.tileSize;
-        i++;
+        // INTERACTIVE TILES
+        place(new IT_Rock(gamePanel), 78, 80);
+    }
+    public Entity place(Entity entity, int col, int row) {
+        //if(i < gamePanel.obj.length) {
+            entity.worldX = col * gamePanel.tileSize;
+            entity.worldY = row * gamePanel.tileSize;
+            gamePanel.obj[i] = entity;
+            i++;
+            return entity;
+        //} else {
+            // OBJECT ARRAY FULL
+            //return null;
+        //}
     }
 }

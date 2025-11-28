@@ -11,8 +11,6 @@ public class OBJ_ShipBack extends Entity {
 
         name = objName;
         collision = true;
-        shrink = false;
-        canPickup = false;
 
         solidArea.x = 16;
         solidArea.y = 96;

@@ -15,8 +15,6 @@ public class IT_Rock extends Entity {
 
         name = objName;
         collision = true;
-        shrink = false;
-        canPickup = false;
         isBreakable = true;
         strength = 3;
 

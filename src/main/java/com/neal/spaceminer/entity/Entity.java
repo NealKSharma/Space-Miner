@@ -30,6 +30,8 @@ public class Entity {
     public int solidAreaDefaultX, solidAreaDefaultY;
     public boolean collisionOn = false;
 
+    public boolean alive = true;
+
     // ITEM ATTRIBUTES
     public String description = "";
     public String name;
@@ -37,8 +39,9 @@ public class Entity {
     public boolean shrink = false;
     public boolean canPickup = false;
     public boolean isBreakable = false;
+    public boolean isStackable = false;
+    public int itemAmount = 0;
     public int strength;
-    public boolean alive = true;
 
     public Entity(GamePanel gamePanel){
         this.gamePanel = gamePanel;

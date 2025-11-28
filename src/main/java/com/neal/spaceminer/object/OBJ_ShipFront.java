@@ -11,8 +11,6 @@ public class OBJ_ShipFront extends Entity {
 
         name = objName;
         collision = true;
-        shrink = false;
-        canPickup = false;
 
         solidArea.x = 72;
         solidArea.y = 64;

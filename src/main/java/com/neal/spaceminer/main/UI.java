@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class UI {
-
     GamePanel gamePanel;
     Graphics2D g2;
     Font arial_40;
@@ -109,9 +108,7 @@ public class UI {
     }
     public void loadTitleBackground() {
         try {
-            titleScreenBackground = ImageIO.read(
-                    Objects.requireNonNull(getClass().getResourceAsStream("/misc/titleBackground.png"))
-            );
+            titleScreenBackground = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/misc/titleBackground.png")));
         } catch (IOException e) {
             e.printStackTrace();
         }

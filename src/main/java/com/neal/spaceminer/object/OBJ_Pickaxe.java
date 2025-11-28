@@ -10,7 +10,6 @@ public class OBJ_Pickaxe extends Entity {
         super(gamePanel);
 
         name = objName;
-        collision = false;
         shrink = true;
         canPickup = true;
 

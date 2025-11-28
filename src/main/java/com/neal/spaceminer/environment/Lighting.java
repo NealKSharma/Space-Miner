@@ -53,6 +53,7 @@ public class Lighting {
 
         setLightSource();
     }
+
     public void setLightSource(){
         BufferedImage newFilter = new BufferedImage(gamePanel.screenWidth, gamePanel.screenHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = (Graphics2D) newFilter.getGraphics();

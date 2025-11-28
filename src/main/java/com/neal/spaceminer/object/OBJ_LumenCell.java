@@ -11,7 +11,6 @@ public class OBJ_LumenCell extends Entity {
         super(gamePanel);
 
         name = objName;
-        collision = false;
         shrink = true;
         canPickup = true;
 
