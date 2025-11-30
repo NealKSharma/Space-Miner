@@ -2,13 +2,16 @@ package com.neal.spaceminer.main;
 
 import com.neal.spaceminer.data.SaveLoad;
 import com.neal.spaceminer.entity.Entity;
+import com.neal.spaceminer.entity.Particle;
 import com.neal.spaceminer.entity.Player;
+import com.neal.spaceminer.environment.EnvironmentManager;
 import com.neal.spaceminer.tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class GamePanel extends JPanel implements Runnable {
     // Screen Settings
@@ -21,8 +24,8 @@ public class GamePanel extends JPanel implements Runnable {
     public final int screenWidth = tileSize * maxScreenCol; // 1024px (64x16)
     public final int screenHeight = tileSize * maxScreenRow; // 768px (64x12)
 
-    public final int maxWorldCol = 50;
-    public final int maxWorldRow = 50;
+    public final int maxWorldCol = 100;
+    public final int maxWorldRow = 100;
     public final int worldWidth = tileSize * maxWorldCol;
     public final int worldHeight = tileSize * maxWorldRow;
 
@@ -33,22 +36,27 @@ public class GamePanel extends JPanel implements Runnable {
     Graphics2D g2;
     public boolean fullScreen = true;
 
-    int FPS = 144;
+    // FPS
+    int FPS = 265;
+    public int currentFPS = 0;
 
     // SYSTEM
     TileManager tileManager = new TileManager(this);
-    KeyHandler keyHandler = new KeyHandler(this);
+    public KeyHandler keyHandler = new KeyHandler(this);
     public CollisionChecker collisionChecker = new CollisionChecker(this);
     public AssetSetter assetSetter = new AssetSetter(this);
     public UI ui = new UI(this);
     Config config = new Config(this);
     SaveLoad saveLoad = new SaveLoad(this);
+    public EnvironmentManager environmentManager = new EnvironmentManager(this);
+    public EntityGenerator entityGenerator = new EntityGenerator(this);
     Thread gameThread;
 
     // PLAYER AND OBJECTS
     public Player player = new Player(this, keyHandler);
-    public Entity[] obj = new Entity[10];
-    ArrayList<Entity> entityList = new ArrayList<Entity>();
+    public Entity[] obj = new Entity[20];
+    public ArrayList<Entity> entityList = new ArrayList<Entity>();
+    public ArrayList<Entity> particleList = new  ArrayList<>();
 
     // GAME STATE
     public int gameState;
@@ -57,6 +65,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int pauseState = 2;
     public final int inventoryState = 3;
     public final int chestState = 4;
+    public final int transitionState = 5;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -68,14 +77,15 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void setupGame() {
         assetSetter.setObject();
+        environmentManager.setup();
+
+        if(fullScreen) setFullScreen();
+
+        // DRY RUN TO LOAD ASSETS
+        gameState = playState;
+        update();
+
         gameState = titleState;
-
-        tempScreen = new BufferedImage(screenWidth2, screenHeight2, BufferedImage.TYPE_INT_ARGB);
-        g2 =  (Graphics2D) tempScreen.getGraphics();
-
-        if(fullScreen) {
-            setFullScreen();
-        }
     }
     public void setFullScreen(){
         // GET LOCAL SCREEN DEVICE
@@ -93,52 +103,71 @@ public class GamePanel extends JPanel implements Runnable {
     }
     @Override
     public void run() {
-
         double drawInterval = 1000000000.0 / FPS;
-        double nextDrawTime = System.nanoTime() + drawInterval;
+        double delta = 0;
+        long lastTime = System.nanoTime();
+        long currentTime;
+        long timer = 0;
+        int drawCount = 0;
 
-        while (gameThread.isAlive()) {
+        while (gameThread != null) {
+            currentTime = System.nanoTime();
+            delta += (currentTime - lastTime) / drawInterval;
+            timer += (currentTime - lastTime);
+            lastTime = currentTime;
 
-            update();
-            drawToTempScreen();
-            drawToScreen();
+            if (delta >= 1) {
+                update();
+                repaint();
+                delta--;
+                drawCount++;
+            }
 
-            try {
-                double remainingTime = nextDrawTime - System.nanoTime();
-                remainingTime /= 1000000;
-
-                if (remainingTime < 0) {
-                    remainingTime = 0;
-                }
-
-                Thread.sleep((long) remainingTime);
-
-                nextDrawTime += drawInterval;
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            // SAVE FPS TO THE VARIABLE
+            if (timer >= 1000000000) {
+                currentFPS = drawCount;
+                drawCount = 0;
+                timer = timer % 1000000000;
             }
         }
     }
     public void update() {
-
+        if(gameState != titleState && gameState != transitionState){
+            environmentManager.update();
+        }
         if(gameState == playState) {
             player.update();
-        } else if (gameState == pauseState){
 
-        } else if(gameState == inventoryState){
-
-        } else if(gameState == chestState){
-
+            for (int i = 0; i < particleList.size(); i++) {
+                if(particleList.get(i) != null) {
+                    if(particleList.get(i).alive){
+                        particleList.get(i).update();
+                    } else {
+                        particleList.remove(i);
+                    }
+                }
+            }
         }
     }
-    public void drawToTempScreen(){
-        long drawStartTime = 0;
-        if(keyHandler.showDebug){
-            drawStartTime = System.nanoTime();
-        }
+    @Override
+    public void paintComponent(Graphics g){
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g;
+
+        // CALCULATE SCALING
+        double drawWidth = screenWidth2;
+        double drawHeight = screenHeight2;
+        double scaleX = drawWidth / screenWidth;
+        double scaleY = drawHeight / screenHeight;
+
+        g2.scale(scaleX, scaleY);
+
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
         // TITLE SCREEN
-        if (gameState == titleState){
+        if (gameState == titleState || gameState == transitionState) {
             ui.draw(g2);
         }
         else {
@@ -154,22 +183,23 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
-            // SORTING - Objects with collision=true are drawn after (on top of) entities with collision=false
-            entityList.sort((e1, e2) -> {
-                // Chests (collision=true) always on top
-                if (e1.collision != e2.collision) {
-                    return e1.collision ? 1 : -1;
+            // PARTICLES
+            for (Entity particle: particleList){
+                if(particle != null) {
+                    entityList.add(particle);
                 }
+            }
 
-                // Among non-collision entities, player always draws last
-                if (!e1.collision && !e2.collision) {
-                    if (e1 instanceof Player) return 1;  // Player draws after
-                    if (e2 instanceof Player) return -1; // Player draws after
-                    return e1.worldY - e2.worldY; // Other objects sort by Y
+            // SORTING
+            entityList.sort(Comparator.comparingInt(e -> {
+                if (e.isBreakable) {
+                    // For breakable blocks: Sort using the TOP of the collision box.
+                    return e.worldY + e.solidArea.y;
+                } else {
+                    // For everything else sort using the FEET (Bottom).
+                    return e.worldY + e.solidArea.y + e.solidArea.height;
                 }
-
-                return e1.worldY - e2.worldY;
-            });
+            }));
 
             // DRAW ENTITIES
             for (Entity entity : entityList) {
@@ -179,27 +209,21 @@ public class GamePanel extends JPanel implements Runnable {
             // EMPTY LIST
             entityList.clear();
 
+            // ENVIRONMENT
+            environmentManager.draw(g2);
+
+            // UI
             ui.draw(g2);
         }
 
+        // DEBUG UI
         if (keyHandler.showDebug){
-            long drawEndTime = System.nanoTime();
-            long passed = drawEndTime - drawStartTime;
-
-            // Convert to microseconds for more consistent display
-            double drawTimeMs = passed / 1000000.0;
-
             g2.setColor(Color.white);
-            g2.drawString(String.format("FPS: %.0f", 1000.0 / drawTimeMs), 10, 20);
+            g2.drawString("FPS: " + currentFPS, 10, 20);
             g2.drawString("WorldX: " + player.worldX, 10, 40);
             g2.drawString("WorldY: " + player.worldY, 10, 60);
             g2.drawString("Col: " + (player.worldX/tileSize), 10, 80);
             g2.drawString("Row: " + (player.worldY/tileSize), 10, 100);
         }
-    }
-    public void drawToScreen(){
-        Graphics g = getGraphics();
-        g.drawImage(tempScreen, 0, 0, screenWidth2, screenHeight2, null);
-        g.dispose();
     }
 }

@@ -11,92 +11,154 @@ import java.util.Objects;
 
 public class Entity {
 
-    GamePanel gamePanel;
+    protected GamePanel gamePanel;
 
     public int worldX, worldY;
     public int speed;
 
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
+    public BufferedImage mineUp1, mineUp2, mineDown1, mineDown2, mineLeft1,  mineLeft2, mineRight1, mineRight2;
     public String direction = "down";
 
     public int spriteCounter = 0;
     public int spriteNum = 1;
-
-    public String name;
-    public boolean collision = false;
+    boolean mining = false;
 
     // COLLISION
     public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
+    public Rectangle swingArea = new Rectangle(0, 0, 0, 0);
     public int solidAreaDefaultX, solidAreaDefaultY;
     public boolean collisionOn = false;
 
+    public boolean alive = true;
+
     // ITEM ATTRIBUTES
     public String description = "";
+    public String name;
+    public boolean collision = false;
+    public boolean shrink = false;
+    public boolean canPickup = false;
+    public boolean isBreakable = false;
+    public boolean isStackable = false;
+    public int itemAmount = 1;
+    public int strength;
 
     public Entity(GamePanel gamePanel){
         this.gamePanel = gamePanel;
     }
-
-    public void draw(Graphics2D g2){
-
+    public void draw(Graphics2D g2) {
         BufferedImage image = null;
         int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
         int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
 
-        if (worldX + gamePanel.tileSize > gamePanel.player.worldX - gamePanel.player.screenX &&
+        // Temp variables for mining animation offsets
+        int tempScreenX = screenX;
+        int tempScreenY = screenY;
+
+        // DETERMINE WHICH IMAGE TO USE FIRST
+        switch (direction) {
+            case "up":
+                if (!mining) {
+                    image = (spriteNum == 1) ? up1 : up2;
+                } else {
+                    tempScreenY = screenY - gamePanel.tileSize;
+                    image = (spriteNum == 1) ? mineUp1 : mineUp2;
+                }
+                break;
+            case "down":
+                if (!mining) {
+                    image = (spriteNum == 1) ? down1 : down2;
+                } else {
+                    image = (spriteNum == 1) ? mineDown1 : mineDown2;
+                }
+                break;
+            case "left":
+                if (!mining) {
+                    image = (spriteNum == 1) ? left1 : left2;
+                } else {
+                    tempScreenX = screenX - gamePanel.tileSize;
+                    image = (spriteNum == 1) ? mineLeft1 : mineLeft2;
+                }
+                break;
+            case "right":
+                if (!mining) {
+                    image = (spriteNum == 1) ? right1 : right2;
+                } else {
+                    image = (spriteNum == 1) ? mineRight1 : mineRight2;
+                }
+                break;
+        }
+
+        // Safety check
+        if (image == null) return;
+
+        // GET THE ACTUAL SIZE OF THE ENTITY
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        // "shrink" logic (for small items)
+        if (shrink) {
+            width = gamePanel.tileSize / 2;
+            height = gamePanel.tileSize / 2;
+            tempScreenX += (gamePanel.tileSize - width) / 2;
+            tempScreenY += (gamePanel.tileSize - height) / 2;
+        }
+
+        //CHECK VISIBILITY USING THE REAL WIDTH/HEIGHT
+        if (worldX + width > gamePanel.player.worldX - gamePanel.player.screenX &&
                 worldX - gamePanel.tileSize < gamePanel.player.worldX + gamePanel.player.screenX &&
-                worldY + gamePanel.tileSize > gamePanel.player.worldY - gamePanel.player.screenY &&
+                worldY + height > gamePanel.player.worldY - gamePanel.player.screenY &&
                 worldY - gamePanel.tileSize < gamePanel.player.worldY + gamePanel.player.screenY) {
 
-            switch (direction) {
-                case "up":
-                    if (spriteNum == 1) {
-                        image = up1;
-                    }
-                    if (spriteNum == 2) {
-                        image = up2;
-                    }
-                    break;
-                case "down":
-                    if (spriteNum == 1) {
-                        image = down1;
-                    }
-                    if (spriteNum == 2) {
-                        image = down2;
-                    }
-                    break;
-                case "left":
-                    if (spriteNum == 1) {
-                        image = left1;
-                    }
-                    if (spriteNum == 2) {
-                        image = left2;
-                    }
-                    break;
-                case "right":
-                    if (spriteNum == 1) {
-                        image = right1;
-                    }
-                    if (spriteNum == 2) {
-                        image = right2;
-                    }
-                    break;
-            }
+            g2.drawImage(image, tempScreenX, tempScreenY, width, height, null);
 
-            g2.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+            // Draw collision box for debugging
+            if(gamePanel.keyHandler.showDebug) {
+                g2.setColor(Color.red);
+                g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
+            }
         }
     }
+    public void update() {
 
-    public BufferedImage setup(String imagePath) {
+    }
+    public BufferedImage setup(String imagePath, int width, int height) {
         Utility utility = new Utility();
         BufferedImage image = null;
         try {
             image = ImageIO.read(Objects.requireNonNull(getClass().getResource(imagePath + ".png")));
-            image = utility.scaleImage(image, gamePanel.tileSize, gamePanel.tileSize);
+            image = utility.scaleImage(image, width, height);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
         return image;
+    }
+    public Entity getDrop(){
+        return null;
+    }
+    public void generateParticle(Entity generator, Entity target){
+        Color color = generator.getParticleColor();
+        int size = generator.getParticleSize();
+        int duration = generator.getParticleDuration();
+
+        Particle p1 = new Particle(gamePanel, generator, color, size, duration, -2, -1);
+        Particle p2 = new Particle(gamePanel, generator, color, size, duration, 2, -1);
+        Particle p3 = new Particle(gamePanel, generator, color, size, duration, -2, 1);
+        Particle p4 = new Particle(gamePanel, generator, color, size, duration, 2, 1);
+        gamePanel.particleList.add(p1);
+        gamePanel.particleList.add(p2);
+        gamePanel.particleList.add(p3);
+        gamePanel.particleList.add(p4);
+    }
+
+    public Color getParticleColor(){
+        return null;
+    }
+    public int getParticleSize(){
+        return -1;
+    }
+    public int getParticleDuration(){
+        return -1;
     }
 }

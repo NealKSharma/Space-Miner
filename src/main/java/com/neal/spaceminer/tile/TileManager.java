@@ -16,7 +16,7 @@ public class TileManager {
 
     GamePanel gamePanel;
     public Tile[] tile;
-    public int mapTileNum[][];
+    public int[][] mapTileNum;
 
     public TileManager(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -24,17 +24,9 @@ public class TileManager {
         mapTileNum = new int[gamePanel.maxWorldCol][gamePanel.maxWorldRow];
 
         getTileImage();
-        loadMap("/maps/map01.txt");
+        loadMap("/maps/map02.txt");
     }
-
     public void getTileImage() {
-
-        // Surface
-        setup(15, "surface", false);
-
-        // Obstacles
-        setup(14, "rock", true);
-
         // Lava
         setup(0, "lava00", true);
         setup(1, "lava01", true);
@@ -51,12 +43,11 @@ public class TileManager {
         setup(12, "lava12", true);
         setup(13, "lava13", true);
 
+        // Surface
+        setup(14, "surface", false);
     }
-
     public void setup(int index, String imageName, boolean collision) {
-
         Utility utility = new Utility();
-
         try {
             tile[index] = new Tile();
             tile[index].img = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/" + imageName + ".png")));
@@ -67,7 +58,6 @@ public class TileManager {
             e.printStackTrace();
         }
     }
-
     public void loadMap(String filePath) {
         try {
             InputStream is = getClass().getResourceAsStream(filePath);
@@ -95,33 +85,23 @@ public class TileManager {
             e.printStackTrace();
         }
     }
-
     public void draw(Graphics2D g2) {
+        // CALCULATE THE VISIBLE TILE RANGE
+        int startCol = Math.max(0, (gamePanel.player.worldX - gamePanel.player.screenX) / gamePanel.tileSize - 1);
+        int endCol = Math.min(gamePanel.maxWorldCol, (gamePanel.player.worldX + gamePanel.player.screenX) / gamePanel.tileSize + 2);
+        int startRow = Math.max(0, (gamePanel.player.worldY - gamePanel.player.screenY) / gamePanel.tileSize - 1);
+        int endRow = Math.min(gamePanel.maxWorldRow, (gamePanel.player.worldY + gamePanel.player.screenY) / gamePanel.tileSize + 2);
 
-        int worldCol = 0;
-        int worldRow = 0;
+        for (int worldRow = startRow; worldRow < endRow; worldRow++) {
+            for (int worldCol = startCol; worldCol < endCol; worldCol++) {
+                int tileNum = mapTileNum[worldCol][worldRow];
 
-        while (worldCol < gamePanel.maxWorldCol && worldRow < gamePanel.maxWorldRow) {
-            int tileNum = mapTileNum[worldCol][worldRow];
-
-            int worldX = worldCol * gamePanel.tileSize;
-            int worldY = worldRow * gamePanel.tileSize;
-            int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
-            int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
-
-            if (worldX + gamePanel.tileSize > gamePanel.player.worldX - gamePanel.player.screenX &&
-                    worldX - gamePanel.tileSize < gamePanel.player.worldX + gamePanel.player.screenX &&
-                    worldY + gamePanel.tileSize > gamePanel.player.worldY - gamePanel.player.screenY &&
-                    worldY - gamePanel.tileSize < gamePanel.player.worldY + gamePanel.player.screenY) {
+                int worldX = worldCol * gamePanel.tileSize;
+                int worldY = worldRow * gamePanel.tileSize;
+                int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
+                int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
 
                 g2.drawImage(tile[tileNum].img, screenX, screenY, null);
-            }
-
-            worldCol++;
-
-            if (worldCol == gamePanel.maxWorldCol) {
-                worldCol = 0;
-                worldRow++;
             }
         }
     }

@@ -3,17 +3,24 @@ import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.entity.Entity;
 
 public class OBJ_Pickaxe extends Entity {
+
+    public static final String objName = "Pickaxe";
+
     public OBJ_Pickaxe(GamePanel gamePanel) {
         super(gamePanel);
 
-        name = "Pickaxe";
-        collision = false;
+        name = objName;
+        shrink = true;
+        canPickup = true;
 
-        solidArea.x = 8;
+        solidArea.x = 16;
         solidArea.y = 16;
-        solidAreaDefaultX = 8;
-        solidAreaDefaultY = 16;
-        down1 = setup("/objects/pickaxe");
-        description = "[" + name + "]\nA simple pickaxe.\nCan mine normal rocks.";
+        solidArea.width = 32;
+        solidArea.height = 32;
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
+
+        down1 = setup("/objects/pickaxe", gamePanel.tileSize, gamePanel.tileSize);
+        description = "[" + name + "]\nCan mine normal rocks.";
     }
 }

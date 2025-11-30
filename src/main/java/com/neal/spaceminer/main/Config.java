@@ -28,7 +28,7 @@ public class Config {
 
         } catch(IOException e){
             e.printStackTrace();
-            }
+        }
     }
     public void loadConfig() {
         try (BufferedReader br = new BufferedReader(new FileReader("gameConfig.txt"))){

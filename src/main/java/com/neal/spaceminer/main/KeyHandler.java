@@ -7,9 +7,9 @@ public class KeyHandler implements KeyListener {
 
     GamePanel gamePanel;
 
-    public boolean up, down, left, right, chest, saved;
+    public boolean up, down, left, right, saved;
 
-    boolean showDebug = false;
+    public boolean showDebug = false;
 
     public KeyHandler(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -52,11 +52,11 @@ public class KeyHandler implements KeyListener {
 
         if(key == KeyEvent.VK_ENTER){
             if(gamePanel.ui.commandNum == 0){
-                gamePanel.gameState = gamePanel.playState;
+                gamePanel.gameState = gamePanel.transitionState;
                 gamePanel.ui.subState = 0;
             } else if(gamePanel.ui.commandNum == 1){
                 gamePanel.saveLoad.load();
-                gamePanel.gameState = gamePanel.playState;
+                gamePanel.gameState = gamePanel.transitionState;
                 gamePanel.ui.subState = 0;
             } else if(gamePanel.ui.commandNum == 2){
                 System.exit(0);
@@ -64,34 +64,26 @@ public class KeyHandler implements KeyListener {
         }
     }
     public void playState(int key){
-        if (key == KeyEvent.VK_W) {
-            up = true;
-        }
-        if (key == KeyEvent.VK_A) {
-            left = true;
-        }
-        if (key == KeyEvent.VK_S) {
-            down = true;
-        }
-        if (key == KeyEvent.VK_D) {
-            right = true;
-        }
+        //MOVEMENT
+        if (key == KeyEvent.VK_W) up = true;
+        if (key == KeyEvent.VK_A) left = true;
+        if (key == KeyEvent.VK_S) down = true;
+        if (key == KeyEvent.VK_D) right = true;
 
-        if(key == KeyEvent.VK_ESCAPE){
-            gamePanel.gameState = gamePanel.pauseState;
+        // SLOTS
+        if (key == KeyEvent.VK_1) {
+            gamePanel.player.useHotbarItem(0);
         }
+        if (key == KeyEvent.VK_2) gamePanel.player.useHotbarItem(1);
+        if (key == KeyEvent.VK_3) gamePanel.player.useHotbarItem(2);
+        if (key == KeyEvent.VK_4) gamePanel.player.useHotbarItem(3);
+        if (key == KeyEvent.VK_5) gamePanel.player.useHotbarItem(4);
 
-        if(key == KeyEvent.VK_E){
-            gamePanel.gameState = gamePanel.inventoryState;
-        }
-
-        if(key == KeyEvent.VK_F && gamePanel.player.canUse){
-            gamePanel.gameState = gamePanel.chestState;
-        }
-
-        if(key == KeyEvent.VK_F3){
-            showDebug = !showDebug;
-        }
+        // MISC
+        if(key == KeyEvent.VK_ESCAPE) gamePanel.gameState = gamePanel.pauseState;
+        if(key == KeyEvent.VK_E) gamePanel.gameState = gamePanel.inventoryState;
+        if(key == KeyEvent.VK_E && gamePanel.player.canOpen) gamePanel.gameState = gamePanel.chestState;
+        if(key == KeyEvent.VK_F3) showDebug = !showDebug;
     }
     // NEEDS OPTIMIZATIONS
     public void pauseState(int key) {
@@ -121,7 +113,7 @@ public class KeyHandler implements KeyListener {
             }
         }
         if (key == KeyEvent.VK_D  && gamePanel.ui.commandNum == 1 && gamePanel.ui.subState==0) {
-            if(gamePanel.ui.volume <= 5){
+            if(gamePanel.ui.volume < 5){
                 gamePanel.ui.volume++;
             }
         }
@@ -200,21 +192,29 @@ public class KeyHandler implements KeyListener {
         if (key == KeyEvent.VK_W) {
             if(gamePanel.ui.slotRow > 0) {
                 gamePanel.ui.slotRow--;
+            } else {
+                gamePanel.ui.slotRow = 3;
             }
         }
         if (key == KeyEvent.VK_A) {
             if(gamePanel.ui.slotCol > 0) {
                 gamePanel.ui.slotCol--;
+            } else {
+                gamePanel.ui.slotCol = 4;
             }
         }
         if (key == KeyEvent.VK_S) {
             if(gamePanel.ui.slotRow < 3) {
                 gamePanel.ui.slotRow++;
+            } else {
+                gamePanel.ui.slotRow = 0;
             }
         }
         if (key == KeyEvent.VK_D) {
             if(gamePanel.ui.slotCol < 4) {
                 gamePanel.ui.slotCol++;
+            } else {
+                gamePanel.ui.slotCol = 0;
             }
         }
 
@@ -236,43 +236,73 @@ public class KeyHandler implements KeyListener {
         }
     }
     public void chestState(int key) {
-        if (key == KeyEvent.VK_F) {
+        if (key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_E) {
             gamePanel.gameState = gamePanel.playState;
             gamePanel.ui.slotRow = 0;
             gamePanel.ui.slotCol = 0;
-            chest = false;
+            gamePanel.player.currentChest = null;
         }
 
+        // Navigation
         if (key == KeyEvent.VK_W) {
             if(gamePanel.ui.slotRow > 0) {
                 gamePanel.ui.slotRow--;
-            }
-        }
-        if (key == KeyEvent.VK_A) {
-            if(gamePanel.ui.slotCol > 0) {
-                gamePanel.ui.slotCol--;
-                if(gamePanel.ui.slotCol == 7) {
-                    gamePanel.ui.slotCol = 5;
-                }
-            }
-        }
-        if (key == KeyEvent.VK_S) {
-            if(gamePanel.ui.slotRow < 6 && gamePanel.ui.slotCol < 6) {
-                gamePanel.ui.slotRow++;
-            } else if (gamePanel.ui.slotRow < 3 && gamePanel.ui.slotCol > 7) {
-                gamePanel.ui.slotRow++;
-            }
-        }
-        if (key == KeyEvent.VK_D) {
-            if(gamePanel.ui.slotCol < 12) {
-                gamePanel.ui.slotCol++;
-                if(gamePanel.ui.slotCol == 6) {
-                    gamePanel.ui.slotCol = 8;
-                }
-                if(gamePanel.ui.slotCol > 7 && gamePanel.ui.slotRow > 2) {
+            } else {
+                // IN CHEST
+                if (gamePanel.ui.slotCol < 6){
+                    gamePanel.ui.slotRow = 6;
+                } else {
                     gamePanel.ui.slotRow = 3;
                 }
             }
+        }
+
+        if (key == KeyEvent.VK_S) {
+            // In chest (0-5 columns, max 6 rows)
+            if(gamePanel.ui.slotCol < 6 && gamePanel.ui.slotRow < 6) {
+                gamePanel.ui.slotRow++;
+            }
+            // In inventory (8-12 columns, max 3 rows)
+            else if(gamePanel.ui.slotCol >= 8 && gamePanel.ui.slotRow < 3) {
+                gamePanel.ui.slotRow++;
+            } else {
+                gamePanel.ui.slotRow = 0;
+            }
+        }
+
+        if (key == KeyEvent.VK_A) {
+            if(gamePanel.ui.slotCol > 0) {
+                gamePanel.ui.slotCol--;
+                // Jump the gap between chest and inventory
+                if(gamePanel.ui.slotCol == 6 || gamePanel.ui.slotCol == 7) {
+                    gamePanel.ui.slotCol = 5; // Move to last chest column
+                }
+            } else {
+                if(gamePanel.ui.slotRow > 3) {
+                    gamePanel.ui.slotRow = 3;
+                }
+                gamePanel.ui.slotCol = 12;
+            }
+        }
+
+        if (key == KeyEvent.VK_D) {
+            if(gamePanel.ui.slotCol < 12) {
+                gamePanel.ui.slotCol++;
+                // Jump the gap between chest and inventory
+                if(gamePanel.ui.slotCol == 6 || gamePanel.ui.slotCol == 7) {
+                    gamePanel.ui.slotCol = 8; // Move to first inventory column
+                    if(gamePanel.ui.slotRow > 3) {
+                        gamePanel.ui.slotRow = 3; // Adjust row if needed
+                    }
+                }
+            }  else {
+                gamePanel.ui.slotCol = 0;
+            }
+        }
+
+        // Item transfer
+        if (key == KeyEvent.VK_ENTER) {
+            gamePanel.player.transferChestItem(gamePanel.ui.slotCol, gamePanel.ui.slotRow);
         }
     }
     @Override

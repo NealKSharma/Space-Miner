@@ -1,18 +1,27 @@
 package com.neal.spaceminer.main;
 
 import com.neal.spaceminer.entity.Entity;
+import com.neal.spaceminer.object.OBJ_Chest;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Objects;
 
 public class UI {
-
     GamePanel gamePanel;
     Graphics2D g2;
     Font arial_40;
 
+    BufferedImage titleScreenBackground;
+    Color subWindowBackground = new Color(0, 0, 0, 170);
+    BasicStroke borderStroke = new BasicStroke(5);
+
     public int commandNum = 0;
     public int subState = 0;
     public int volume = 0;
+    int counter = 0;
 
     public int slotCol = 0;
     public int slotRow = 0;
@@ -20,6 +29,8 @@ public class UI {
     public UI(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         arial_40 = new Font("Arial", Font.PLAIN, 25);
+
+        loadTitleBackground();
     }
 
     public void draw(Graphics2D g2) {
@@ -40,79 +51,83 @@ public class UI {
             drawInventory();
         } else if(gamePanel.gameState == gamePanel.chestState){
             drawChest();
+        } else if(gamePanel.gameState == gamePanel.transitionState){
+            drawTransition();
         }
         g2.setFont(originalFont);
     }
     public void drawTitleScreen() {
-        g2.setColor(new Color(20, 0, 20));
-        g2.fillRect(0,0,gamePanel.screenWidth, gamePanel.screenHeight);
 
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 96F));
-        String text = "Space Miner";
-        int x = getXforCenteredText(text);
-        int y = gamePanel.tileSize * 3;
+        g2.drawImage(titleScreenBackground, 0, 0, gamePanel.screenWidth, gamePanel.screenHeight, null);
 
+        // HEADING
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 64F));
+        String text = "SPACE-MINER";
+        int x = gamePanel.tileSize;
+        int y = gamePanel.tileSize * 2;
         g2.setColor(Color.DARK_GRAY);
-        g2.drawString(text, x+5, y+5);
-
+        g2.drawString(text, x+3, y+3);
         g2.setColor(Color.WHITE);
         g2.drawString(text, x, y);
 
-        // IMAGE
-        x = gamePanel.screenWidth/2 - (gamePanel.tileSize*2) / 2;
-        y +=  gamePanel.tileSize;
-        g2.drawImage(gamePanel.player.down1, x, y, gamePanel.tileSize*2, gamePanel.tileSize*2, null);
-
         // MENU
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
-        text = "NEW GAME";
-        x = getXforCenteredText(text);
-        y += (int) (gamePanel.tileSize * 3.5);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
+        text = "New Game";
+        y += gamePanel.tileSize * 2;
         if(commandNum == 0){
             g2.drawString(">", x - (gamePanel.tileSize/2), y);
         }
-
         g2.setColor(Color.DARK_GRAY);
-        g2.drawString(text, x+5, y+5);
-
+        g2.drawString(text, x+3, y+3);
         g2.setColor(Color.WHITE);
         g2.drawString(text, x, y);
 
 
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
-        text = "LOAD GAME";
-        x = getXforCenteredText(text);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
+        text = "Load Game";
         y += gamePanel.tileSize;
         if(commandNum == 1){
             g2.drawString(">", x - (gamePanel.tileSize/2), y);
         }
-
         g2.setColor(Color.DARK_GRAY);
-        g2.drawString(text, x+5, y+5);
-
+        g2.drawString(text, x+3, y+3);
         g2.setColor(Color.WHITE);
         g2.drawString(text, x, y);
 
 
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
-        text = "QUIT";
-        x = getXforCenteredText(text);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
+        text = "Quit";
         y += gamePanel.tileSize;
         if(commandNum == 2){
             g2.drawString(">", x - (gamePanel.tileSize/2), y);
         }
-
         g2.setColor(Color.DARK_GRAY);
-        g2.drawString(text, x+5, y+5);
-
+        g2.drawString(text, x+3, y+3);
         g2.setColor(Color.WHITE);
         g2.drawString(text, x, y);
+    }
+    public void loadTitleBackground() {
+        try {
+            titleScreenBackground = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/misc/titleBackground.png")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void drawTransition(){
+        counter++;
+        g2.setColor(new Color(0, 0,0,counter*3));
+        g2.fillRect(0, 0, gamePanel.screenWidth, gamePanel.screenHeight);
+
+        if(counter == 85){
+            counter = 0;
+            gamePanel.gameState = gamePanel.playState;
+        }
     }
     public void drawPlayScreen() {
         int frameX = (gamePanel.tileSize * 14) + 10;
         int frameY = (gamePanel.tileSize * 10) + 10;
-        int frameWidth = (gamePanel.tileSize * 6) - 30;
-        int frameHeight = (gamePanel.tileSize * 2) - 35;
+        int frameWidth = (gamePanel.tileSize * 6) - 25;
+        int frameHeight = (gamePanel.tileSize * 2) - 45;
 
         // SLOTS
         final int slotXstart = frameX + 15;
@@ -128,12 +143,24 @@ public class UI {
             Entity item = gamePanel.player.inventory.get(i);
             if(item != null){
                 g2.drawImage(item.down1, slotX, slotY,null);
+                if(item.itemAmount > 1){
+                    g2.setFont(g2.getFont().deriveFont(28f));
+                    String s = "" +  item.itemAmount;
+                    int amountX = getXforAlignToRightText(s, slotX + gamePanel.tileSize - 3);
+                    int amountY = slotY + gamePanel.tileSize - 3;
+
+                    g2.setColor(new Color(60, 60, 60));
+                    g2.drawString(s, amountX, amountY);
+                    g2.setColor(Color.white);
+                    g2.drawString(s, amountX-2, amountY-2);
+                }
             }
+
             slotX += slotSize;
         }
 
-        if (gamePanel.player.canUse) {
-            g2.drawString("Press F to interact", 10, gamePanel.screenHeight / 2);
+        if (gamePanel.player.canOpen) {
+            g2.drawString("Press E to interact", 10, gamePanel.screenHeight / 2);
         }
     }
     public void drawPauseScreen() {
@@ -330,6 +357,17 @@ public class UI {
             Entity item = gamePanel.player.inventory.get(i);
             if(item != null){
                 g2.drawImage(item.down1, slotX, slotY,null);
+                if(item.itemAmount > 1){
+                    g2.setFont(g2.getFont().deriveFont(28f));
+                    String s = "" +  item.itemAmount;
+                    int amountX = getXforAlignToRightText(s, slotX + gamePanel.tileSize - 3);
+                    int amountY = slotY + gamePanel.tileSize - 3;
+
+                    g2.setColor(new Color(60, 60, 60));
+                    g2.drawString(s, amountX, amountY);
+                    g2.setColor(Color.white);
+                    g2.drawString(s, amountX-2, amountY-2);
+                }
             }
 
             slotX += slotSize;
@@ -374,66 +412,168 @@ public class UI {
         }
     }
     public void drawChest() {
-        // Inventory
-        int frameX = gamePanel.tileSize * 13;
-        int frameY = gamePanel.tileSize * 2;
-        int frameWidth = gamePanel.tileSize * 6;
-        int frameHeight = gamePanel.tileSize * 5;
+        // GET THE CURRENT CHEST OBJECT
+        OBJ_Chest chest = (OBJ_Chest) gamePanel.player.currentChest;
 
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 50));
-        String text = "Inventory";
-        g2.drawString(text, frameX + 85, frameY + frameHeight + 50);
-
-        drawSubWindow(frameX, frameY, frameWidth, frameHeight);
-
-        // Chest
         int frameChestX = gamePanel.tileSize * 5;
         int frameChestY = gamePanel.tileSize * 2;
         int frameChestWidth = gamePanel.tileSize * 7;
         int frameChestHeight = gamePanel.tileSize * 8;
 
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 50));
-        text = "Chest";
-        g2.drawString(text, frameChestX + 160, frameChestY + frameChestHeight + 50);
+        String text = "Chest";
+        g2.drawString(text, frameChestX, frameChestY - 15);
 
         drawSubWindow(frameChestX, frameChestY, frameChestWidth, frameChestHeight);
 
-        // SLOTS
-        final int slotXstart = frameChestX + 20;
-        final int slotYstart = frameChestY + 20;
-        int slotX = slotXstart;
-        int slotY = slotYstart;
+        // PLAYER INVENTORY WINDOW (Right side - 5 cols x 4 rows)
+        int frameX = gamePanel.tileSize * 13;
+        int frameY = gamePanel.tileSize * 2;
+        int frameWidth = gamePanel.tileSize * 6;
+        int frameHeight = gamePanel.tileSize * 5;
 
-        // CURSOR
-        int cursorX = slotXstart + (gamePanel.tileSize * slotCol);
-        int cursorY = slotYstart + (gamePanel.tileSize * slotRow);
-        int cursorWidth = gamePanel.tileSize;
-        int cursorHeight = gamePanel.tileSize;
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 50));
+        text = "Inventory";
+        g2.drawString(text, frameX, frameY - 15);
+
+        drawSubWindow(frameX, frameY, frameWidth, frameHeight);
+
+        // DRAW CHEST ITEMS (6x7 grid)
+        final int chestSlotXstart = frameChestX + 20;
+        final int chestSlotYstart = frameChestY + 20;
+        int slotSize = gamePanel.tileSize + 3;
+
+        int slotX = chestSlotXstart;
+        int slotY = chestSlotYstart;
+
+        for (int i = 0; i < chest.chestInv.size(); i++) {
+            Entity item = chest.chestInv.get(i);
+            if(item != null){
+                g2.drawImage(item.down1, slotX, slotY,null);
+                if(item.itemAmount > 1){
+                    g2.setFont(g2.getFont().deriveFont(28f));
+                    String s = "" +  item.itemAmount;
+                    int amountX = getXforAlignToRightText(s, slotX + gamePanel.tileSize - 3);
+                    int amountY = slotY + gamePanel.tileSize - 3;
+
+                    g2.setColor(new Color(60, 60, 60));
+                    g2.drawString(s, amountX, amountY);
+                    g2.setColor(Color.white);
+                    g2.drawString(s, amountX-2, amountY-2);
+                }
+            }
+
+            slotX += slotSize;
+
+            if ((i + 1) % 6 == 0) { // 6 columns
+                slotX = chestSlotXstart;
+                slotY += slotSize;
+            }
+        }
+
+        // DRAW PLAYER INVENTORY ITEMS (5x4 grid)
+        final int invSlotXstart = frameX + 20;
+        final int invSlotYstart = frameY + 20;
+
+        slotX = invSlotXstart;
+        slotY = invSlotYstart;
+
+        for (int i = 0; i < gamePanel.player.inventory.size(); i++) {
+            Entity item = gamePanel.player.inventory.get(i);
+            if(item != null){
+                g2.drawImage(item.down1, slotX, slotY,null);
+                if(item.itemAmount > 1){
+                    g2.setFont(g2.getFont().deriveFont(28f));
+                    String s = "" +  item.itemAmount;
+                    int amountX = getXforAlignToRightText(s, slotX + gamePanel.tileSize - 3);
+                    int amountY = slotY + gamePanel.tileSize - 3;
+
+                    g2.setColor(new Color(60, 60, 60));
+                    g2.drawString(s, amountX, amountY);
+                    g2.setColor(Color.white);
+                    g2.drawString(s, amountX-2, amountY-2);
+                }
+            }
+
+            slotX += slotSize;
+
+            if (i == 4 || i == 9 || i == 14 || i == 19) { // 5 columns
+                slotX = invSlotXstart;
+                slotY += slotSize;
+            }
+        }
 
         // DRAW CURSOR
+        int cursorX, cursorY;
+
+        if(slotCol < 6) {
+            // Cursor is in chest area
+            cursorX = chestSlotXstart + (slotSize * slotCol);
+            cursorY = chestSlotYstart + (slotSize * slotRow);
+        } else {
+            // Cursor is in inventory area (offset by 8 to account for gap)
+            cursorX = invSlotXstart + (slotSize * (slotCol - 8));
+            cursorY = invSlotYstart + (slotSize * slotRow);
+        }
+
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(3));
-        g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
+        g2.drawRoundRect(cursorX, cursorY, gamePanel.tileSize, gamePanel.tileSize, 10, 10);
+
+        // DESCRIPTION FRAME
+        int dFrameX = frameX;
+        int dFrameY = frameY + frameHeight + 10;
+        int dFrameWidth = frameWidth;
+        int dFrameHeight = gamePanel.tileSize * 3;
+
+        // DRAW DESCRIPTION TEXT
+        int textX = dFrameX + 20;
+        int textY = dFrameY + gamePanel.tileSize - 20;
+        g2.setFont(g2.getFont().deriveFont(28F));
+
+        Entity item = null;
+
+        // Determine which item to show based on cursor position
+        if(slotCol < 6) {
+            // Cursor is in chest area
+            int chestIndex = slotCol + (slotRow * 6);
+            if(chestIndex < chest.chestInv.size()) {
+                item = chest.chestInv.get(chestIndex);
+            }
+        } else {
+            // Cursor is in inventory area
+            int invIndex = (slotCol - 8) + (slotRow * 5);
+            if(invIndex < gamePanel.player.inventory.size()) {
+                item = gamePanel.player.inventory.get(invIndex);
+            }
+        }
+
+        // Draw description if item exists
+        if(item != null){
+            drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
+            for(String line: item.description.split("\n")){
+                g2.drawString(line, textX, textY);
+                textY += 32;
+            }
+        }
     }
     public int getItemIndexOnSlotInventory(){
         return slotCol + (slotRow*5);
     }
     public void drawSubWindow(int x, int y, int width, int height) {
-
-        Color color = new Color(0, 0, 0, 170);
-        g2.setColor(color);
-
+        g2.setColor(subWindowBackground);
         g2.fillRoundRect(x, y, width, height, 35, 35);
 
-        color = new Color(255, 255, 255);
-        g2.setColor(color);
-        g2.setStroke(new BasicStroke(5));
+        g2.setColor(Color.white);
+        g2.setStroke(borderStroke);
         g2.drawRoundRect(x+5, y+5, width-10, height-10, 25, 25);
-
     }
     public int getXforCenteredText(String text) {
-
         int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
         return gamePanel.screenWidth / 2 - length / 2;
+    }
+    public int getXforAlignToRightText(String text, int tailX) {
+        int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+        return tailX - length;
     }
 }

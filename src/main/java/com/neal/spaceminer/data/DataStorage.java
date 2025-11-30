@@ -2,9 +2,9 @@ package com.neal.spaceminer.data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DataStorage implements Serializable {
-
     // PLAYER LOCATION
     int playerX;
     int playerY;
@@ -17,4 +17,8 @@ public class DataStorage implements Serializable {
     String[] mapObjectNames;
     int[] mapObjectWorldX;
     int[] mapObjectWorldY;
+
+    // CHEST INVENTORIES
+    HashMap<Integer, ArrayList<String>> chestItemNames = new HashMap<>();
+    HashMap<Integer, ArrayList<Integer>> chestItemSlots = new HashMap<>();
 }
