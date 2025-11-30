@@ -3,9 +3,7 @@ package com.neal.spaceminer.entity;
 import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.main.KeyHandler;
 import com.neal.spaceminer.object.OBJ_Chest;
-import com.neal.spaceminer.object.OBJ_LumenCell;
 import com.neal.spaceminer.object.OBJ_Pickaxe;
-import com.neal.spaceminer.tiles_interactive.IT_Rock;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -81,19 +79,27 @@ public class Player extends Entity {
         mineRight2 = setup("/astronaut_pickaxing/pickaxe_right2", gamePanel.tileSize*2, gamePanel.tileSize);
     }
     public void interactWithObject(int index) {
-        if(gamePanel.obj[index] != null){
-            if (gamePanel.obj[index].canPickup) {
-                int emptySlot = getFirstEmptySlot();
-                if (emptySlot != -1) {
-                    inventory.set(emptySlot, gamePanel.obj[index]);
+        Entity objOnGround = gamePanel.obj[index];
+        if(objOnGround != null){
+            if (objOnGround.canPickup) {
+                if(objOnGround.isStackable && searchInventory(objOnGround.name) != -1) {
+                    inventory.get(searchInventory(objOnGround.name)).itemAmount++;
                     gamePanel.obj[index] = null;
-                    itemBehaviour();
                 } else {
-                    // INVENTORY FULL
+                    int emptySlot = getFirstEmptySlot();
+                    if (emptySlot != -1) {
+                        inventory.set(emptySlot, objOnGround);
+                        gamePanel.obj[index] = null;
+                        itemBehaviour();
+                    } else {
+                        // INVENTORY FULL
+                    }
+                    inventory.set(emptySlot, objOnGround);
+                    itemBehaviour();
                 }
-            } else if ("Chest".equals(gamePanel.obj[index].name)) {
+            } else if ("Chest".equals(objOnGround.name)) {
                 canOpen = true;
-                currentChest = gamePanel.obj[index];
+                currentChest = objOnGround;
             }
         }
     }
@@ -127,10 +133,17 @@ public class Player extends Entity {
             if(chestIndex < chest.chestInv.size()) {
                 Entity item = chest.chestInv.get(chestIndex);
                 if(item != null) {
-                    int emptySlot = getFirstEmptySlot();
-                    if(emptySlot != -1) {
-                        inventory.set(emptySlot, item);
+                    // STACKABLE ITEM ALREADY IN INVENTORY
+                    if(item.isStackable && searchInventory(item.name) != -1) {
+                        inventory.get(searchInventory(item.name)).itemAmount += item.itemAmount;
                         chest.chestInv.set(chestIndex, null);
+                    } else {
+                        // NOT STACKABLE OR NOT IN INVENTORY
+                        int emptySlot = getFirstEmptySlot();
+                        if(emptySlot != -1) {
+                            inventory.set(emptySlot, item);
+                            chest.chestInv.set(chestIndex, null);
+                        }
                     }
                 }
             }
@@ -140,9 +153,22 @@ public class Player extends Entity {
             if(invIndex < inventory.size()) {
                 Entity item = inventory.get(invIndex);
                 if(item != null) {
-                    // Find first empty chest slot
-                    for(int i = 0; i < chest.chestInv.size(); i++) {
-                        if(chest.chestInv.get(i) == null) {
+                    // IF STACKABLE, SEARCH FOR EXISTING STACK IN CHEST FIRST
+                    if (item.isStackable) {
+                        for (int i = 0; i < chest.chestInv.size(); i++) {
+                            Entity chestItem = chest.chestInv.get(i);
+                            if (chestItem != null && chestItem.name.equals(item.name)) {
+                                chestItem.itemAmount += item.itemAmount;
+                                inventory.set(invIndex, null);
+                                itemBehaviour();
+                                return;
+                            }
+                        }
+                    }
+
+                    // IF NOT MOVED YET, FIND EMPTY SLOT
+                    for (int i = 0; i < chest.chestInv.size(); i++) {
+                        if (chest.chestInv.get(i) == null) {
                             chest.chestInv.set(i, item);
                             inventory.set(invIndex, null);
                             break;
@@ -168,13 +194,13 @@ public class Player extends Entity {
         }
         return false;
     }
-    public boolean searchInventory(String name){
+    public int searchInventory(String name){
         for(int i = 0; i < maxInventorySize; i++) {
             if(inventory.get(i) != null && inventory.get(i).name.equals(name)) {
-                return true;
+                return i;
             }
         }
-        return false;
+        return -1;
     }
     public void useHotbarItem(int index){
         // MINING

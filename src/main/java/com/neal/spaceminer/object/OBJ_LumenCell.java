@@ -13,6 +13,7 @@ public class OBJ_LumenCell extends Entity {
         name = objName;
         shrink = true;
         canPickup = true;
+        isStackable = true;
 
         solidArea.x = 16;
         solidArea.y = 16;

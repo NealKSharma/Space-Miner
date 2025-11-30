@@ -40,7 +40,7 @@ public class Entity {
     public boolean canPickup = false;
     public boolean isBreakable = false;
     public boolean isStackable = false;
-    public int itemAmount = 0;
+    public int itemAmount = 1;
     public int strength;
 
     public Entity(GamePanel gamePanel){

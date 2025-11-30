@@ -16,31 +16,19 @@ public class AssetSetter {
     public void setObject() {
         i = 0;
 
+        // TO SET STACKABLE ITEMS IN CHEST
+        OBJ_LumenCell cells = new OBJ_LumenCell(gamePanel);
+        cells.itemAmount = 5;
+
         // CHESTS
         OBJ_Chest chest1 = (OBJ_Chest) place(new OBJ_Chest(gamePanel), 76, 79);
         chest1.chestInv.set(0, new OBJ_Pickaxe(gamePanel));
+        chest1.chestInv.set(7, cells);
 
+        cells.itemAmount = 10;
         OBJ_Chest chest2 = (OBJ_Chest) place(new OBJ_Chest(gamePanel), 76, 81);
         chest2.chestInv.set(1, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(2, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(3, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(4, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(5, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(6, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(7, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(8, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(9, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(10, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(11, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(12, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(13, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(14, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(15, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(16, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(17, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(18, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(19, new OBJ_Pickaxe(gamePanel));
-        chest2.chestInv.set(20, new OBJ_Pickaxe(gamePanel));
+        chest2.chestInv.set(3, cells);
 
         // ITEMS
         place(new OBJ_Pickaxe(gamePanel), 72, 80);
@@ -58,7 +46,9 @@ public class AssetSetter {
         place(new OBJ_Astronaut(gamePanel), 11, 90);
 
         // INTERACTIVE TILES
+        place(new IT_Rock(gamePanel), 78, 79);
         place(new IT_Rock(gamePanel), 78, 80);
+        place(new IT_Rock(gamePanel), 78, 81);
     }
     public Entity place(Entity entity, int col, int row) {
         //if(i < gamePanel.obj.length) {

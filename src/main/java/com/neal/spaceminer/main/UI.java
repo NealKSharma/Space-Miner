@@ -143,7 +143,19 @@ public class UI {
             Entity item = gamePanel.player.inventory.get(i);
             if(item != null){
                 g2.drawImage(item.down1, slotX, slotY,null);
+                if(item.itemAmount > 1){
+                    g2.setFont(g2.getFont().deriveFont(28f));
+                    String s = "" +  item.itemAmount;
+                    int amountX = getXforAlignToRightText(s, slotX + gamePanel.tileSize - 3);
+                    int amountY = slotY + gamePanel.tileSize - 3;
+
+                    g2.setColor(new Color(60, 60, 60));
+                    g2.drawString(s, amountX, amountY);
+                    g2.setColor(Color.white);
+                    g2.drawString(s, amountX-2, amountY-2);
+                }
             }
+
             slotX += slotSize;
         }
 
@@ -345,6 +357,17 @@ public class UI {
             Entity item = gamePanel.player.inventory.get(i);
             if(item != null){
                 g2.drawImage(item.down1, slotX, slotY,null);
+                if(item.itemAmount > 1){
+                    g2.setFont(g2.getFont().deriveFont(28f));
+                    String s = "" +  item.itemAmount;
+                    int amountX = getXforAlignToRightText(s, slotX + gamePanel.tileSize - 3);
+                    int amountY = slotY + gamePanel.tileSize - 3;
+
+                    g2.setColor(new Color(60, 60, 60));
+                    g2.drawString(s, amountX, amountY);
+                    g2.setColor(Color.white);
+                    g2.drawString(s, amountX-2, amountY-2);
+                }
             }
 
             slotX += slotSize;
@@ -426,7 +449,18 @@ public class UI {
         for (int i = 0; i < chest.chestInv.size(); i++) {
             Entity item = chest.chestInv.get(i);
             if(item != null){
-                g2.drawImage(item.down1, slotX, slotY, gamePanel.tileSize, gamePanel.tileSize, null);
+                g2.drawImage(item.down1, slotX, slotY,null);
+                if(item.itemAmount > 1){
+                    g2.setFont(g2.getFont().deriveFont(28f));
+                    String s = "" +  item.itemAmount;
+                    int amountX = getXforAlignToRightText(s, slotX + gamePanel.tileSize - 3);
+                    int amountY = slotY + gamePanel.tileSize - 3;
+
+                    g2.setColor(new Color(60, 60, 60));
+                    g2.drawString(s, amountX, amountY);
+                    g2.setColor(Color.white);
+                    g2.drawString(s, amountX-2, amountY-2);
+                }
             }
 
             slotX += slotSize;
@@ -447,7 +481,18 @@ public class UI {
         for (int i = 0; i < gamePanel.player.inventory.size(); i++) {
             Entity item = gamePanel.player.inventory.get(i);
             if(item != null){
-                g2.drawImage(item.down1, slotX, slotY, gamePanel.tileSize, gamePanel.tileSize, null);
+                g2.drawImage(item.down1, slotX, slotY,null);
+                if(item.itemAmount > 1){
+                    g2.setFont(g2.getFont().deriveFont(28f));
+                    String s = "" +  item.itemAmount;
+                    int amountX = getXforAlignToRightText(s, slotX + gamePanel.tileSize - 3);
+                    int amountY = slotY + gamePanel.tileSize - 3;
+
+                    g2.setColor(new Color(60, 60, 60));
+                    g2.drawString(s, amountX, amountY);
+                    g2.setColor(Color.white);
+                    g2.drawString(s, amountX-2, amountY-2);
+                }
             }
 
             slotX += slotSize;
@@ -524,8 +569,11 @@ public class UI {
         g2.drawRoundRect(x+5, y+5, width-10, height-10, 25, 25);
     }
     public int getXforCenteredText(String text) {
-
         int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
         return gamePanel.screenWidth / 2 - length / 2;
+    }
+    public int getXforAlignToRightText(String text, int tailX) {
+        int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+        return tailX - length;
     }
 }
