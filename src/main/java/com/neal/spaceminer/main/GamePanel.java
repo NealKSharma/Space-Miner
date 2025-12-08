@@ -77,6 +77,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void setupGame() {
         assetSetter.setObject();
+        assetSetter.setInteractiveTile();
         environmentManager.setup();
 
         if(fullScreen) setFullScreen();

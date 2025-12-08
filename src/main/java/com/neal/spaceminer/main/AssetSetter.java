@@ -7,15 +7,23 @@ import com.neal.spaceminer.tiles_interactive.IT_Rock;
 public class AssetSetter {
 
     GamePanel gamePanel;
+
     int i;
+    int numIT = 1; // NUMBER OF INTERACTIVE TILES
+    final int maxIT = 5; // NUMBER OF INTERACTIVE TILES THAT CAN BE PLACED
+    final int maxTotalIT = numIT * maxIT;
+    int currIT = 0;
+    int[] ITCount = new int[numIT];
 
     public AssetSetter(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
+        for (i = 0; i < numIT; i++) {
+            ITCount[i] = 0;
+        }
     }
 
     public void setObject() {
         i = 0;
-
         // TO SET STACKABLE ITEMS IN CHEST
         OBJ_LumenCell cells = new OBJ_LumenCell(gamePanel);
         cells.itemAmount = 5;
@@ -44,11 +52,41 @@ public class AssetSetter {
         place(new OBJ_Astronaut(gamePanel), 18, 90);
         place(new OBJ_Astronaut(gamePanel), 18, 84);
         place(new OBJ_Astronaut(gamePanel), 11, 90);
+    }
+    public void setInteractiveTile(){
+        while (currIT < maxTotalIT) {
+            int randCol = (int)(Math.random() * (99 - 1 + 1) + 1); // 99 IS FOR 100 MAP SIZE
+            int randRow = (int)(Math.random() * (99 - 1 + 1) + 1);
 
-        // INTERACTIVE TILES
-        place(new IT_Rock(gamePanel), 78, 79);
-        place(new IT_Rock(gamePanel), 78, 80);
-        place(new IT_Rock(gamePanel), 78, 81);
+            if(canPlaceIT(randCol, randRow)) {
+                int randIT = (int)(Math.random() * numIT);
+
+                // CHECK IF THIS SPECIFIC TILE HAS REACHED ITS MAX CAP
+                if(randIT == 0 && ITCount[randIT] < maxIT) {
+                    place(new IT_Rock(gamePanel), randCol, randRow);
+                    ITCount[randIT]++;
+                    currIT++;
+                }
+            }
+        }
+    }
+    public boolean canPlaceIT(int col, int row){
+        // CHECK IF AN INTERACTIVE TILE CAN BE PLACE ON THE TILE
+        int tile = gamePanel.tileManager.mapTileNum[col][row];
+        // ONLY SURFACE'S COLLISION IS FALSE
+        if (gamePanel.tileManager.tile[tile].collision){
+            return false; // RETURN FALSE IF COLLISION IS TRUE FOR THE TILE
+        }
+
+        // CHECK IF THERE'S AN OBJECT ALREADY THERE ON THE TILE
+        int worldX = col * gamePanel.tileSize;
+        int worldY = row * gamePanel.tileSize;
+        for(int i = 0; i < gamePanel.obj.length; i++) {
+            if(gamePanel.obj[i] != null && gamePanel.obj[i].worldX == worldX && gamePanel.obj[i].worldY == worldY) {
+                return false;
+            }
+        }
+        return true;
     }
     public Entity place(Entity entity, int col, int row) {
         //if(i < gamePanel.obj.length) {
