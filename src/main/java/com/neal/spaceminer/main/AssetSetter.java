@@ -9,9 +9,9 @@ public class AssetSetter {
     GamePanel gamePanel;
 
     int i;
-    int numIT = 1; // NUMBER OF INTERACTIVE TILES
-    final int maxIT = 5; // NUMBER OF INTERACTIVE TILES THAT CAN BE PLACED
-    final int maxTotalIT = numIT * maxIT;
+    int numIT = 1; // NUMBER OF DIFFERENT INTERACTIVE TILES
+    final int maxIT = 5; // NUMBER OF INTERACTIVE TILE THAT CAN BE PLACED
+    final int maxTotalIT = numIT * maxIT; // MAX INTERACTIVE TILES ON MAP
     int currIT = 0;
     int[] ITCount = new int[numIT];
 
@@ -23,7 +23,6 @@ public class AssetSetter {
     }
 
     public void setObject() {
-        i = 0;
         // TO SET STACKABLE ITEMS IN CHEST
         OBJ_LumenCell cells = new OBJ_LumenCell(gamePanel);
         cells.itemAmount = 5;
@@ -81,23 +80,17 @@ public class AssetSetter {
         // CHECK IF THERE'S AN OBJECT ALREADY THERE ON THE TILE
         int worldX = col * gamePanel.tileSize;
         int worldY = row * gamePanel.tileSize;
-        for(int i = 0; i < gamePanel.obj.length; i++) {
-            if(gamePanel.obj[i] != null && gamePanel.obj[i].worldX == worldX && gamePanel.obj[i].worldY == worldY) {
+        for(int i = 0; i < gamePanel.obj.size(); i++) {
+            if(gamePanel.obj.get(i).worldX == worldX && gamePanel.obj.get(i).worldY == worldY) {
                 return false;
             }
         }
         return true;
     }
     public Entity place(Entity entity, int col, int row) {
-        //if(i < gamePanel.obj.length) {
             entity.worldX = col * gamePanel.tileSize;
             entity.worldY = row * gamePanel.tileSize;
-            gamePanel.obj[i] = entity;
-            i++;
+            gamePanel.obj.add(entity);
             return entity;
-        //} else {
-            // OBJECT ARRAY FULL
-            //return null;
-        //}
     }
 }

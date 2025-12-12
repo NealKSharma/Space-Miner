@@ -79,17 +79,16 @@ public class Player extends Entity {
         mineRight2 = setup("/astronaut_pickaxing/pickaxe_right2", gamePanel.tileSize*2, gamePanel.tileSize);
     }
     public void interactWithObject(int index) {
-        Entity objOnGround = gamePanel.obj[index];
-        if(objOnGround != null){
+        Entity objOnGround = gamePanel.obj.get(index);
             if (objOnGround.canPickup) {
                 if(objOnGround.isStackable && searchInventory(objOnGround.name) != -1) {
                     inventory.get(searchInventory(objOnGround.name)).itemAmount++;
-                    gamePanel.obj[index] = null;
+                    gamePanel.obj.remove(index);
                 } else {
                     int emptySlot = getFirstEmptySlot();
                     if (emptySlot != -1) {
                         inventory.set(emptySlot, objOnGround);
-                        gamePanel.obj[index] = null;
+                        gamePanel.obj.remove(index);
                         itemBehaviour();
                     } else {
                         // INVENTORY FULL
@@ -101,7 +100,6 @@ public class Player extends Entity {
                 canOpen = true;
                 currentChest = objOnGround;
             }
-        }
     }
     public void setItems(){
         inventory.set(0, new OBJ_Pickaxe(gamePanel));
@@ -277,7 +275,7 @@ public class Player extends Entity {
             solidArea.height = swingArea.height;
 
             int objectIndex = gamePanel.collisionChecker.checkObject(this, true);
-            if(objectIndex != -1 && gamePanel.obj[objectIndex].isBreakable) mineObject(objectIndex);
+            if(objectIndex != -1 && gamePanel.obj.get(objectIndex).isBreakable) mineObject(objectIndex);
 
             // AFTER CHECKING FOR COLLISION RESTORE ORIGINAL DATA
             worldX = currentWorldX;
@@ -293,14 +291,14 @@ public class Player extends Entity {
     }
     public void mineObject(int i){
         // MULTIPLIED BY 39 SINCE IT'S CALLED MULTIPLE TIMES WHILE THE ANIMATION IS HAPPENING
-        if(mineCount >= gamePanel.obj[i].strength * 39){
-            generateParticle(gamePanel.obj[i], gamePanel.obj[i]);
-            gamePanel.obj[i] = gamePanel.obj[i].getDrop();
+        if(mineCount >= gamePanel.obj.get(i).strength * 39){
+            generateParticle(gamePanel.obj.get(i), gamePanel.obj.get(i));
+            gamePanel.obj.set(i, gamePanel.obj.get(i).getDrop());
             mineCount = 0;
         } else {
             mineCount++;
             if(mineCount % 40 == 0){
-                generateParticle(gamePanel.obj[i], gamePanel.obj[i]);
+                generateParticle(gamePanel.obj.get(i), gamePanel.obj.get(i));
             }
         }
     }

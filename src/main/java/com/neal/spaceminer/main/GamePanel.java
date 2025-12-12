@@ -32,7 +32,6 @@ public class GamePanel extends JPanel implements Runnable {
     // FULLSCREEN
     int screenWidth2 = screenWidth;
     int screenHeight2 = screenHeight;
-    BufferedImage tempScreen;
     Graphics2D g2;
     public boolean fullScreen = true;
 
@@ -54,7 +53,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     // PLAYER AND OBJECTS
     public Player player = new Player(this, keyHandler);
-    public Entity[] obj = new Entity[20];
+    public ArrayList<Entity> obj = new ArrayList<>();
     public ArrayList<Entity> entityList = new ArrayList<Entity>();
     public ArrayList<Entity> particleList = new  ArrayList<>();
 

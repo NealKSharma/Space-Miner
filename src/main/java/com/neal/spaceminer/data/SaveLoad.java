@@ -1,13 +1,13 @@
 package com.neal.spaceminer.data;
 
 import com.neal.spaceminer.entity.Entity;
-import com.neal.spaceminer.main.EntityGenerator;
 import com.neal.spaceminer.main.GamePanel;
-import com.neal.spaceminer.object.OBJ_Astronaut;
 import com.neal.spaceminer.object.OBJ_Chest;
-import com.neal.spaceminer.object.OBJ_Pickaxe;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class SaveLoad {
@@ -35,19 +35,18 @@ public class SaveLoad {
             }
 
             // OBJECTS ON MAP
-            ds.mapObjectNames = new String[gamePanel.obj.length];
-            ds.mapObjectWorldX = new int[gamePanel.obj.length];
-            ds.mapObjectWorldY = new int[gamePanel.obj.length];
+            ds.mapObjectNames = new String[gamePanel.obj.size()];
+            ds.mapObjectWorldX = new int[gamePanel.obj.size()];
+            ds.mapObjectWorldY = new int[gamePanel.obj.size()];
 
-            for(int i = 0; i < gamePanel.obj.length; i++){
-                if (gamePanel.obj[i] != null) {
-                    ds.mapObjectNames[i] = gamePanel.obj[i].name;
-                    ds.mapObjectWorldX[i] = gamePanel.obj[i].worldX;
-                    ds.mapObjectWorldY[i] = gamePanel.obj[i].worldY;
+            for (int i = 0; i < gamePanel.obj.size(); i++) {
+                ds.mapObjectNames[i] = gamePanel.obj.get(i).name;
+                ds.mapObjectWorldX[i] = gamePanel.obj.get(i).worldX;
+                ds.mapObjectWorldY[i] = gamePanel.obj.get(i).worldY;
 
                     // CHEST INVENTORIES
-                    if(gamePanel.obj[i].name.equals("Chest")){
-                        OBJ_Chest chest = (OBJ_Chest) gamePanel.obj[i];
+                if (gamePanel.obj.get(i).name.equals("Chest")) {
+                    OBJ_Chest chest = (OBJ_Chest) gamePanel.obj.get(i);
                         ArrayList<String> chestItems = new ArrayList<>();
                         ArrayList<Integer> chestSlots = new ArrayList<>();
 
@@ -57,10 +56,8 @@ public class SaveLoad {
                                 chestSlots.add(j);
                             }
                         }
-
                         ds.chestItemNames.put(i, chestItems);
                         ds.chestItemSlots.put(i, chestSlots);
-                    }
                 }
             }
 
@@ -89,15 +86,15 @@ public class SaveLoad {
             }
 
             // OBJECTS ON MAP
-            for (int i = 0; i < gamePanel.obj.length; i++){
+            for (int i = 0; i < gamePanel.obj.size(); i++){
                 if(ds.mapObjectNames[i] != null){
-                    gamePanel.obj[i] = gamePanel.entityGenerator.getObject(ds.mapObjectNames[i]);
-                    gamePanel.obj[i].worldX = ds.mapObjectWorldX[i];
-                    gamePanel.obj[i].worldY = ds.mapObjectWorldY[i];
+                    gamePanel.obj.add(gamePanel.entityGenerator.getObject(ds.mapObjectNames[i]));
+                    gamePanel.obj.get(i).worldX = ds.mapObjectWorldX[i];
+                    gamePanel.obj.get(i).worldY = ds.mapObjectWorldY[i];
 
                     // LOAD CHEST INVENTORY
                     if(ds.mapObjectNames[i].equals("Chest")) {
-                        OBJ_Chest chest = (OBJ_Chest) gamePanel.obj[i];
+                        OBJ_Chest chest = (OBJ_Chest) gamePanel.obj.get(i);
 
                         // Clear chest inventory first
                         for(int j = 0; j < chest.chestInv.size(); j++) {
@@ -116,8 +113,6 @@ public class SaveLoad {
                             }
                         }
                     }
-                } else {
-                    gamePanel.obj[i] = null;
                 }
             }
         } catch (Exception e){
