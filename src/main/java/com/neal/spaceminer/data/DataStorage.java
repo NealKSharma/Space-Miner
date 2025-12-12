@@ -12,6 +12,7 @@ public class DataStorage implements Serializable {
     // PLAYER INVENTORY
     ArrayList<String> itemNames = new ArrayList<String>();
     ArrayList<Integer> itemSlot = new ArrayList<>();
+    ArrayList<Integer> itemQuantity = new ArrayList<>();
 
     // OBJECTS ON MAP
     String[] mapObjectNames;
@@ -21,4 +22,5 @@ public class DataStorage implements Serializable {
     // CHEST INVENTORIES
     HashMap<Integer, ArrayList<String>> chestItemNames = new HashMap<>();
     HashMap<Integer, ArrayList<Integer>> chestItemSlots = new HashMap<>();
+    HashMap<Integer, ArrayList<Integer>> chestItemAmounts = new HashMap<>();
 }

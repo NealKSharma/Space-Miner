@@ -30,6 +30,7 @@ public class SaveLoad {
             for(int i = 0; i < gamePanel.player.inventory.size(); i++){
                 if(gamePanel.player.inventory.get(i) != null){
                     ds.itemNames.add(gamePanel.player.inventory.get(i).name);
+                    ds.itemQuantity.add(gamePanel.player.inventory.get(i).itemAmount);
                     ds.itemSlot.add(i);
                 }
             }
@@ -49,15 +50,18 @@ public class SaveLoad {
                     OBJ_Chest chest = (OBJ_Chest) gamePanel.obj.get(i);
                         ArrayList<String> chestItems = new ArrayList<>();
                         ArrayList<Integer> chestSlots = new ArrayList<>();
+                        ArrayList<Integer> chestAmounts = new ArrayList<>();
 
                         for(int j = 0; j < chest.chestInv.size(); j++) {
                             if(chest.chestInv.get(j) != null) {
                                 chestItems.add(chest.chestInv.get(j).name);
                                 chestSlots.add(j);
+                                chestAmounts.add(chest.chestInv.get(j).itemAmount);
                             }
                         }
                         ds.chestItemNames.put(i, chestItems);
                         ds.chestItemSlots.put(i, chestSlots);
+                        ds.chestItemAmounts.put(i, chestAmounts);
                 }
             }
 
@@ -78,23 +82,30 @@ public class SaveLoad {
             gamePanel.player.worldY = ds.playerY;
 
             // PLAYER INVENTORY
+            gamePanel.player.inventory.clear();
             for(int i = 0; i < gamePanel.player.maxInventorySize; i++){
-                gamePanel.player.inventory.set(i, null);
+                gamePanel.player.inventory.add(null);
             }
             for(int i = 0; i < ds.itemNames.size(); i++){
-                gamePanel.player.inventory.set(ds.itemSlot.get(i), gamePanel.entityGenerator.getObject(ds.itemNames.get(i)));
+                int slot = ds.itemSlot.get(i);
+                Entity item = gamePanel.entityGenerator.getObject(ds.itemNames.get(i));
+
+                item.itemAmount = ds.itemQuantity.get(i);
+                gamePanel.player.inventory.set(slot, item);
             }
 
             // OBJECTS ON MAP
-            for (int i = 0; i < gamePanel.obj.size(); i++){
+            gamePanel.obj.clear();
+            for (int i = 0; i < ds.mapObjectNames.length; i++) {
                 if(ds.mapObjectNames[i] != null){
-                    gamePanel.obj.add(gamePanel.entityGenerator.getObject(ds.mapObjectNames[i]));
-                    gamePanel.obj.get(i).worldX = ds.mapObjectWorldX[i];
-                    gamePanel.obj.get(i).worldY = ds.mapObjectWorldY[i];
+
+                    Entity obj = gamePanel.entityGenerator.getObject(ds.mapObjectNames[i]);
+                    obj.worldX = ds.mapObjectWorldX[i];
+                    obj.worldY = ds.mapObjectWorldY[i];
 
                     // LOAD CHEST INVENTORY
                     if(ds.mapObjectNames[i].equals("Chest")) {
-                        OBJ_Chest chest = (OBJ_Chest) gamePanel.obj.get(i);
+                        OBJ_Chest chest = (OBJ_Chest) obj;
 
                         // Clear chest inventory first
                         for(int j = 0; j < chest.chestInv.size(); j++) {
@@ -105,14 +116,19 @@ public class SaveLoad {
                         if(ds.chestItemNames.containsKey(i)) {
                             ArrayList<String> chestItems = ds.chestItemNames.get(i);
                             ArrayList<Integer> chestSlots = ds.chestItemSlots.get(i);
+                            ArrayList<Integer> chestAmounts = ds.chestItemAmounts.get(i);
 
                             for(int j = 0; j < chestItems.size(); j++) {
                                 int slot = chestSlots.get(j);
                                 Entity item = gamePanel.entityGenerator.getObject(chestItems.get(j));
+                                if(chestAmounts != null && j < chestAmounts.size()){
+                                    item.itemAmount = chestAmounts.get(j);
+                                }
                                 chest.chestInv.set(slot, item);
                             }
                         }
                     }
+                    gamePanel.obj.add(obj);
                 }
             }
         } catch (Exception e){

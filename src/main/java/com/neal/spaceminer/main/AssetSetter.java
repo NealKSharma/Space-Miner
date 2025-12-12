@@ -10,8 +10,8 @@ public class AssetSetter {
 
     int i;
     int numIT = 1; // NUMBER OF DIFFERENT INTERACTIVE TILES
-    final int maxIT = 5; // NUMBER OF INTERACTIVE TILE THAT CAN BE PLACED
-    final int maxTotalIT = numIT * maxIT; // MAX INTERACTIVE TILES ON MAP
+    final int maxIT = 15; // NUMBER OF INTERACTIVE TILE THAT CAN BE PLACED
+    final int maxTotalIT = numIT * maxIT; // TOTAL MAX INTERACTIVE TILES ON MAP
     int currIT = 0;
     int[] ITCount = new int[numIT];
 
@@ -77,13 +77,28 @@ public class AssetSetter {
             return false; // RETURN FALSE IF COLLISION IS TRUE FOR THE TILE
         }
 
-        // CHECK IF THERE'S AN OBJECT ALREADY THERE ON THE TILE
         int worldX = col * gamePanel.tileSize;
         int worldY = row * gamePanel.tileSize;
+
+        // CHECK IF THE PLAYER IS SPAWNING ON THE TILE
+        if(gamePanel.player.worldX == worldX && gamePanel.player.worldY == worldY){
+            return false;
+        }
+
+        // CHECK IF THERE'S AN OBJECT ALREADY THERE ON THE TILE
+        int height = 32;
+        int width = 40;
         for(int i = 0; i < gamePanel.obj.size(); i++) {
-            if(gamePanel.obj.get(i).worldX == worldX && gamePanel.obj.get(i).worldY == worldY) {
+            gamePanel.obj.get(i).solidArea.x = gamePanel.obj.get(i).worldX + gamePanel.obj.get(i).solidArea.x;
+            gamePanel.obj.get(i).solidArea.y = gamePanel.obj.get(i).worldY + gamePanel.obj.get(i).solidArea.y;
+
+            if(gamePanel.obj.get(i).solidArea.intersects(worldX, worldY, height, width)) {
+                gamePanel.obj.get(i).solidArea.x = gamePanel.obj.get(i).solidAreaDefaultX;
+                gamePanel.obj.get(i).solidArea.y = gamePanel.obj.get(i).solidAreaDefaultY;
                 return false;
             }
+            gamePanel.obj.get(i).solidArea.x = gamePanel.obj.get(i).solidAreaDefaultX;
+            gamePanel.obj.get(i).solidArea.y = gamePanel.obj.get(i).solidAreaDefaultY;
         }
         return true;
     }
