@@ -2,6 +2,8 @@ package com.neal.spaceminer.main;
 
 import com.neal.spaceminer.entity.Entity;
 
+import java.util.ArrayList;
+
 public class CollisionChecker {
 
     GamePanel gamePanel;
@@ -104,5 +106,90 @@ public class CollisionChecker {
                 gamePanel.obj.get(i).solidArea.y = gamePanel.obj.get(i).solidAreaDefaultY;
             }
         return index;
+    }
+    public int checkEntity(Entity entity, ArrayList<Entity> target) {
+        int index = -1;
+
+        for (int i = 0; i < target.size(); i++) {
+            entity.solidArea.x = entity.worldX + entity.solidArea.x;
+            entity.solidArea.y = entity.worldY + entity.solidArea.y;
+
+            target.get(i).solidArea.x = target.get(i).worldX + target.get(i).solidArea.x;
+            target.get(i).solidArea.y = target.get(i).worldY + target.get(i).solidArea.y;
+
+            switch (entity.direction) {
+                case "up":
+                    entity.solidArea.y -= entity.speed;
+                    if (entity.solidArea.intersects(target.get(i).solidArea)) {
+                        entity.collisionOn = true;
+                        index = i;
+                    }
+                    break;
+                case "down":
+                    entity.solidArea.y += entity.speed;
+                    if (entity.solidArea.intersects(target.get(i).solidArea)) {
+                        entity.collisionOn = true;
+                        index = i;
+                    }
+                    break;
+                case "left":
+                    entity.solidArea.x -= entity.speed;
+                    if (entity.solidArea.intersects(target.get(i).solidArea)) {
+                        entity.collisionOn = true;
+                        index = i;
+                    }
+                    break;
+                case "right":
+                    entity.solidArea.x += entity.speed;
+                    if (entity.solidArea.intersects(target.get(i).solidArea)) {
+                        entity.collisionOn = true;
+                        index = i;
+                    }
+                    break;
+            }
+            entity.solidArea.x = entity.solidAreaDefaultX;
+            entity.solidArea.y = entity.solidAreaDefaultY;
+            target.get(i).solidArea.x = target.get(i).solidAreaDefaultX;
+            target.get(i).solidArea.y = target.get(i).solidAreaDefaultY;
+        }
+        return index;
+    }
+    public void checkPlayer(Entity entity) {
+        entity.solidArea.x = entity.worldX + entity.solidArea.x;
+        entity.solidArea.y = entity.worldY + entity.solidArea.y;
+
+        gamePanel.player.solidArea.x = gamePanel.player.worldX + gamePanel.player.solidArea.x;
+        gamePanel.player.solidArea.y = gamePanel.player.worldY + gamePanel.player.solidArea.y;
+
+        switch (entity.direction) {
+            case "up":
+                entity.solidArea.y -= entity.speed;
+                if (entity.solidArea.intersects(gamePanel.player.solidArea)) {
+                    entity.collisionOn = true;
+                }
+                break;
+            case "down":
+                entity.solidArea.y += entity.speed;
+                if (entity.solidArea.intersects(gamePanel.player.solidArea)) {
+                    entity.collisionOn = true;
+                }
+                break;
+            case "left":
+                entity.solidArea.x -= entity.speed;
+                if (entity.solidArea.intersects(gamePanel.player.solidArea)) {
+                    entity.collisionOn = true;
+                }
+                break;
+            case "right":
+                entity.solidArea.x += entity.speed;
+                if (entity.solidArea.intersects(gamePanel.player.solidArea)) {
+                    entity.collisionOn = true;
+                }
+                break;
+        }
+        entity.solidArea.x = entity.solidAreaDefaultX;
+        entity.solidArea.y = entity.solidAreaDefaultY;
+        gamePanel.player.solidArea.x = gamePanel.player.solidAreaDefaultX;
+        gamePanel.player.solidArea.y = gamePanel.player.solidAreaDefaultY;
     }
 }

@@ -9,8 +9,6 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Player extends Entity {
-
-    GamePanel gamePanel;
     KeyHandler keyHandler;
 
     public final int screenX;
@@ -26,7 +24,6 @@ public class Player extends Entity {
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
         super(gamePanel);
 
-        this.gamePanel = gamePanel;
         this.keyHandler = keyHandler;
 
         screenX = gamePanel.screenWidth / 2 - gamePanel.tileSize / 2;
@@ -101,6 +98,7 @@ public class Player extends Entity {
                 currentChest = objOnGround;
             }
     }
+    public void interactWithEntity(int index) { }
     public void setItems(){
         inventory.set(0, new OBJ_Pickaxe(gamePanel));
         itemBehaviour();
@@ -222,8 +220,12 @@ public class Player extends Entity {
             collisionOn = false;
             gamePanel.collisionChecker.checkTile(this);
 
+            // CHECK COLLISION WITH OBJECT
             int objIndex = gamePanel.collisionChecker.checkObject(this, true);
             if (objIndex != -1) interactWithObject(objIndex);
+            // CHECK COLLISION WITH ENTITY
+            int entityIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
+            if(entityIndex != -1) interactWithEntity(entityIndex);
 
             // IF COLLISION IS FALSE, PLAYER CAN MOVE
             if (!collisionOn) {

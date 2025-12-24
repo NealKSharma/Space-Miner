@@ -1,6 +1,7 @@
 package com.neal.spaceminer.main;
 
 import com.neal.spaceminer.entity.Entity;
+import com.neal.spaceminer.entity.NPC_Robot;
 import com.neal.spaceminer.object.*;
 import com.neal.spaceminer.tiles_interactive.IT_Rock;
 
@@ -28,29 +29,36 @@ public class AssetSetter {
         cells.itemAmount = 5;
 
         // CHESTS
-        OBJ_Chest chest1 = (OBJ_Chest) place(new OBJ_Chest(gamePanel), 76, 79);
+        OBJ_Chest chest1 = (OBJ_Chest) place(new OBJ_Chest(gamePanel), 76, 79, true);
         chest1.chestInv.set(0, new OBJ_Pickaxe(gamePanel));
         chest1.chestInv.set(7, cells);
 
         cells.itemAmount = 10;
-        OBJ_Chest chest2 = (OBJ_Chest) place(new OBJ_Chest(gamePanel), 76, 81);
+        OBJ_Chest chest2 = (OBJ_Chest) place(new OBJ_Chest(gamePanel), 77, 79, true);
         chest2.chestInv.set(1, new OBJ_Pickaxe(gamePanel));
         chest2.chestInv.set(3, cells);
 
         // ITEMS
-        place(new OBJ_Pickaxe(gamePanel), 72, 80);
-        place(new OBJ_LumenCell(gamePanel), 73, 80);
-        place(new OBJ_SuitGenerator(gamePanel), 72, 76);
+        place(new OBJ_Pickaxe(gamePanel), 72, 80, true);
+        place(new OBJ_LumenCell(gamePanel), 73, 80, true);
+        place(new OBJ_SuitGenerator(gamePanel), 72, 76, true);
 
         // SHIP
-        place(new OBJ_ShipFront(gamePanel), 12, 90);
-        place(new OBJ_ShipMiddle(gamePanel), 16, 86);
-        place(new OBJ_ShipBack(gamePanel), 21, 82);
+        place(new OBJ_ShipFront(gamePanel), 12, 90, true);
+        place(new OBJ_ShipMiddle(gamePanel), 16, 86, true);
+        place(new OBJ_ShipBack(gamePanel), 21, 82, true);
 
         // MISC
-        place(new OBJ_Astronaut(gamePanel), 18, 90);
-        place(new OBJ_Astronaut(gamePanel), 18, 84);
-        place(new OBJ_Astronaut(gamePanel), 11, 90);
+        place(new OBJ_Astronaut(gamePanel), 18, 90, true);
+        place(new OBJ_Astronaut(gamePanel), 18, 84, true);
+        place(new OBJ_Astronaut(gamePanel), 11, 90, true);
+    }
+    public void setNPC(){
+        // NPC THAT FOLLOWS PLAYER
+        Entity robot = new NPC_Robot(gamePanel);
+        robot.worldX = gamePanel.player.worldX + 32;
+        robot.worldY = gamePanel.player.worldY + 32;
+        gamePanel.npc.add(robot);
     }
     public void setInteractiveTile(){
         while (currIT < maxTotalIT) {
@@ -62,7 +70,7 @@ public class AssetSetter {
 
                 // CHECK IF THIS SPECIFIC TILE HAS REACHED ITS MAX CAP
                 if(randIT == 0 && ITCount[randIT] < maxIT) {
-                    place(new IT_Rock(gamePanel), randCol, randRow);
+                    place(new IT_Rock(gamePanel), randCol, randRow, true);
                     ITCount[randIT]++;
                     currIT++;
                 }
@@ -102,10 +110,14 @@ public class AssetSetter {
         }
         return true;
     }
-    public Entity place(Entity entity, int col, int row) {
-            entity.worldX = col * gamePanel.tileSize;
-            entity.worldY = row * gamePanel.tileSize;
+    public Entity place(Entity entity, int col, int row, boolean isObject) {
+        entity.worldX = col * gamePanel.tileSize;
+        entity.worldY = row * gamePanel.tileSize;
+        if(isObject){
             gamePanel.obj.add(entity);
-            return entity;
+        } else {
+            gamePanel.npc.add(entity);
+        }
+        return entity;
     }
 }

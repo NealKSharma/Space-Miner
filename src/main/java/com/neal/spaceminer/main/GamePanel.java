@@ -2,6 +2,7 @@ package com.neal.spaceminer.main;
 
 import com.neal.spaceminer.data.SaveLoad;
 import com.neal.spaceminer.entity.Entity;
+import com.neal.spaceminer.entity.NPC_Robot;
 import com.neal.spaceminer.entity.Particle;
 import com.neal.spaceminer.entity.Player;
 import com.neal.spaceminer.environment.EnvironmentManager;
@@ -36,7 +37,7 @@ public class GamePanel extends JPanel implements Runnable {
     public boolean fullScreen = true;
 
     // FPS
-    int FPS = 265;
+    public int FPS = 265;
     public int currentFPS = 0;
 
     // SYSTEM
@@ -54,6 +55,7 @@ public class GamePanel extends JPanel implements Runnable {
     // PLAYER AND OBJECTS
     public Player player = new Player(this, keyHandler);
     public ArrayList<Entity> obj = new ArrayList<>();
+    public ArrayList<Entity> npc = new ArrayList<>();
     public ArrayList<Entity> entityList = new ArrayList<Entity>();
     public ArrayList<Entity> particleList = new  ArrayList<>();
 
@@ -77,6 +79,7 @@ public class GamePanel extends JPanel implements Runnable {
     public void setupGame() {
         assetSetter.setObject();
         assetSetter.setInteractiveTile();
+        assetSetter.setNPC();
         environmentManager.setup();
 
         if(fullScreen) setFullScreen();
@@ -137,6 +140,11 @@ public class GamePanel extends JPanel implements Runnable {
         }
         if(gameState == playState) {
             player.update();
+            for (Entity entity : npc) {
+                if (entity != null) {
+                    entity.update();
+                }
+            }
 
             for (int i = 0; i < particleList.size(); i++) {
                 if(particleList.get(i) != null) {
@@ -178,6 +186,13 @@ public class GamePanel extends JPanel implements Runnable {
 
             // ADD OBJECTS TO LIST
             for (Entity value : obj) {
+                if (value != null) {
+                    entityList.add(value);
+                }
+            }
+
+            // NPC
+            for(Entity value : npc) {
                 if (value != null) {
                     entityList.add(value);
                 }

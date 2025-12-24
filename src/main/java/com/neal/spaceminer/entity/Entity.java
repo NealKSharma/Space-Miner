@@ -22,6 +22,7 @@ public class Entity {
 
     public int spriteCounter = 0;
     public int spriteNum = 1;
+    public int actionCooldown = 0;
     boolean mining = false;
 
     // COLLISION
@@ -120,6 +121,34 @@ public class Entity {
         }
     }
     public void update() {
+        setAction();
+
+        collisionOn = false;
+        gamePanel.collisionChecker.checkTile(this);
+        gamePanel.collisionChecker.checkObject(this, false);
+        gamePanel.collisionChecker.checkPlayer(this);
+
+        // IF COLLISION IS FALSE, ENTITY CAN MOVE
+        if (!collisionOn) {
+            switch (direction) {
+                case "up": worldY -= speed; break;
+                case "down": worldY += speed; break;
+                case "left": worldX -= speed; break;
+                case "right": worldX += speed; break;
+            }
+        }
+
+        spriteCounter++;
+        if (spriteCounter > 32) {
+            if (spriteNum == 1) {
+                spriteNum = 2;
+            } else if (spriteNum == 2) {
+                spriteNum = 1;
+            }
+            spriteCounter = 0;
+        }
+    }
+    public void setAction() {
 
     }
     public BufferedImage setup(String imagePath, int width, int height) {
