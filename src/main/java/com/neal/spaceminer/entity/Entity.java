@@ -31,7 +31,9 @@ public class Entity {
     public int solidAreaDefaultX, solidAreaDefaultY;
     public boolean collisionOn = false;
 
+    // STATE
     public boolean alive = true;
+    public boolean onPath = false;
 
     // ITEM ATTRIBUTES
     public String description = "";
@@ -120,13 +122,15 @@ public class Entity {
             }
         }
     }
-    public void update() {
-        setAction();
-
+    public void checkCollision(){
         collisionOn = false;
         gamePanel.collisionChecker.checkTile(this);
         gamePanel.collisionChecker.checkObject(this, false);
         gamePanel.collisionChecker.checkPlayer(this);
+    }
+    public void update() {
+        setAction();
+        checkCollision();
 
         // IF COLLISION IS FALSE, ENTITY CAN MOVE
         if (!collisionOn) {

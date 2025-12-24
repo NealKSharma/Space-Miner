@@ -83,7 +83,10 @@ public class KeyHandler implements KeyListener {
         if(key == KeyEvent.VK_ESCAPE) gamePanel.gameState = gamePanel.pauseState;
         if(key == KeyEvent.VK_E) gamePanel.gameState = gamePanel.inventoryState;
         if(key == KeyEvent.VK_E && gamePanel.player.canOpen) gamePanel.gameState = gamePanel.chestState;
-        if(key == KeyEvent.VK_F3) showDebug = !showDebug;
+        if(key == KeyEvent.VK_F3) {
+            showDebug = !showDebug;
+            gamePanel.tileManager.drawPath = !gamePanel.tileManager.drawPath;
+        }
     }
     // NEEDS OPTIMIZATIONS
     public void pauseState(int key) {

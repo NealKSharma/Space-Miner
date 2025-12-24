@@ -1,5 +1,6 @@
 package com.neal.spaceminer.main;
 
+import com.neal.spaceminer.ai.PathFinder;
 import com.neal.spaceminer.data.SaveLoad;
 import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.entity.NPC_Robot;
@@ -41,7 +42,7 @@ public class GamePanel extends JPanel implements Runnable {
     public int currentFPS = 0;
 
     // SYSTEM
-    TileManager tileManager = new TileManager(this);
+    public TileManager tileManager = new TileManager(this);
     public KeyHandler keyHandler = new KeyHandler(this);
     public CollisionChecker collisionChecker = new CollisionChecker(this);
     public AssetSetter assetSetter = new AssetSetter(this);
@@ -50,6 +51,7 @@ public class GamePanel extends JPanel implements Runnable {
     SaveLoad saveLoad = new SaveLoad(this);
     public EnvironmentManager environmentManager = new EnvironmentManager(this);
     public EntityGenerator entityGenerator = new EntityGenerator(this);
+    public PathFinder pathFinder = new PathFinder(this);
     Thread gameThread;
 
     // PLAYER AND OBJECTS

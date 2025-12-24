@@ -12,6 +12,7 @@ public class NPC_Robot extends Entity {
 
         direction = "down";
         speed = gamePanel.player.speed;
+        onPath = true;
 
         solidArea = new Rectangle();
         solidArea.x = 18;
@@ -35,20 +36,85 @@ public class NPC_Robot extends Entity {
         right2 = setup("/astronaut/right2", gamePanel.tileSize, gamePanel.tileSize);
     }
     public void setAction() {
-        actionCooldown++;
 
-        if(actionCooldown == gamePanel.FPS*2){
-            actionCooldown = 0;
+        if(onPath){
+            int goalCol = (gamePanel.player.worldX + gamePanel.player.solidArea.x) / gamePanel.tileSize;
+            int goalRow = (gamePanel.player.worldY + gamePanel.player.solidArea.y) / gamePanel.tileSize;
+            searchPath(goalCol, goalRow);
+        } else {
+            actionCooldown++;
 
-            Random rand = new Random();
-            int i = rand.nextInt(4) + 1; // PICK A NUMBER FROM 1 to 4
+            if(actionCooldown == gamePanel.FPS*2){
+                actionCooldown = 0;
 
-            switch (i) {
-                case 1: direction = "up"; break;
-                case 2: direction = "down"; break;
-                case 3: direction = "left"; break;
-                case 4: direction = "right"; break;
+                Random rand = new Random();
+                int i = rand.nextInt(4) + 1; // PICK A NUMBER FROM 1 to 4
+
+                switch (i) {
+                    case 1: direction = "up"; break;
+                    case 2: direction = "down"; break;
+                    case 3: direction = "left"; break;
+                    case 4: direction = "right"; break;
+                }
             }
+        }
+    }
+    public void searchPath(int goalCol, int goalRow){
+        int startCol = (worldX + solidArea.x) / gamePanel.tileSize;
+        int startRow  = (worldY + solidArea.y) / gamePanel.tileSize;
+
+        gamePanel.pathFinder.setNodes(startCol, startRow, goalCol, goalRow);
+        if(gamePanel.pathFinder.search()){
+            // NEXT WORLDX AND WORLDY
+            int nextCol = gamePanel.pathFinder.pathList.getFirst().col;
+            int nextRow = gamePanel.pathFinder.pathList.getFirst().row;
+            int nextX = nextCol * gamePanel.tileSize;
+            int nextY = nextRow * gamePanel.tileSize;
+            // ENTITY'S SOLID AREA POSITION
+            int enLeftX = worldX + solidArea.x;
+            int enRightX = worldX + solidArea.x + solidArea.width;
+            int enTopY = worldY + solidArea.y;
+            int enBottomY = worldY + solidArea.y + solidArea.height;
+
+            if(enTopY > nextY && enLeftX >= nextX && enRightX < nextX + gamePanel.tileSize){
+                direction = "up";
+            } else if(enTopY < nextY && enLeftX >= nextX && enRightX < nextX + gamePanel.tileSize){
+                direction = "down";
+            } else if(enTopY >= nextY && enBottomY < nextY + gamePanel.tileSize){
+                // LEFT OR RIGHT
+                if(enLeftX > nextX) {
+                    direction = "left";
+                }
+                if(enLeftX < nextX) {
+                    direction = "right";
+                }
+            } else if (enTopY > nextY && enLeftX > nextX){
+                // UP OR LEFT
+                direction = "up";
+                checkCollision();
+                if(collisionOn) direction = "left";
+            }
+            else if(enTopY > nextY && enLeftX < nextX){
+                // UP OR RIGHT
+                direction = "up";
+                checkCollision();
+                if(collisionOn) direction = "right";
+            }
+            else if(enTopY < nextY && enLeftX > nextX){
+                // DOWN OR LEFT
+                direction = "down";
+                checkCollision();
+                if(collisionOn) direction = "left";
+            }
+            else if(enTopY < nextY && enLeftX < nextX){
+                // DOWN OR RIGHT
+                direction = "down";
+                checkCollision();
+                if(collisionOn) direction = "right";
+            }
+
+            // IF NPC HAS TO GET TO A CERTAIN ROW AND COL
+            // if(nextCol == goalCol && nextRow == goalRow) onPath = false;
         }
     }
 }
