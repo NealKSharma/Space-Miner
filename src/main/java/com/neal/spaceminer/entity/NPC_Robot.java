@@ -11,7 +11,6 @@ public class NPC_Robot extends Entity {
         super(gamePanel);
 
         direction = "down";
-        speed = gamePanel.player.speed;
         onPath = true;
 
         solidArea = new Rectangle();
@@ -36,11 +35,22 @@ public class NPC_Robot extends Entity {
         right2 = setup("/astronaut/right2", gamePanel.tileSize, gamePanel.tileSize);
     }
     public void setAction() {
-
+        speed = (speed == 0) ? gamePanel.player.speed : 0;
         if(onPath){
             int goalCol = (gamePanel.player.worldX + gamePanel.player.solidArea.x) / gamePanel.tileSize;
             int goalRow = (gamePanel.player.worldY + gamePanel.player.solidArea.y) / gamePanel.tileSize;
-            searchPath(goalCol, goalRow);
+
+            int distanceX = Math.abs(worldX - gamePanel.player.worldX);
+            int distanceY = Math.abs(worldY - gamePanel.player.worldY);
+
+            int range = 64;
+
+            if(distanceX > range || distanceY > range) {
+                searchPath(goalCol, goalRow);
+            } else {
+                speed = 0;
+                spriteCounter = 0;
+            }
         } else {
             actionCooldown++;
 
@@ -61,7 +71,7 @@ public class NPC_Robot extends Entity {
     }
     public void searchPath(int goalCol, int goalRow){
         int startCol = (worldX + solidArea.x) / gamePanel.tileSize;
-        int startRow  = (worldY + solidArea.y) / gamePanel.tileSize;
+        int startRow = (worldY + solidArea.y) / gamePanel.tileSize;
 
         gamePanel.pathFinder.setNodes(startCol, startRow, goalCol, goalRow);
         if(gamePanel.pathFinder.search()){
@@ -70,6 +80,7 @@ public class NPC_Robot extends Entity {
             int nextRow = gamePanel.pathFinder.pathList.getFirst().row;
             int nextX = nextCol * gamePanel.tileSize;
             int nextY = nextRow * gamePanel.tileSize;
+
             // ENTITY'S SOLID AREA POSITION
             int enLeftX = worldX + solidArea.x;
             int enRightX = worldX + solidArea.x + solidArea.width;

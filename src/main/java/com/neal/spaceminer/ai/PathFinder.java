@@ -64,15 +64,9 @@ public class PathFinder {
             // CHECK SOLID TILES
             int tileNum = gamePanel.tileManager.mapTileNum[col][row];
             if(gamePanel.tileManager.tile[tileNum].collision){
-                node[row][col].solid = true;
+                node[col][row].solid = true;
             }
 
-            // CHECK OBJECTS
-            for (int i = 0; i < gamePanel.obj.size(); i++) {
-                if(gamePanel.obj.get(i) != null && gamePanel.obj.get(i).collision){
-                    node[gamePanel.obj.get(i).worldX/gamePanel.tileSize][gamePanel.obj.get(i).worldY/gamePanel.tileSize].solid = true;
-                }
-            }
             // SET COST
             getCost(node[col][row]);
             col++;
@@ -81,6 +75,34 @@ public class PathFinder {
                 col = 0;
             }
         }
+
+        // CHECK OBJECTS
+        for (int i = 0; i < gamePanel.obj.size(); i++) {
+            if (gamePanel.obj.get(i) != null && gamePanel.obj.get(i).collision) {
+                int objLeftX = gamePanel.obj.get(i).worldX + gamePanel.obj.get(i).solidArea.x;
+                int objRightX = gamePanel.obj.get(i).worldX + gamePanel.obj.get(i).solidArea.x + gamePanel.obj.get(i).solidArea.width;
+                int objTopY = gamePanel.obj.get(i).worldY + gamePanel.obj.get(i).solidArea.y;
+                int objBottomY = gamePanel.obj.get(i).worldY + gamePanel.obj.get(i).solidArea.y + gamePanel.obj.get(i).solidArea.height;
+
+                int objStartCol = objLeftX / gamePanel.tileSize;
+                int objEndCol = (objRightX - 1) / gamePanel.tileSize;
+                int objStartRow = objTopY / gamePanel.tileSize;
+                int objEndRow = (objBottomY - 1) / gamePanel.tileSize;
+
+                for(int c = objStartCol; c <= objEndCol; c++) {
+                    for(int r = objStartRow; r <= objEndRow; r++) {
+                        if(c >= 0 && c < gamePanel.maxWorldCol && r >= 0 && r < gamePanel.maxWorldRow) {
+                            node[c][r].solid = true;
+                        }
+                    }
+                }
+            }
+        }
+        if(node[startCol][startRow] != null)
+            node[startCol][startRow].solid = false;
+
+        if(node[goalCol][goalRow] != null)
+            node[goalCol][goalRow].solid = false;
     }
     public void getCost(Node node){
         // G Cost
@@ -97,7 +119,7 @@ public class PathFinder {
         node.fCost = node.gCost + node.hCost;
     }
     public boolean search(){
-        while(!goalReached && step < 1000){
+        while(!goalReached && step < 5000){
             int col = currentNode.col;
             int row = currentNode.row;
 
