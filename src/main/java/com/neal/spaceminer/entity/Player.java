@@ -223,9 +223,15 @@ public class Player extends Entity {
             // CHECK COLLISION WITH OBJECT
             int objIndex = gamePanel.collisionChecker.checkObject(this, true);
             if (objIndex != -1) interactWithObject(objIndex);
-            // CHECK COLLISION WITH ENTITY
+            // CHECK COLLISION WITH ENTITIES
             int entityIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
             if(entityIndex != -1) interactWithEntity(entityIndex);
+            // CHECK COLLISION WITH BOT
+            boolean collision = gamePanel.collisionChecker.checkBot(this, gamePanel.bot);
+            if(collision) {
+                // BOT SPECIFIC ACTIONS
+            }
+
             // CHECK EVENTS
             gamePanel.eventHandler.checkEvent();
 

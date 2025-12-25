@@ -22,6 +22,7 @@ public class UI {
     public int subState = 0;
     public int volume = 0;
     int counter = 0;
+    public int transitionType = 0;
 
     public int slotCol = 0;
     public int slotRow = 0;
@@ -52,6 +53,9 @@ public class UI {
         } else if(gamePanel.gameState == gamePanel.chestState){
             drawChest();
         } else if(gamePanel.gameState == gamePanel.transitionState){
+            if (transitionType == 1 && counter < 85) {
+                drawTitleScreen();
+            }
             drawTransition();
         }
         g2.setFont(originalFont);
@@ -115,17 +119,26 @@ public class UI {
     }
     public void drawTransition(){
         counter++;
-        g2.setColor(new Color(0, 0,0,counter*3));
+        g2.setColor(new Color(0, 0, 0, counter * 3));
         g2.fillRect(0, 0, gamePanel.screenWidth, gamePanel.screenHeight);
 
         if(counter == 85){
             counter = 0;
+            if(transitionType == 0) {
+                gamePanel.currentMap = gamePanel.eventHandler.tempMap;
+                gamePanel.player.worldX = gamePanel.eventHandler.tempCol * gamePanel.tileSize;
+                gamePanel.player.worldY = gamePanel.eventHandler.tempRow * gamePanel.tileSize;
+
+                // MOVE THE ROBOT
+                if(gamePanel.bot != null){
+                    gamePanel.bot.worldX = gamePanel.player.worldX + 32;
+                    gamePanel.bot.worldY = gamePanel.player.worldY + 32;
+                }
+
+                gamePanel.eventHandler.previousEventX = gamePanel.player.worldX;
+                gamePanel.eventHandler.previousEventY = gamePanel.player.worldY;
+            }
             gamePanel.gameState = gamePanel.playState;
-            //gamePanel.currentMap = gamePanel.eventHandler.tempMap;
-            //gamePanel.player.worldX = gamePanel.tileSize + gamePanel.eventHandler.tempCol;
-            //gamePanel.player.worldY = gamePanel.tileSize * gamePanel.eventHandler.tempRow;
-            //gamePanel.eventHandler.previousEventX = gamePanel.player.worldX;
-            //gamePanel.eventHandler.previousEventY = gamePanel.player.worldY;
         }
     }
     public void drawPlayScreen() {

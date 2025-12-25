@@ -157,6 +157,36 @@ public class CollisionChecker {
         }
         return index;
     }
+    public boolean checkBot(Entity entity, Entity target){
+        boolean contact = false;
+
+        if (target != null) {
+            entity.solidArea.x = entity.worldX + entity.solidArea.x;
+            entity.solidArea.y = entity.worldY + entity.solidArea.y;
+
+            target.solidArea.x = target.worldX + target.solidArea.x;
+            target.solidArea.y = target.worldY + target.solidArea.y;
+
+            switch (entity.direction) {
+                case "up": entity.solidArea.y -= entity.speed; break;
+                case "down": entity.solidArea.y += entity.speed; break;
+                case "left": entity.solidArea.x -= entity.speed; break;
+                case "right": entity.solidArea.x += entity.speed; break;
+            }
+
+            if (entity.solidArea.intersects(target.solidArea)) {
+                entity.collisionOn = true;
+                contact = true;
+            }
+
+            entity.solidArea.x = entity.solidAreaDefaultX;
+            entity.solidArea.y = entity.solidAreaDefaultY;
+            target.solidArea.x = target.solidAreaDefaultX;
+            target.solidArea.y = target.solidAreaDefaultY;
+        }
+
+        return contact;
+    }
     public void checkPlayer(Entity entity) {
         entity.solidArea.x = entity.worldX + entity.solidArea.x;
         entity.solidArea.y = entity.worldY + entity.solidArea.y;

@@ -191,7 +191,7 @@ public class GamePanel extends JPanel implements Runnable {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
         // TITLE SCREEN
-        if (gameState == titleState || gameState == transitionState) {
+        if (gameState == titleState) {
             ui.draw(g2);
         }
         else {

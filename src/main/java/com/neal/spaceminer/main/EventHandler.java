@@ -77,25 +77,15 @@ public class EventHandler {
         return hit;
     }
     public void mapSwitch(int map, int col, int row){
-
-        gamePanel.gameState = gamePanel.transitionState;
-
         tempMap = map;
         tempCol = col;
         tempRow = row;
 
-        gamePanel.currentMap = map;
-        gamePanel.player.worldX = col*gamePanel.tileSize;
-        gamePanel.player.worldY = row*gamePanel.tileSize;
+        gamePanel.gameState = gamePanel.transitionState;
 
-        // TELEPORT THE BOT TO THE PLAYER
-        if(gamePanel.bot != null){
-            gamePanel.bot.worldX = gamePanel.player.worldX + 32;
-            gamePanel.bot.worldY = gamePanel.player.worldY + 32;
-        }
+        gamePanel.ui.transitionType = 0;
 
-        previousEventX = gamePanel.player.worldX;
-        previousEventY = gamePanel.player.worldY;
+        gamePanel.ui.counter = 0;
         canTouchEvent = false;
     }
 }
