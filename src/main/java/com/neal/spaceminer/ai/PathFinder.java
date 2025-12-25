@@ -62,7 +62,7 @@ public class PathFinder {
 
         while(col < gamePanel.maxWorldCol && row < gamePanel.maxWorldRow){
             // CHECK SOLID TILES
-            int tileNum = gamePanel.tileManager.mapTileNum[col][row];
+            int tileNum = gamePanel.tileManager.mapTileNum[gamePanel.currentMap][col][row];
             if(gamePanel.tileManager.tile[tileNum].collision){
                 node[col][row].solid = true;
             }
@@ -77,12 +77,12 @@ public class PathFinder {
         }
 
         // CHECK OBJECTS
-        for (int i = 0; i < gamePanel.obj.size(); i++) {
-            if (gamePanel.obj.get(i) != null && gamePanel.obj.get(i).collision) {
-                int objLeftX = gamePanel.obj.get(i).worldX + gamePanel.obj.get(i).solidArea.x;
-                int objRightX = gamePanel.obj.get(i).worldX + gamePanel.obj.get(i).solidArea.x + gamePanel.obj.get(i).solidArea.width;
-                int objTopY = gamePanel.obj.get(i).worldY + gamePanel.obj.get(i).solidArea.y;
-                int objBottomY = gamePanel.obj.get(i).worldY + gamePanel.obj.get(i).solidArea.y + gamePanel.obj.get(i).solidArea.height;
+        for (int i = 0; i < gamePanel.obj.get(gamePanel.currentMap).size(); i++) {
+            if (gamePanel.obj.get(gamePanel.currentMap).get(i) != null && gamePanel.obj.get(gamePanel.currentMap).get(i).collision) {
+                int objLeftX = gamePanel.obj.get(gamePanel.currentMap).get(i).worldX + gamePanel.obj.get(gamePanel.currentMap).get(i).solidArea.x;
+                int objRightX = gamePanel.obj.get(gamePanel.currentMap).get(i).worldX + gamePanel.obj.get(gamePanel.currentMap).get(i).solidArea.x + gamePanel.obj.get(gamePanel.currentMap).get(i).solidArea.width;
+                int objTopY = gamePanel.obj.get(gamePanel.currentMap).get(i).worldY + gamePanel.obj.get(gamePanel.currentMap).get(i).solidArea.y;
+                int objBottomY = gamePanel.obj.get(gamePanel.currentMap).get(i).worldY + gamePanel.obj.get(gamePanel.currentMap).get(i).solidArea.y + gamePanel.obj.get(gamePanel.currentMap).get(i).solidArea.height;
 
                 int objStartCol = objLeftX / gamePanel.tileSize;
                 int objEndCol = (objRightX - 1) / gamePanel.tileSize;

@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SaveLoad {
 
@@ -26,6 +27,29 @@ public class SaveLoad {
             ds.playerX = gamePanel.player.worldX;
             ds.playerY = gamePanel.player.worldY;
 
+            // NPC LOCATION
+            ds.NPCX = new int[gamePanel.maxMap][];
+            ds.NPCY = new int[gamePanel.maxMap][];
+
+            // CURRENT MAP
+            ds.currentMap = gamePanel.currentMap;
+
+            for(int i = 0; i < gamePanel.maxMap; i++){
+                // Check if the NPC list for this map exists
+                if(gamePanel.npc.get(i) == null) continue;
+                int npcCount = gamePanel.npc.get(i).size();
+
+                ds.NPCX[i] = new int[npcCount];
+                ds.NPCY[i] = new int[npcCount];
+
+                for(int j = 0; j < npcCount; j++){
+                    if(gamePanel.npc.get(i).get(j) != null){
+                        ds.NPCX[i][j] = gamePanel.npc.get(i).get(j).worldX;
+                        ds.NPCY[i][j] = gamePanel.npc.get(i).get(j).worldY;
+                    }
+                }
+            }
+
             // PLAYER INVENTORY
             for(int i = 0; i < gamePanel.player.inventory.size(); i++){
                 if(gamePanel.player.inventory.get(i) != null){
@@ -36,37 +60,51 @@ public class SaveLoad {
             }
 
             // OBJECTS ON MAP
-            ds.mapObjectNames = new String[gamePanel.obj.size()];
-            ds.mapObjectWorldX = new int[gamePanel.obj.size()];
-            ds.mapObjectWorldY = new int[gamePanel.obj.size()];
+            ds.mapObjectNames = new String[gamePanel.maxMap][];
+            ds.mapObjectWorldX = new int[gamePanel.maxMap][];
+            ds.mapObjectWorldY = new int[gamePanel.maxMap][];
 
-            for (int i = 0; i < gamePanel.obj.size(); i++) {
-                ds.mapObjectNames[i] = gamePanel.obj.get(i).name;
-                ds.mapObjectWorldX[i] = gamePanel.obj.get(i).worldX;
-                ds.mapObjectWorldY[i] = gamePanel.obj.get(i).worldY;
+            for (int i = 0; i < gamePanel.maxMap; i++){
+
+                int mapSize = gamePanel.obj.get(i).size();
+                ds.mapObjectNames[i] = new String[mapSize];
+                ds.mapObjectWorldX[i] = new int[mapSize];
+                ds.mapObjectWorldY[i] = new int[mapSize];
+
+                for (int j = 0; j < gamePanel.obj.get(i).size(); j++){
+                    ds.mapObjectNames[i][j] = gamePanel.obj.get(i).get(j).name;
+                    ds.mapObjectWorldX[i][j] = gamePanel.obj.get(i).get(j).worldX;
+                    ds.mapObjectWorldY[i][j] = gamePanel.obj.get(i).get(j).worldY;
 
                     // CHEST INVENTORIES
-                if (gamePanel.obj.get(i).name.equals("Chest")) {
-                    OBJ_Chest chest = (OBJ_Chest) gamePanel.obj.get(i);
+                    if (gamePanel.obj.get(i).get(j).name.equals("Chest")) {
+                        OBJ_Chest chest = (OBJ_Chest) gamePanel.obj.get(i).get(j);
                         ArrayList<String> chestItems = new ArrayList<>();
                         ArrayList<Integer> chestSlots = new ArrayList<>();
                         ArrayList<Integer> chestAmounts = new ArrayList<>();
 
-                        for(int j = 0; j < chest.chestInv.size(); j++) {
-                            if(chest.chestInv.get(j) != null) {
-                                chestItems.add(chest.chestInv.get(j).name);
-                                chestSlots.add(j);
-                                chestAmounts.add(chest.chestInv.get(j).itemAmount);
+                        for(int k = 0; k < chest.chestInv.size(); k++) {
+                            if(chest.chestInv.get(k) != null) {
+                                chestItems.add(chest.chestInv.get(k).name);
+                                chestSlots.add(k);
+                                chestAmounts.add(chest.chestInv.get(k).itemAmount);
                             }
                         }
-                        ds.chestItemNames.put(i, chestItems);
-                        ds.chestItemSlots.put(i, chestSlots);
-                        ds.chestItemAmounts.put(i, chestAmounts);
+                        if (!ds.chestItemNames.containsKey(i)) {
+                            ds.chestItemNames.put(i, new HashMap<>());
+                            ds.chestItemSlots.put(i, new HashMap<>());
+                            ds.chestItemAmounts.put(i, new HashMap<>());
+                        }
+
+                        ds.chestItemNames.get(i).put(j, chestItems);
+                        ds.chestItemSlots.get(i).put(j, chestSlots);
+                        ds.chestItemAmounts.get(i).put(j, chestAmounts);
+                    }
                 }
             }
-
-            // WRITE THE DATASTORAGE OBJECT
+            // WRITE THE DATA STORAGE OBJECT
             oos.writeObject(ds);
+            oos.close();
 
         } catch (Exception e){
             e.printStackTrace();
@@ -80,6 +118,23 @@ public class SaveLoad {
             // PLAYER LOCATION
             gamePanel.player.worldX = ds.playerX;
             gamePanel.player.worldY = ds.playerY;
+
+            // NPC LOCATION
+            if (ds.NPCX != null) {
+                for(int i = 0; i < ds.NPCX.length; i++){
+                    if(ds.NPCX[i] == null) continue;
+
+                    for(int j = 0; j < ds.NPCX[i].length; j++){
+                        if(j < gamePanel.npc.get(i).size() && gamePanel.npc.get(i).get(j) != null){
+                            gamePanel.npc.get(i).get(j).worldX = ds.NPCX[i][j];
+                            gamePanel.npc.get(i).get(j).worldY = ds.NPCY[i][j];
+                        }
+                    }
+                }
+            }
+
+            // CURRENT MAP
+            gamePanel.currentMap = ds.currentMap;
 
             // PLAYER INVENTORY
             gamePanel.player.inventory.clear();
@@ -95,42 +150,48 @@ public class SaveLoad {
             }
 
             // OBJECTS ON MAP
-            gamePanel.obj.clear();
-            for (int i = 0; i < ds.mapObjectNames.length; i++) {
-                if(ds.mapObjectNames[i] != null){
+            for (int i = 0; i < gamePanel.maxMap; i++) {
+                gamePanel.obj.get(i).clear();
+            }
 
-                    Entity obj = gamePanel.entityGenerator.getObject(ds.mapObjectNames[i]);
-                    obj.worldX = ds.mapObjectWorldX[i];
-                    obj.worldY = ds.mapObjectWorldY[i];
+            for(int i = 0; i < ds.mapObjectNames.length; i++){
+                if (ds.mapObjectNames[i] == null) continue;
+                for (int j = 0; j < ds.mapObjectNames[i].length; j++) {
+                    if(ds.mapObjectNames[i][j] != null){
+                        Entity obj = gamePanel.entityGenerator.getObject(ds.mapObjectNames[i][j]);
+                        obj.worldX = ds.mapObjectWorldX[i][j];
+                        obj.worldY = ds.mapObjectWorldY[i][j];
 
-                    // LOAD CHEST INVENTORY
-                    if(ds.mapObjectNames[i].equals("Chest")) {
-                        OBJ_Chest chest = (OBJ_Chest) obj;
+                        // LOAD CHEST INVENTORY
+                        if(ds.mapObjectNames[i][j].equals("Chest")) {
+                            OBJ_Chest chest = (OBJ_Chest) obj;
 
-                        // Clear chest inventory first
-                        for(int j = 0; j < chest.chestInv.size(); j++) {
-                            chest.chestInv.set(j, null);
-                        }
+                            // Clear chest inventory first
+                            for(int k = 0; k < chest.chestInv.size(); k++) {
+                                chest.chestInv.set(k, null);
+                            }
 
-                        // Load chest items if they exist
-                        if(ds.chestItemNames.containsKey(i)) {
-                            ArrayList<String> chestItems = ds.chestItemNames.get(i);
-                            ArrayList<Integer> chestSlots = ds.chestItemSlots.get(i);
-                            ArrayList<Integer> chestAmounts = ds.chestItemAmounts.get(i);
+                            // Load chest items if they exist
+                            if (ds.chestItemNames.containsKey(i) && ds.chestItemNames.get(i).containsKey(j)) {
+                                ArrayList<String> chestItems = ds.chestItemNames.get(i).get(j);
+                                ArrayList<Integer> chestSlots = ds.chestItemSlots.get(i).get(j);
+                                ArrayList<Integer> chestAmounts = ds.chestItemAmounts.get(i).get(j);
 
-                            for(int j = 0; j < chestItems.size(); j++) {
-                                int slot = chestSlots.get(j);
-                                Entity item = gamePanel.entityGenerator.getObject(chestItems.get(j));
-                                if(chestAmounts != null && j < chestAmounts.size()){
-                                    item.itemAmount = chestAmounts.get(j);
+                                for (int k = 0; k < chestItems.size(); k++) {
+                                    int slot = chestSlots.get(k);
+                                    Entity item = gamePanel.entityGenerator.getObject(chestItems.get(k));
+                                    if (chestAmounts != null && k < chestAmounts.size()) {
+                                        item.itemAmount = chestAmounts.get(k);
+                                    }
+                                    chest.chestInv.set(slot, item);
                                 }
-                                chest.chestInv.set(slot, item);
                             }
                         }
+                        gamePanel.obj.get(i).add(obj);
                     }
-                    gamePanel.obj.add(obj);
                 }
             }
+            ois.close();
         } catch (Exception e){
             e.printStackTrace();
         }

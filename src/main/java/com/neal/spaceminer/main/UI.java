@@ -121,6 +121,11 @@ public class UI {
         if(counter == 85){
             counter = 0;
             gamePanel.gameState = gamePanel.playState;
+            //gamePanel.currentMap = gamePanel.eventHandler.tempMap;
+            //gamePanel.player.worldX = gamePanel.tileSize + gamePanel.eventHandler.tempCol;
+            //gamePanel.player.worldY = gamePanel.tileSize * gamePanel.eventHandler.tempRow;
+            //gamePanel.eventHandler.previousEventX = gamePanel.player.worldX;
+            //gamePanel.eventHandler.previousEventY = gamePanel.player.worldY;
         }
     }
     public void drawPlayScreen() {

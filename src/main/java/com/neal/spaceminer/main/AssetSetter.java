@@ -54,11 +54,12 @@ public class AssetSetter {
         place(new OBJ_Astronaut(gamePanel), 11, 90, true);
     }
     public void setNPC(){
-        // NPC THAT FOLLOWS PLAYER
-        Entity robot = new NPC_Robot(gamePanel);
-        robot.worldX = gamePanel.player.worldX + 32;
-        robot.worldY = gamePanel.player.worldY + 32;
-        gamePanel.npc.add(robot);
+        // NPC THAT FOLLOWS PLAYER - MAP 1
+        gamePanel.bot = new NPC_Robot(gamePanel);
+        gamePanel.bot.worldX = gamePanel.player.worldX + 32; // Start next to player
+        gamePanel.bot.worldY = gamePanel.player.worldY + 32;
+
+
     }
     public void setInteractiveTile(){
         while (currIT < maxTotalIT) {
@@ -79,7 +80,7 @@ public class AssetSetter {
     }
     public boolean canPlaceIT(int col, int row){
         // CHECK IF AN INTERACTIVE TILE CAN BE PLACE ON THE TILE
-        int tile = gamePanel.tileManager.mapTileNum[col][row];
+        int tile = gamePanel.tileManager.mapTileNum[gamePanel.currentMap][col][row];
         // ONLY SURFACE'S COLLISION IS FALSE
         if (gamePanel.tileManager.tile[tile].collision){
             return false; // RETURN FALSE IF COLLISION IS TRUE FOR THE TILE
@@ -96,17 +97,19 @@ public class AssetSetter {
         // CHECK IF THERE'S AN OBJECT ALREADY THERE ON THE TILE
         int height = 32;
         int width = 40;
-        for(int i = 0; i < gamePanel.obj.size(); i++) {
-            gamePanel.obj.get(i).solidArea.x = gamePanel.obj.get(i).worldX + gamePanel.obj.get(i).solidArea.x;
-            gamePanel.obj.get(i).solidArea.y = gamePanel.obj.get(i).worldY + gamePanel.obj.get(i).solidArea.y;
+        for(int i = 0; i < gamePanel.obj.get(gamePanel.currentMap).size(); i++) {
+            Entity obj = gamePanel.obj.get(gamePanel.currentMap).get(i);
 
-            if(gamePanel.obj.get(i).solidArea.intersects(worldX, worldY, height, width)) {
-                gamePanel.obj.get(i).solidArea.x = gamePanel.obj.get(i).solidAreaDefaultX;
-                gamePanel.obj.get(i).solidArea.y = gamePanel.obj.get(i).solidAreaDefaultY;
+            obj.solidArea.x = obj.worldX + obj.solidArea.x;
+            obj.solidArea.y = obj.worldY + obj.solidArea.y;
+
+            if(obj.solidArea.intersects(worldX, worldY, height, width)) {
+                obj.solidArea.x = obj.solidAreaDefaultX;
+                obj.solidArea.y = obj.solidAreaDefaultY;
                 return false;
             }
-            gamePanel.obj.get(i).solidArea.x = gamePanel.obj.get(i).solidAreaDefaultX;
-            gamePanel.obj.get(i).solidArea.y = gamePanel.obj.get(i).solidAreaDefaultY;
+            obj.solidArea.x = obj.solidAreaDefaultX;
+            obj.solidArea.y = obj.solidAreaDefaultY;
         }
         return true;
     }
@@ -114,9 +117,9 @@ public class AssetSetter {
         entity.worldX = col * gamePanel.tileSize;
         entity.worldY = row * gamePanel.tileSize;
         if(isObject){
-            gamePanel.obj.add(entity);
+            gamePanel.obj.get(gamePanel.currentMap).add(entity);
         } else {
-            gamePanel.npc.add(entity);
+            gamePanel.npc.get(gamePanel.currentMap).add(entity);
         }
         return entity;
     }

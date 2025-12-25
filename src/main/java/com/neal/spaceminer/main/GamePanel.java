@@ -30,6 +30,8 @@ public class GamePanel extends JPanel implements Runnable {
     public final int maxWorldRow = 100;
     public final int worldWidth = tileSize * maxWorldCol;
     public final int worldHeight = tileSize * maxWorldRow;
+    public final int maxMap = 10;
+    public int currentMap = 0;
 
     // FULLSCREEN
     int screenWidth2 = screenWidth;
@@ -52,14 +54,16 @@ public class GamePanel extends JPanel implements Runnable {
     public EnvironmentManager environmentManager = new EnvironmentManager(this);
     public EntityGenerator entityGenerator = new EntityGenerator(this);
     public PathFinder pathFinder = new PathFinder(this);
+    public EventHandler eventHandler = new EventHandler(this);
     Thread gameThread;
 
     // PLAYER AND OBJECTS
     public Player player = new Player(this, keyHandler);
-    public ArrayList<Entity> obj = new ArrayList<>();
-    public ArrayList<Entity> npc = new ArrayList<>();
-    public ArrayList<Entity> entityList = new ArrayList<Entity>();
+    public Entity bot;
+    public ArrayList<ArrayList<Entity>> obj = new ArrayList<>();
+    public ArrayList<ArrayList<Entity>> npc = new ArrayList<>();
     public ArrayList<Entity> particleList = new  ArrayList<>();
+    public ArrayList<Entity> entityList = new ArrayList<>();
 
     // GAME STATE
     public int gameState;
@@ -79,6 +83,11 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void setupGame() {
+        for (int i = 0; i < maxMap; i++) {
+            obj.add(new ArrayList<>());
+            npc.add(new ArrayList<>());
+        }
+
         assetSetter.setObject();
         assetSetter.setInteractiveTile();
         assetSetter.setNPC();
@@ -142,7 +151,12 @@ public class GamePanel extends JPanel implements Runnable {
         }
         if(gameState == playState) {
             player.update();
-            for (Entity entity : npc) {
+
+            if(bot != null){
+                bot.update();
+            }
+
+            for (Entity entity : npc.get(currentMap)) {
                 if (entity != null) {
                     entity.update();
                 }
@@ -186,15 +200,20 @@ public class GamePanel extends JPanel implements Runnable {
             // ADD PLAYER TO LIST
             entityList.add(player);
 
+            // ADD ROBOT
+            if(bot != null){
+                entityList.add(bot);
+            }
+
             // ADD OBJECTS TO LIST
-            for (Entity value : obj) {
+            for (Entity value : obj.get(currentMap)) {
                 if (value != null) {
                     entityList.add(value);
                 }
             }
 
             // NPC
-            for(Entity value : npc) {
+            for(Entity value : npc.get(currentMap)) {
                 if (value != null) {
                     entityList.add(value);
                 }

@@ -43,7 +43,7 @@ public class NPC_Robot extends Entity {
             int distanceX = Math.abs(worldX - gamePanel.player.worldX);
             int distanceY = Math.abs(worldY - gamePanel.player.worldY);
 
-            int range = 64;
+            int range = 128;
 
             if(distanceX > range || distanceY > range) {
                 searchPath(goalCol, goalRow);

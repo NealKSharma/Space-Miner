@@ -16,16 +16,17 @@ public class TileManager {
 
     GamePanel gamePanel;
     public Tile[] tile;
-    public int[][] mapTileNum;
+    public int[][][] mapTileNum;
     public boolean drawPath = false;
 
     public TileManager(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         tile = new Tile[20];
-        mapTileNum = new int[gamePanel.maxWorldCol][gamePanel.maxWorldRow];
+        mapTileNum = new int[gamePanel.maxMap][gamePanel.maxWorldCol][gamePanel.maxWorldRow];
 
         getTileImage();
-        loadMap("/maps/map02.txt");
+        loadMap("/maps/map02.txt", 0);
+        loadMap("/maps/map01.txt", 1);
     }
     public void getTileImage() {
         // Lava
@@ -59,7 +60,7 @@ public class TileManager {
             e.printStackTrace();
         }
     }
-    public void loadMap(String filePath) {
+    public void loadMap(String filePath, int map) {
         try {
             InputStream is = getClass().getResourceAsStream(filePath);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -73,7 +74,7 @@ public class TileManager {
                     String[] numbers = line.split(" ");
                     int num = Integer.parseInt(numbers[col]);
 
-                    mapTileNum[col][row] = num;
+                    mapTileNum[map][col][row] = num;
                     col++;
                 }
                 if (col == gamePanel.maxWorldCol) {
@@ -95,7 +96,7 @@ public class TileManager {
 
         for (int worldRow = startRow; worldRow < endRow; worldRow++) {
             for (int worldCol = startCol; worldCol < endCol; worldCol++) {
-                int tileNum = mapTileNum[worldCol][worldRow];
+                int tileNum = mapTileNum[gamePanel.currentMap][worldCol][worldRow];
 
                 int worldX = worldCol * gamePanel.tileSize;
                 int worldY = worldRow * gamePanel.tileSize;
