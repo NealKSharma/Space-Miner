@@ -27,7 +27,11 @@ public class SaveLoad {
             ds.playerX = gamePanel.player.worldX;
             ds.playerY = gamePanel.player.worldY;
 
-            // NPC LOCATION
+            // BOT LOCATION
+            ds.botX = gamePanel.bot.worldX;
+            ds.botY = gamePanel.bot.worldY;
+
+            // NPC LOCATIONS
             ds.NPCX = new int[gamePanel.maxMap][];
             ds.NPCY = new int[gamePanel.maxMap][];
 
@@ -118,6 +122,10 @@ public class SaveLoad {
             // PLAYER LOCATION
             gamePanel.player.worldX = ds.playerX;
             gamePanel.player.worldY = ds.playerY;
+
+            // BOT LOCATION
+            gamePanel.bot.worldX = ds.botX;
+            gamePanel.bot.worldY = ds.botY;
 
             // NPC LOCATION
             if (ds.NPCX != null) {

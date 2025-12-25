@@ -9,7 +9,11 @@ public class DataStorage implements Serializable {
     int playerX;
     int playerY;
 
-    // NPC LOCATION
+    // BOT LOCATION
+    int botX;
+    int botY;
+
+    // NPC LOCATIONS
     int[][] NPCX;
     int[][] NPCY;
 

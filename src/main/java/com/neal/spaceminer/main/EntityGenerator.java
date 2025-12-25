@@ -22,6 +22,7 @@ public class EntityGenerator {
             case OBJ_ShipFront.objName: obj = new OBJ_ShipFront(gamePanel); break;
             case OBJ_ShipMiddle.objName: obj = new OBJ_ShipMiddle(gamePanel); break;
             case OBJ_SuitGenerator.objName: obj = new OBJ_SuitGenerator(gamePanel); break;
+            case OBJ_Teleporter.objName: obj = new OBJ_Teleporter(gamePanel); break;
             case IT_Rock.objName: obj = new IT_Rock(gamePanel); break;
         }
         return obj;

@@ -26,7 +26,7 @@ public class Entity {
     boolean mining = false;
 
     // COLLISION
-    public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
+    public Rectangle solidArea = new Rectangle(0, 0, 64, 64);
     public Rectangle swingArea = new Rectangle(0, 0, 0, 0);
     public int solidAreaDefaultX, solidAreaDefaultY;
     public boolean collisionOn = false;
@@ -45,6 +45,7 @@ public class Entity {
     public boolean isStackable = false;
     public int itemAmount = 1;
     public int strength;
+    public boolean placedOnGround = false;
 
     public Entity(GamePanel gamePanel){
         this.gamePanel = gamePanel;

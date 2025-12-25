@@ -42,26 +42,18 @@ public class UI {
         g2.setFont(arial_40);
         g2.setColor(Color.white);
 
-        if (gamePanel.gameState == gamePanel.playState) {
-            drawPlayScreen();
-        } else if (gamePanel.gameState == gamePanel.titleState){
-            drawTitleScreen();
-        } else if (gamePanel.gameState == gamePanel.pauseState) {
-            drawPauseScreen();
-        } else if(gamePanel.gameState == gamePanel.inventoryState){
-            drawInventory();
-        } else if(gamePanel.gameState == gamePanel.chestState){
-            drawChest();
-        } else if(gamePanel.gameState == gamePanel.transitionState){
-            if (transitionType == 1 && counter < 85) {
-                drawTitleScreen();
-            }
+        if (gamePanel.gameState == gamePanel.playState) { drawPlayScreen(); }
+        else if (gamePanel.gameState == gamePanel.titleState){ drawTitleScreen(); }
+        else if (gamePanel.gameState == gamePanel.pauseState) { drawPauseScreen(); }
+        else if(gamePanel.gameState == gamePanel.inventoryState){ drawInventory(); }
+        else if(gamePanel.gameState == gamePanel.chestState){ drawChest(); }
+        else if(gamePanel.gameState == gamePanel.transitionState){
+            if (transitionType == 1 && counter < 85) { drawTitleScreen(); }
             drawTransition();
         }
         g2.setFont(originalFont);
     }
     public void drawTitleScreen() {
-
         g2.drawImage(titleScreenBackground, 0, 0, gamePanel.screenWidth, gamePanel.screenHeight, null);
 
         // HEADING
@@ -86,7 +78,6 @@ public class UI {
         g2.setColor(Color.WHITE);
         g2.drawString(text, x, y);
 
-
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
         text = "Load Game";
         y += gamePanel.tileSize;
@@ -97,7 +88,6 @@ public class UI {
         g2.drawString(text, x+3, y+3);
         g2.setColor(Color.WHITE);
         g2.drawString(text, x, y);
-
 
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
         text = "Quit";
@@ -119,10 +109,10 @@ public class UI {
     }
     public void drawTransition(){
         counter++;
-        g2.setColor(new Color(0, 0, 0, counter * 3));
+        g2.setColor(new Color(0, 0, 0, counter * 5));
         g2.fillRect(0, 0, gamePanel.screenWidth, gamePanel.screenHeight);
 
-        if(counter == 85){
+        if(counter == 50){
             counter = 0;
             if(transitionType == 0) {
                 gamePanel.currentMap = gamePanel.eventHandler.tempMap;
@@ -134,7 +124,6 @@ public class UI {
                     gamePanel.bot.worldX = gamePanel.player.worldX + 32;
                     gamePanel.bot.worldY = gamePanel.player.worldY + 32;
                 }
-
                 gamePanel.eventHandler.previousEventX = gamePanel.player.worldX;
                 gamePanel.eventHandler.previousEventY = gamePanel.player.worldY;
             }
@@ -143,7 +132,7 @@ public class UI {
     }
     public void drawPlayScreen() {
         int frameX = (gamePanel.tileSize * 14) + 10;
-        int frameY = (gamePanel.tileSize * 10) + 10;
+        int frameY = (gamePanel.tileSize * 10) + 30;
         int frameWidth = (gamePanel.tileSize * 6) - 25;
         int frameHeight = (gamePanel.tileSize * 2) - 45;
 
@@ -173,7 +162,6 @@ public class UI {
                     g2.drawString(s, amountX-2, amountY-2);
                 }
             }
-
             slotX += slotSize;
         }
 
@@ -215,38 +203,45 @@ public class UI {
             g2.drawString(">", textX-32, textY);
         }
 
+        // MINIMAP
+        textY += gamePanel.tileSize;
+        g2.drawString("Minimap", textX, textY);
+        if(commandNum == 1){
+            g2.drawString(">", textX-32, textY);
+        }
+
         // SOUND
         textY += gamePanel.tileSize;
         g2.drawString("Sound", textX, textY);
-        if(commandNum == 1){
+        if(commandNum == 2){
             g2.drawString(">", textX-32, textY);
         }
 
         // CONTROLS
         textY += gamePanel.tileSize;
         g2.drawString("Controls", textX, textY);
-        if(commandNum == 2){
+        if(commandNum == 3){
             g2.drawString(">", textX-32, textY);
         }
 
         // SAVE GAME
         textY += gamePanel.tileSize;
         g2.drawString("Save Game", textX, textY);
-        if(commandNum == 3){
+        if(commandNum == 4){
             g2.drawString(">", textX-32, textY);
         }
 
         // QUIT
         textY += gamePanel.tileSize;
         g2.drawString("Quit", textX, textY);
-        if(commandNum == 4){
+        if(commandNum == 5){
             g2.drawString(">", textX-32, textY);
         }
 
         // BACK
         textY = frameY + gamePanel.tileSize*9;
         g2.drawString("Back", textX, textY);
-        if(commandNum == 5){
+        if(commandNum == 6){
             g2.drawString(">", textX-32, textY);
         }
 
@@ -259,12 +254,19 @@ public class UI {
             g2.fillRect(textX + 5, textY + 5, (gamePanel.tileSize/2) - 9, (gamePanel.tileSize/2) - 9);
         }
 
+        // MINIMAP CHECKBOX
+        textY += gamePanel.tileSize;
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRect(textX, textY, gamePanel.tileSize/2, gamePanel.tileSize/2);
+        if(gamePanel.map.miniMapOn){
+            g2.fillRect(textX + 5, textY + 5, (gamePanel.tileSize/2) - 9, (gamePanel.tileSize/2) - 9);
+        }
+
         // SOUND VOLUME
         textY += gamePanel.tileSize;
         g2.drawRect(textX, textY, (gamePanel.tileSize*3) + 9, gamePanel.tileSize/2);
         int volumeWidth = (gamePanel.tileSize/2) * volume; // TEMPORARY VARIABLE
         g2.fillRect(textX + 5, textY + 5, volumeWidth, (gamePanel.tileSize/2) - 9);
-        gamePanel.config.saveConfig();
 
         // GAME SAVE
         if(gamePanel.keyHandler.saved){
@@ -307,6 +309,7 @@ public class UI {
         g2.drawString("Interact", textX, textY); textY += gamePanel.tileSize;
         g2.drawString("Inventory", textX, textY); textY += gamePanel.tileSize;
         g2.drawString("Slots", textX, textY); textY += gamePanel.tileSize;
+        g2.drawString("Map", textX, textY); textY += gamePanel.tileSize;
         g2.drawString("Options", textX, textY);
 
         textX = frameX + gamePanel.tileSize*5;
@@ -315,6 +318,7 @@ public class UI {
         g2.drawString("F", textX, textY); textY += gamePanel.tileSize;
         g2.drawString("E", textX, textY); textY += gamePanel.tileSize;
         g2.drawString("1 2 3 4 5", textX, textY); textY += gamePanel.tileSize;
+        g2.drawString("M", textX, textY); textY += gamePanel.tileSize;
         g2.drawString("ESC", textX, textY);
 
         textX = frameX + gamePanel.tileSize;

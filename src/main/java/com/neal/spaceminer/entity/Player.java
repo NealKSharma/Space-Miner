@@ -55,6 +55,20 @@ public class Player extends Entity {
         worldY = gamePanel.tileSize * 80;
         speed = 1;
     }
+    public void setDefaultValues() {
+        initialize();
+        direction = "down";
+
+        currentChest = null;
+        hasLight = false;
+        mineCount = 0;
+
+        inventory.clear();
+        for(int i = 0; i < maxInventorySize; i++) {
+            inventory.add(null);
+        }
+        setItems();
+    }
     public void getImage() {
         up1 = setup("/astronaut/back1", gamePanel.tileSize, gamePanel.tileSize);
         up2 = setup("/astronaut/back2", gamePanel.tileSize, gamePanel.tileSize);

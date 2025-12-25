@@ -5,7 +5,6 @@ import com.neal.spaceminer.main.Utility;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,28 +24,32 @@ public class TileManager {
         mapTileNum = new int[gamePanel.maxMap][gamePanel.maxWorldCol][gamePanel.maxWorldRow];
 
         getTileImage();
-        loadMap("/maps/map02.txt", 0);
-        loadMap("/maps/map02.txt", 1);
+        loadMap("/maps/map00.txt", 0);
+        loadMap("/maps/map01.txt", 1);
     }
     public void getTileImage() {
         // Lava
-        setup(0, "lava00", true);
-        setup(1, "lava01", true);
-        setup(2, "lava02", true);
-        setup(3, "lava03", true);
-        setup(4, "lava04", true);
-        setup(5, "lava05", true);
-        setup(6, "lava06", true);
-        setup(7, "lava07", true);
-        setup(8, "lava08", true);
-        setup(9, "lava09", true);
-        setup(10, "lava10", true);
-        setup(11, "lava11", true);
-        setup(12, "lava12", true);
-        setup(13, "lava13", true);
+        setup(0, "00_lava", true);
+        setup(1, "01_lava", true);
+        setup(2, "02_lava", true);
+        setup(3, "03_lava", true);
+        setup(4, "04_lava", true);
+        setup(5, "05_lava", true);
+        setup(6, "06_lava", true);
+        setup(7, "07_lava", true);
+        setup(8, "08_lava", true);
+        setup(9, "09_lava", true);
+        setup(10, "10_lava", true);
+        setup(11, "11_lava", true);
+        setup(12, "12_lava", true);
+        setup(13, "13_lava", true);
 
-        // Surface
-        setup(14, "surface", false);
+        // Surfaces
+        setup(14, "14_surface", false);
+        setup(15, "15_surface", false);
+
+        // Black Tile
+        setup(16, "16_black", true);
     }
     public void setup(int index, String imageName, boolean collision) {
         Utility utility = new Utility();

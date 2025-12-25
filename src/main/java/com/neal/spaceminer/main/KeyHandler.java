@@ -24,17 +24,12 @@ public class KeyHandler implements KeyListener {
 
         int key = e.getKeyCode();
 
-        if (gamePanel.gameState == gamePanel.titleState){
-            titleState(key);
-        } else if (gamePanel.gameState == gamePanel.playState){
-            playState(key);
-        } else if (gamePanel.gameState == gamePanel.pauseState){
-            pauseState(key);
-        } else if (gamePanel.gameState == gamePanel.inventoryState){
-            inventoryState(key);
-        } else if (gamePanel.gameState == gamePanel.chestState){
-            chestState(key);
-        }
+        if (gamePanel.gameState == gamePanel.titleState){ titleState(key); }
+        else if (gamePanel.gameState == gamePanel.playState){ playState(key); }
+        else if (gamePanel.gameState == gamePanel.pauseState){ pauseState(key); }
+        else if (gamePanel.gameState == gamePanel.inventoryState){ inventoryState(key); }
+        else if (gamePanel.gameState == gamePanel.chestState){ chestState(key); }
+        else if (gamePanel.gameState == gamePanel.mapState) { mapState(key); }
     }
     public void titleState(int key){
         if (key == KeyEvent.VK_W) {
@@ -52,6 +47,7 @@ public class KeyHandler implements KeyListener {
 
         if(key == KeyEvent.VK_ENTER){
             if(gamePanel.ui.commandNum == 0){
+                gamePanel.reinitializeGame();
                 gamePanel.gameState = gamePanel.transitionState;
                 gamePanel.ui.transitionType = 1;
                 gamePanel.ui.subState = 0;
@@ -85,105 +81,101 @@ public class KeyHandler implements KeyListener {
         if(key == KeyEvent.VK_ESCAPE) gamePanel.gameState = gamePanel.pauseState;
         if(key == KeyEvent.VK_E) gamePanel.gameState = gamePanel.inventoryState;
         if(key == KeyEvent.VK_E && gamePanel.player.canOpen) gamePanel.gameState = gamePanel.chestState;
+        if(key == KeyEvent.VK_M) gamePanel.gameState = gamePanel.mapState;
         if(key == KeyEvent.VK_F3) {
             showDebug = !showDebug;
             gamePanel.tileManager.drawPath = !gamePanel.tileManager.drawPath;
         }
     }
-    // NEEDS OPTIMIZATIONS
     public void pauseState(int key) {
+        UI ui = gamePanel.ui;
         if (key == KeyEvent.VK_ESCAPE) {
             gamePanel.gameState = gamePanel.playState;
-            gamePanel.ui.commandNum = 0;
-            gamePanel.ui.subState = 0;
+            ui.commandNum = 0;
+            ui.subState = 0;
+            gamePanel.config.saveConfig();
             saved = false;
+            return;
         }
 
-        if (key == KeyEvent.VK_W && gamePanel.ui.subState==0) {
-            gamePanel.ui.commandNum--;
-            if(gamePanel.ui.commandNum < 0){
-                gamePanel.ui.commandNum = 5;
+        switch (ui.subState) {
+            case 0: // MAIN PAUSE MENU
+                handleMainMenuInput(key, ui);
+                break;
+            case 1: // FULL SCREEN SETTINGS
+                handleYesNoInput(key, ui);
+                if (key == KeyEvent.VK_ENTER) enterFullScreenSettings(ui);
+                break;
+            case 2: // CONTROL SCREEN
+                if (key == KeyEvent.VK_ENTER) ui.subState = 0;
+                break;
+            case 3: // QUIT CONFIRMATION
+                handleYesNoInput(key, ui);
+                if (key == KeyEvent.VK_ENTER) enterQuitConfirmation(ui);
+                break;
+        }
+    }
+    private void handleMainMenuInput(int key, UI ui) {
+        switch (key) {
+            case KeyEvent.VK_W -> {
+                ui.commandNum--;
+                if (ui.commandNum < 0) ui.commandNum = 6;
+            }
+            case KeyEvent.VK_S -> {
+                ui.commandNum++;
+                if (ui.commandNum > 6) ui.commandNum = 0;
+            }
+            case KeyEvent.VK_A -> {
+                if (ui.commandNum == 2 && ui.volume > 0) {
+                    ui.volume--;
+                    gamePanel.config.saveConfig();
+                }
+            }
+            case KeyEvent.VK_D -> {
+                if (ui.commandNum == 2 && ui.volume < 6) {
+                    ui.volume++;
+                    gamePanel.config.saveConfig();
+                }
+            }
+            case KeyEvent.VK_ENTER -> {
+                switch (ui.commandNum) {
+                    case 0 -> ui.subState = 1;  // FULLSCREEN MENU
+                    case 1 -> { gamePanel.map.miniMapOn = !gamePanel.map.miniMapOn; gamePanel.config.saveConfig(); } // MINIMAP
+                    case 2 -> {} // VOLUME
+                    case 3 -> ui.subState = 2; // CONTROLS
+                    case 4 -> { gamePanel.saveLoad.save(); saved = true; } // SAVE
+                    case 5 -> { ui.subState = 3; ui.commandNum = 1; saved = false;} // QUIT CONFIRM MENU
+                    case 6 -> { gamePanel.gameState = gamePanel.playState; ui.commandNum = 0; gamePanel.config.saveConfig(); saved = false;} // BACK
+                }
             }
         }
-        if (key == KeyEvent.VK_S && gamePanel.ui.subState==0) {
-            gamePanel.ui.commandNum++;
-            if(gamePanel.ui.commandNum > 5){
-                gamePanel.ui.commandNum = 0;
-            }
+    }
+    private void handleYesNoInput(int key, UI ui) {
+        if (key == KeyEvent.VK_W) {
+            ui.commandNum--;
+            if (ui.commandNum < 0) ui.commandNum = 1;
         }
-
-        if (key == KeyEvent.VK_A && gamePanel.ui.commandNum == 1 && gamePanel.ui.subState==0) {
-            if(gamePanel.ui.volume > 0){
-                gamePanel.ui.volume--;
-            }
+        if (key == KeyEvent.VK_S) {
+            ui.commandNum++;
+            if (ui.commandNum > 1) ui.commandNum = 0;
         }
-        if (key == KeyEvent.VK_D  && gamePanel.ui.commandNum == 1 && gamePanel.ui.subState==0) {
-            if(gamePanel.ui.volume < 5){
-                gamePanel.ui.volume++;
-            }
+    }
+    private void enterFullScreenSettings(UI ui) {
+        if (ui.commandNum == 0) {
+            gamePanel.fullScreen = !gamePanel.fullScreen;
+            gamePanel.config.saveConfig();
+            System.exit(0);
+        } else {
+            ui.subState = 0;
+            ui.commandNum = 0;
         }
-
-        if (key == KeyEvent.VK_W && gamePanel.ui.subState==3) {
-            gamePanel.ui.commandNum--;
-            if(gamePanel.ui.commandNum < 0){
-                gamePanel.ui.commandNum = 1;
-            }
-        }
-        if (key == KeyEvent.VK_S && gamePanel.ui.subState==3) {
-            gamePanel.ui.commandNum++;
-            if(gamePanel.ui.commandNum > 1){
-                gamePanel.ui.commandNum = 0;
-            }
-        }
-
-        if (key == KeyEvent.VK_W && gamePanel.ui.subState==1) {
-            gamePanel.ui.commandNum--;
-            if(gamePanel.ui.commandNum < 0){
-                gamePanel.ui.commandNum = 1;
-            }
-        }
-        if (key == KeyEvent.VK_S && gamePanel.ui.subState==1) {
-            gamePanel.ui.commandNum++;
-            if(gamePanel.ui.commandNum > 1){
-                gamePanel.ui.commandNum = 0;
-            }
-        }
-
-        if(key == KeyEvent.VK_ENTER && gamePanel.ui.subState == 0){
-            if(gamePanel.ui.commandNum == 0){
-                gamePanel.ui.subState = 1;
-                gamePanel.ui.commandNum = 1;
-            } else if(gamePanel.ui.commandNum == 2){
-                gamePanel.ui.subState = 2;
-            } else if(gamePanel.ui.commandNum == 3){
-                gamePanel.saveLoad.save();
-                saved = true;
-            }
-            else if (gamePanel.ui.commandNum == 4){
-                gamePanel.ui.subState = 3;
-                gamePanel.ui.commandNum = 1;
-            } else if (gamePanel.ui.commandNum == 5) {
-                gamePanel.gameState = gamePanel.playState;
-                gamePanel.ui.commandNum = 0;
-            }
-        } else if(key == KeyEvent.VK_ENTER && gamePanel.ui.subState == 1){
-            if(gamePanel.ui.commandNum == 0){
-                gamePanel.fullScreen = !gamePanel.fullScreen;
-                gamePanel.config.saveConfig();
-                System.exit(0);
-            } else if(gamePanel.ui.commandNum == 1){
-                gamePanel.ui.subState = 0;
-                gamePanel.ui.commandNum = 0;
-            }
-        } else if(key == KeyEvent.VK_ENTER && gamePanel.ui.subState == 2){
-            gamePanel.ui.subState = 0;
-        } else if(key == KeyEvent.VK_ENTER && gamePanel.ui.subState == 3){
-            if(gamePanel.ui.commandNum == 0){
-                gamePanel.gameState = gamePanel.titleState;
-            } else if(gamePanel.ui.commandNum == 1){
-                gamePanel.ui.subState = 0;
-                gamePanel.ui.commandNum = 3;
-            }
+    }
+    private void enterQuitConfirmation(UI ui) {
+        if (ui.commandNum == 0) {
+            gamePanel.gameState = gamePanel.titleState;
+        } else {
+            ui.subState = 0;
+            ui.commandNum = 3;
         }
     }
     public void inventoryState(int key) {
@@ -309,6 +301,9 @@ public class KeyHandler implements KeyListener {
         if (key == KeyEvent.VK_ENTER) {
             gamePanel.player.transferChestItem(gamePanel.ui.slotCol, gamePanel.ui.slotRow);
         }
+    }
+    public void mapState(int key) {
+        if(key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_M) { gamePanel.gameState = gamePanel.playState; }
     }
     @Override
     public void keyReleased(KeyEvent e) {

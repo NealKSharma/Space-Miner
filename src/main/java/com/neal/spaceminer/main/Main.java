@@ -17,6 +17,7 @@ public class Main {
 
         gamePanel.config.loadConfig();
         window.setUndecorated(gamePanel.fullScreen);
+        if(gamePanel.fullScreen) gamePanel.setFullScreen();
 
         window.pack();
 

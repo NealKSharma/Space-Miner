@@ -7,6 +7,7 @@ import com.neal.spaceminer.entity.NPC_Robot;
 import com.neal.spaceminer.entity.Particle;
 import com.neal.spaceminer.entity.Player;
 import com.neal.spaceminer.environment.EnvironmentManager;
+import com.neal.spaceminer.tile.Map;
 import com.neal.spaceminer.tile.TileManager;
 
 import javax.swing.*;
@@ -55,6 +56,7 @@ public class GamePanel extends JPanel implements Runnable {
     public EntityGenerator entityGenerator = new EntityGenerator(this);
     public PathFinder pathFinder = new PathFinder(this);
     public EventHandler eventHandler = new EventHandler(this);
+    Map map = new Map(this);
     Thread gameThread;
 
     // PLAYER AND OBJECTS
@@ -73,6 +75,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int inventoryState = 3;
     public final int chestState = 4;
     public final int transitionState = 5;
+    public final int mapState = 6;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -81,7 +84,6 @@ public class GamePanel extends JPanel implements Runnable {
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
     }
-
     public void setupGame() {
         for (int i = 0; i < maxMap; i++) {
             obj.add(new ArrayList<>());
@@ -93,13 +95,22 @@ public class GamePanel extends JPanel implements Runnable {
         assetSetter.setNPC();
         environmentManager.setup();
 
-        if(fullScreen) setFullScreen();
-
         // DRY RUN TO LOAD ASSETS
         gameState = playState;
         update();
 
         gameState = titleState;
+    }
+    public void reinitializeGame() {
+        obj.clear();
+        npc.clear();
+        particleList.clear();
+
+        currentMap = 0;
+        player.setDefaultValues();
+        bot = null;
+
+        setupGame();
     }
     public void setFullScreen(){
         // GET LOCAL SCREEN DEVICE
@@ -228,8 +239,8 @@ public class GamePanel extends JPanel implements Runnable {
 
             // SORTING
             entityList.sort(Comparator.comparingInt(e -> {
-                if (e.isBreakable) {
-                    // For breakable blocks: Sort using the TOP of the collision box.
+                if (e.isBreakable || e.placedOnGround) {
+                    // For breakable or placedOnGround blocks always appear behind player.
                     return e.worldY + e.solidArea.y;
                 } else {
                     // For everything else sort using the FEET (Bottom).
@@ -247,6 +258,12 @@ public class GamePanel extends JPanel implements Runnable {
 
             // ENVIRONMENT
             environmentManager.draw(g2);
+
+            // MINI MAP
+            map.drawMiniMap(g2);
+            if (gameState == mapState) {
+                map.drawFullMapScreen(g2);
+            }
 
             // UI
             ui.draw(g2);

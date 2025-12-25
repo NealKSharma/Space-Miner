@@ -22,6 +22,14 @@ public class Config {
             }
             bw.newLine();
 
+            // MINIMAP
+            if(gamePanel.map.miniMapOn){
+                bw.write("On");
+            } else {
+                bw.write("Off");
+            }
+            bw.newLine();
+
             // SOUND VOLUME
             bw.write(String.valueOf(gamePanel.ui.volume));
             bw.newLine();
@@ -32,14 +40,21 @@ public class Config {
     }
     public void loadConfig() {
         try (BufferedReader br = new BufferedReader(new FileReader("gameConfig.txt"))){
-
-            String s = br.readLine();
-
             // FULLSCREEN
+            String s = br.readLine();
             if(s.equals("On")){
                 gamePanel.fullScreen = true;
             } else if(s.equals("Off")){
                 gamePanel.fullScreen = false;
+            }
+
+
+            // MINIMAP
+            s = br.readLine();
+            if(s.equals("On")){
+                gamePanel.map.miniMapOn = true;
+            } else if(s.equals("Off")){
+                gamePanel.map.miniMapOn = false;
             }
 
             // SOUND
