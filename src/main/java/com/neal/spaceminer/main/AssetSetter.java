@@ -3,15 +3,17 @@ package com.neal.spaceminer.main;
 import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.entity.NPC_Robot;
 import com.neal.spaceminer.object.*;
-import com.neal.spaceminer.tiles_interactive.IT_Rock;
+import com.neal.spaceminer.tiles_interactive.*;
+
+import java.util.Arrays;
 
 public class AssetSetter {
 
     GamePanel gamePanel;
 
     int i;
-    int numIT = 1; // NUMBER OF DIFFERENT INTERACTIVE TILES
-    final int maxIT = 15; // NUMBER OF INTERACTIVE TILE THAT CAN BE PLACED
+    int numIT = 5; // NUMBER OF DIFFERENT INTERACTIVE TILES
+    final int maxIT = 10; // NUMBER OF INTERACTIVE TILE THAT CAN BE PLACED
     final int maxTotalIT = numIT * maxIT; // TOTAL MAX INTERACTIVE TILES ON MAP
     int currIT = 0;
     int[] ITCount = new int[numIT];
@@ -71,16 +73,27 @@ public class AssetSetter {
         gamePanel.bot.worldY = gamePanel.player.worldY + 32;
     }
     public void setInteractiveTile(){
+        currIT = 0;
+        Arrays.fill(ITCount, 0);
+        Entity interactiveTile = null;
+
         while (currIT < maxTotalIT) {
             int randCol = (int)(Math.random() * (99 - 1 + 1) + 1); // 99 IS FOR 100 MAP SIZE
             int randRow = (int)(Math.random() * (99 - 1 + 1) + 1);
 
             if(canPlaceIT(randCol, randRow)) {
                 int randIT = (int)(Math.random() * numIT);
+                switch(randIT) {
+                    case 0: interactiveTile = new IT_Rock(gamePanel); break;
+                    case 1: interactiveTile = new IT_Chrono(gamePanel); break;
+                    case 2: interactiveTile = new IT_Pulsarite(gamePanel); break;
+                    case 3: interactiveTile = new IT_Scoria(gamePanel); break;
+                    case 4: interactiveTile = new IT_Void(gamePanel); break;
+                }
 
                 // CHECK IF THIS SPECIFIC TILE HAS REACHED ITS MAX CAP
-                if(randIT == 0 && ITCount[randIT] < maxIT) {
-                    place(new IT_Rock(gamePanel), 0, randCol, randRow, true);
+                if(ITCount[randIT] < maxIT && interactiveTile != null) {
+                    place(interactiveTile, 0, randCol, randRow, true);
                     ITCount[randIT]++;
                     currIT++;
                 }
@@ -103,6 +116,11 @@ public class AssetSetter {
             return false;
         }
 
+        // CHECK IF THE ROBOT IS ON THE TILE
+        if(gamePanel.player.worldX + 32 == worldX && gamePanel.player.worldY + 32 == worldY){
+            return false;
+        }
+
         // CHECK IF THERE'S AN OBJECT ALREADY THERE ON THE TILE
         int height = 32;
         int width = 40;
@@ -120,9 +138,26 @@ public class AssetSetter {
             obj.solidArea.x = obj.solidAreaDefaultX;
             obj.solidArea.y = obj.solidAreaDefaultY;
         }
+
+        // CHECK FOR NPCS
+        for(int i = 0; i < gamePanel.npc.get(gamePanel.currentMap).size(); i++) {
+            Entity npc = gamePanel.npc.get(gamePanel.currentMap).get(i);
+
+            npc.solidArea.x = npc.worldX + npc.solidArea.x;
+            npc.solidArea.y = npc.worldY + npc.solidArea.y;
+
+            if(npc.solidArea.intersects(worldX, worldY, height, width)) {
+                npc.solidArea.x = npc.solidAreaDefaultX;
+                npc.solidArea.y = npc.solidAreaDefaultY;
+                return false;
+            }
+            npc.solidArea.x = npc.solidAreaDefaultX;
+            npc.solidArea.y = npc.solidAreaDefaultY;
+        }
+
         return true;
     }
-    public Entity place(Entity entity,int map, int col, int row, boolean isObject) {
+    public Entity place(Entity entity, int map, int col, int row, boolean isObject) {
         entity.worldX = col * gamePanel.tileSize;
         entity.worldY = row * gamePanel.tileSize;
         if(isObject){
@@ -131,5 +166,16 @@ public class AssetSetter {
             gamePanel.npc.get(map).add(entity);
         }
         return entity;
+    }
+    public void replaceTile(Entity entity){
+        boolean placed = false;
+        while(!placed){
+            int randCol = (int)(Math.random() * (99 - 1 + 1) + 1); // 99 IS FOR 100 MAP SIZE
+            int randRow = (int)(Math.random() * (99 - 1 + 1) + 1);
+            if(canPlaceIT(randCol, randRow) && !gamePanel.tileManager.isOnScreen(randCol*gamePanel.tileSize, randRow*gamePanel.tileSize)) {
+                placed = true;
+                place(entity, gamePanel.currentMap, randCol, randRow, true);
+            }
+        }
     }
 }

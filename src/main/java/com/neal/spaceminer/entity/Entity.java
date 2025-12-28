@@ -185,7 +185,6 @@ public class Entity {
         gamePanel.particleList.add(p3);
         gamePanel.particleList.add(p4);
     }
-
     public Color getParticleColor(){
         return null;
     }

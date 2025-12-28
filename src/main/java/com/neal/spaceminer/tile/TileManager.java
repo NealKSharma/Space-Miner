@@ -90,12 +90,25 @@ public class TileManager {
             e.printStackTrace();
         }
     }
+    public boolean isOnScreen(int worldX, int worldY) {
+        int playerWorldX = gamePanel.player.worldX;
+        int playerWorldY = gamePanel.player.worldY;
+        int playerScreenX = gamePanel.player.screenX;
+        int playerScreenY = gamePanel.player.screenY;
+
+        int buffer = gamePanel.tileSize;
+
+        return worldX + gamePanel.tileSize > playerWorldX - playerScreenX - buffer &&
+                worldX - gamePanel.tileSize < playerWorldX + playerScreenX + buffer &&
+                worldY + gamePanel.tileSize > playerWorldY - playerScreenY - buffer &&
+                worldY - gamePanel.tileSize < playerWorldY + playerScreenY + buffer;
+    }
     public void draw(Graphics2D g2) {
-        // CALCULATE THE VISIBLE TILE RANGE
-        int startCol = Math.max(0, (gamePanel.player.worldX - gamePanel.player.screenX) / gamePanel.tileSize - 1);
-        int endCol = Math.min(gamePanel.maxWorldCol, (gamePanel.player.worldX + gamePanel.player.screenX) / gamePanel.tileSize + 2);
-        int startRow = Math.max(0, (gamePanel.player.worldY - gamePanel.player.screenY) / gamePanel.tileSize - 1);
-        int endRow = Math.min(gamePanel.maxWorldRow, (gamePanel.player.worldY + gamePanel.player.screenY) / gamePanel.tileSize + 2);
+
+        int startCol = Math.max(0, (gamePanel.player.worldX - gamePanel.player.screenX) / gamePanel.tileSize - 2);
+        int endCol = Math.min(gamePanel.maxWorldCol, (gamePanel.player.worldX + gamePanel.player.screenX) / gamePanel.tileSize + 3);
+        int startRow = Math.max(0, (gamePanel.player.worldY - gamePanel.player.screenY) / gamePanel.tileSize - 2);
+        int endRow = Math.min(gamePanel.maxWorldRow, (gamePanel.player.worldY + gamePanel.player.screenY) / gamePanel.tileSize + 3);
 
         for (int worldRow = startRow; worldRow < endRow; worldRow++) {
             for (int worldCol = startCol; worldCol < endCol; worldCol++) {
@@ -106,18 +119,20 @@ public class TileManager {
                 int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
                 int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
 
-                g2.drawImage(tile[tileNum].img, screenX, screenY, null);
+                g2.drawImage(tile[tileNum].img, screenX, screenY, gamePanel.tileSize + 1, gamePanel.tileSize + 1, null);
             }
         }
         if(drawPath){
             g2.setColor(new Color(255, 0, 0, 60));
             for(int i = 0; i < gamePanel.pathFinder.pathList.size(); i++){
-                if(gamePanel.pathFinder.pathList.get(i) != null){
+                if(gamePanel.pathFinder.pathList.get(i) != null ){
                     int worldX = gamePanel.pathFinder.pathList.get(i).col * gamePanel.tileSize;
                     int worldY = gamePanel.pathFinder.pathList.get(i).row * gamePanel.tileSize;
-                    int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
-                    int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
-                    g2.fillRect(screenX, screenY, gamePanel.tileSize, gamePanel.tileSize);
+                    if(isOnScreen(worldX, worldY)){
+                        int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
+                        int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
+                        g2.fillRect(screenX, screenY, gamePanel.tileSize, gamePanel.tileSize);
+                    }
                 }
             }
         }

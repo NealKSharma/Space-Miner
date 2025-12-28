@@ -6,11 +6,11 @@ import com.neal.spaceminer.object.OBJ_LumenCell;
 
 import java.awt.*;
 
-public class IT_Rock extends Entity {
+public class IT_Scoria extends Entity {
 
-    public static final String objName = "Rock Ore";
+    public static final String objName = "Scoria Ore";
 
-    public IT_Rock(GamePanel gamePanel) {
+    public IT_Scoria(GamePanel gamePanel) {
         super(gamePanel);
 
         name = objName;
@@ -25,7 +25,7 @@ public class IT_Rock extends Entity {
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
 
-        down1 = setup("/tiled_objects/rock_ore", gamePanel.tileSize, gamePanel.tileSize);
+        down1 = setup("/tiled_objects/scoria_ore", gamePanel.tileSize, gamePanel.tileSize);
         description = "[" + name + "]";
     }
     @Override
@@ -37,7 +37,7 @@ public class IT_Rock extends Entity {
     }
     @Override
     public Color getParticleColor() {
-        return new Color(94, 43, 43, 255);
+        return new Color(236, 88, 5, 255);
     }
     @Override
     public int getParticleSize() {

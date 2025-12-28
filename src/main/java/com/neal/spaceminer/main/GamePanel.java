@@ -3,8 +3,6 @@ package com.neal.spaceminer.main;
 import com.neal.spaceminer.ai.PathFinder;
 import com.neal.spaceminer.data.SaveLoad;
 import com.neal.spaceminer.entity.Entity;
-import com.neal.spaceminer.entity.NPC_Robot;
-import com.neal.spaceminer.entity.Particle;
 import com.neal.spaceminer.entity.Player;
 import com.neal.spaceminer.environment.EnvironmentManager;
 import com.neal.spaceminer.tile.Map;
@@ -12,7 +10,6 @@ import com.neal.spaceminer.tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -29,8 +26,6 @@ public class GamePanel extends JPanel implements Runnable {
 
     public final int maxWorldCol = 100;
     public final int maxWorldRow = 100;
-    public final int worldWidth = tileSize * maxWorldCol;
-    public final int worldHeight = tileSize * maxWorldRow;
     public final int maxMap = 10;
     public int currentMap = 0;
 

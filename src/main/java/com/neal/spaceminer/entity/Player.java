@@ -274,40 +274,40 @@ public class Player extends Entity {
             if (objIndex != -1) interactWithObject(objIndex);
         }
     }
-    public void mining(){
+    public void mining() {
         spriteCounter++;
-        if(spriteCounter <= 10){
+        if (spriteCounter <= 10) {
             spriteNum = 1;
         }
-        if(spriteCounter > 10 && spriteCounter <= 50){
+        if (spriteCounter > 10 && spriteCounter <= 50) {
             spriteNum = 2;
+            Entity swingCheck = new Entity(gamePanel);
 
-            int currentWorldX = worldX;
-            int currentWorldY = worldY;
-            int solidAreaWidth = solidArea.width;
-            int solidAreaHeight = solidArea.height;
+            swingCheck.worldX = this.worldX;
+            swingCheck.worldY = this.worldY;
 
-            // ADJUST PLAYER's WORLD X/Y FOR THE ATTACK AREA
-            switch(direction){
-                case "up": worldY -= swingArea.height; break;
-                case "down": worldY += swingArea.height; break;
-                case "left": worldX -= swingArea.width; break;
-                case "right": worldX += swingArea.width; break;
+            swingCheck.solidArea = new Rectangle();
+            swingCheck.solidArea.x = 0;
+            swingCheck.solidArea.y = 0;
+            swingCheck.solidArea.width = swingArea.width;
+            swingCheck.solidArea.height = swingArea.height;
+
+            swingCheck.solidAreaDefaultX = swingCheck.solidArea.x;
+            swingCheck.solidAreaDefaultY = swingCheck.solidArea.y;
+
+            switch (direction) {
+                case "up": swingCheck.worldY -= swingArea.height; break;
+                case "down": swingCheck.worldY += swingArea.height; break;
+                case "left": swingCheck.worldX -= swingArea.width; break;
+                case "right": swingCheck.worldX += swingArea.width; break;
             }
-            // SWING AREA BECOMES THE SOLID AREA
-            solidArea.width = swingArea.width;
-            solidArea.height = swingArea.height;
 
-            int objectIndex = gamePanel.collisionChecker.checkObject(this, true);
-            if(objectIndex != -1 && gamePanel.obj.get(gamePanel.currentMap).get(objectIndex).isBreakable) mineObject(objectIndex);
-
-            // AFTER CHECKING FOR COLLISION RESTORE ORIGINAL DATA
-            worldX = currentWorldX;
-            worldY = currentWorldY;
-            solidArea.width = solidAreaWidth;
-            solidArea.height = solidAreaHeight;
+            int objectIndex = gamePanel.collisionChecker.checkObject(swingCheck, true);
+            if (objectIndex != -1 && gamePanel.obj.get(gamePanel.currentMap).get(objectIndex).isBreakable) {
+                mineObject(objectIndex);
+            }
         }
-        if(spriteCounter > 50 && spriteCounter <= 100){
+        if (spriteCounter > 50 && spriteCounter <= 100) {
             spriteNum = 1;
             spriteCounter = 0;
             mining = false;
@@ -318,6 +318,7 @@ public class Player extends Entity {
         if(mineCount >= gamePanel.obj.get(gamePanel.currentMap).get(i).strength * 39){
             generateParticle(gamePanel.obj.get(gamePanel.currentMap).get(i), gamePanel.obj.get(gamePanel.currentMap).get(i));
             Entity drop = gamePanel.obj.get(gamePanel.currentMap).get(i).getDrop();
+            gamePanel.assetSetter.replaceTile(gamePanel.obj.get(gamePanel.currentMap).get(i)); // REPLACE THE TILE
             gamePanel.obj.get(gamePanel.currentMap).remove(i);
             gamePanel.obj.get(gamePanel.currentMap).add(drop);
             mineCount = 0;
