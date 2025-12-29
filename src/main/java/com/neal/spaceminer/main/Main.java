@@ -5,6 +5,7 @@ import javax.swing.*;
 public class Main {
 
     public static JFrame window;
+    static 
 
     public static void main(String[] args) {
 
@@ -16,13 +17,18 @@ public class Main {
         window.add(gamePanel);
 
         gamePanel.config.loadConfig();
-        window.setUndecorated(gamePanel.fullScreen);
-        if(gamePanel.fullScreen) gamePanel.setFullScreen();
+
+        if (gamePanel.fullScreen) {
+            window.setUndecorated(true);
+        }
 
         window.pack();
-
         window.setLocationRelativeTo(null);
         window.setVisible(true);
+
+        if (gamePanel.fullScreen) {
+            gamePanel.setFullScreen();
+        }
 
         gamePanel.setupGame();
         gamePanel.startGame();

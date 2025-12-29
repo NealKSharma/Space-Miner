@@ -2,7 +2,7 @@ package com.neal.spaceminer.tiles_interactive;
 
 import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.main.GamePanel;
-import com.neal.spaceminer.object.OBJ_LumenCell;
+import com.neal.spaceminer.object.OBJ_Pulsarite;
 
 import java.awt.*;
 
@@ -26,13 +26,15 @@ public class IT_Pulsarite extends Entity {
         solidAreaDefaultY = solidArea.y;
 
         down1 = setup("/tiled_objects/pulsarite_ore", gamePanel.tileSize, gamePanel.tileSize);
-        description = "[" + name + "]";
+        description = "[" + name + "]\n Ore for Pulsarite.";
     }
     @Override
     public Entity getDrop (){
-        Entity drop = new OBJ_LumenCell(gamePanel);
-        drop.worldX = this.worldX;
-        drop.worldY = this.worldY;
+        Entity drop = new OBJ_Pulsarite(gamePanel);
+        int randX = (int)(Math.random() * 65) - 32;
+        int randY = (int)(Math.random() * 65) - 32;
+        drop.worldX = this.worldX + randX;
+        drop.worldY = this.worldY + randY;
         return drop;
     }
     @Override

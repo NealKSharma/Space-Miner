@@ -3,11 +3,11 @@ package com.neal.spaceminer.object;
 import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.main.GamePanel;
 
-public class OBJ_LumenCell extends Entity {
+public class OBJ_VoidShard extends Entity {
 
-    public static final String objName = "Lumen Cell";
+    public static final String objName = "Void Shard";
 
-    public OBJ_LumenCell(GamePanel gamePanel) {
+    public OBJ_VoidShard(GamePanel gamePanel) {
         super(gamePanel);
 
         name = objName;
@@ -22,7 +22,7 @@ public class OBJ_LumenCell extends Entity {
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
 
-        down1 = setup("/objects/lumen_cell", gamePanel.tileSize, gamePanel.tileSize);
-        description = "[" + name + "]\nSimple, effective. \nA cell that produces light.";
+        down1 = setup("/objects/void_shard", gamePanel.tileSize, gamePanel.tileSize);
+        description = "[" + name + "]\n Resource use for crafting.";
     }
 }

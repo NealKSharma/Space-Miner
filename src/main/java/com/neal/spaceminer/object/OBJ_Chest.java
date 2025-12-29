@@ -24,7 +24,7 @@ public class OBJ_Chest extends Entity {
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
 
-        down1 = setup("/objects/Chest", gamePanel.tileSize, gamePanel.tileSize);
+        down1 = setup("/objects/chest", gamePanel.tileSize, gamePanel.tileSize);
         description = "[" + name + "]\nUsed to store items.";
 
         for(int i = 0; i < maxChestInvSize; i++) {

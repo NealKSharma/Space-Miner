@@ -46,6 +46,7 @@ public class Entity {
     public int itemAmount = 1;
     public int strength;
     public boolean placedOnGround = false;
+    public int mineCount = 0;
 
     public Entity(GamePanel gamePanel){
         this.gamePanel = gamePanel;

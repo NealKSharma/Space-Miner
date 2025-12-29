@@ -102,7 +102,7 @@ public class UI {
     }
     public void loadTitleBackground() {
         try {
-            titleScreenBackground = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/misc/titleBackground.png")));
+            titleScreenBackground = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/misc/title_background.png")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -121,8 +121,8 @@ public class UI {
 
                 // MOVE THE ROBOT
                 if(gamePanel.bot != null){
-                    gamePanel.bot.worldX = gamePanel.player.worldX + 32;
-                    gamePanel.bot.worldY = gamePanel.player.worldY + 32;
+                    gamePanel.bot.worldX = gamePanel.player.worldX + 64;
+                    gamePanel.bot.worldY = gamePanel.player.worldY + 64;
                 }
                 gamePanel.eventHandler.previousEventX = gamePanel.player.worldX;
                 gamePanel.eventHandler.previousEventY = gamePanel.player.worldY;

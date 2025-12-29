@@ -28,6 +28,11 @@ public class EntityGenerator {
             case IT_Pulsarite.objName: obj = new IT_Pulsarite(gamePanel); break;
             case IT_Scoria.objName: obj = new IT_Scoria(gamePanel); break;
             case IT_Void.objName: obj = new IT_Void(gamePanel); break;
+            case OBJ_Rock.objName: obj = new OBJ_Rock(gamePanel); break;
+            case OBJ_ChronoFilament.objName: obj = new OBJ_ChronoFilament(gamePanel); break;
+            case OBJ_Pulsarite.objName: obj = new OBJ_Pulsarite(gamePanel); break;
+            case OBJ_Scoria.objName: obj = new OBJ_Scoria(gamePanel); break;
+            case OBJ_VoidShard.objName: obj = new OBJ_VoidShard(gamePanel); break;
         }
         return obj;
     }

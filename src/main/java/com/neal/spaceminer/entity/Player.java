@@ -19,7 +19,6 @@ public class Player extends Entity {
     public Entity currentChest = null;
     public boolean canOpen;
     public boolean hasLight = false;
-    public int mineCount = 0;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
         super(gamePanel);
@@ -93,7 +92,7 @@ public class Player extends Entity {
         Entity objOnGround = gamePanel.obj.get(gamePanel.currentMap).get(index);
             if (objOnGround.canPickup) {
                 if(objOnGround.isStackable && searchInventory(objOnGround.name) != -1) {
-                    inventory.get(searchInventory(objOnGround.name)).itemAmount++;
+                    inventory.get(searchInventory(objOnGround.name)).itemAmount += objOnGround.itemAmount;
                     gamePanel.obj.get(gamePanel.currentMap).remove(index);
                 } else {
                     int emptySlot = getFirstEmptySlot();
@@ -313,20 +312,25 @@ public class Player extends Entity {
             mining = false;
         }
     }
-    public void mineObject(int i){
-        // MULTIPLIED BY 39 SINCE IT'S CALLED MULTIPLE TIMES WHILE THE ANIMATION IS HAPPENING
-        if(mineCount >= gamePanel.obj.get(gamePanel.currentMap).get(i).strength * 39){
-            generateParticle(gamePanel.obj.get(gamePanel.currentMap).get(i), gamePanel.obj.get(gamePanel.currentMap).get(i));
-            Entity drop = gamePanel.obj.get(gamePanel.currentMap).get(i).getDrop();
-            gamePanel.assetSetter.replaceTile(gamePanel.obj.get(gamePanel.currentMap).get(i)); // REPLACE THE TILE
+    public void mineObject(int i) {
+        Entity ore = gamePanel.obj.get(gamePanel.currentMap).get(i);
+        if (ore.mineCount >= ore.strength * 39) {
+            generateParticle(ore, ore);
+
+            int randAmount = (int)(Math.random() * 3) + 1;
+            for (int k = 0; k < randAmount; k++) {
+                gamePanel.obj.get(gamePanel.currentMap).add(ore.getDrop());
+            }
+
+            gamePanel.assetSetter.replaceTile(ore);
             gamePanel.obj.get(gamePanel.currentMap).remove(i);
-            gamePanel.obj.get(gamePanel.currentMap).add(drop);
-            mineCount = 0;
+            ore.mineCount = 0;
         } else {
-            mineCount++;
-            if(mineCount % 40 == 0){
-                generateParticle(gamePanel.obj.get(gamePanel.currentMap).get(i), gamePanel.obj.get(gamePanel.currentMap).get(i));
+            ore.mineCount++;
+            if (ore.mineCount % 40 == 0) {
+                generateParticle(ore, ore);
             }
         }
     }
+
 }
