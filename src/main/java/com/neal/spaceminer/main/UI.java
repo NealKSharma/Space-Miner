@@ -109,10 +109,10 @@ public class UI {
     }
     public void drawTransition(){
         counter++;
-        g2.setColor(new Color(0, 0, 0, counter * 5));
+        g2.setColor(new Color(0, 0, 0, counter * 8));
         g2.fillRect(0, 0, gamePanel.screenWidth, gamePanel.screenHeight);
 
-        if(counter == 50){
+        if(counter == 30){
             counter = 0;
             if(transitionType == 0) {
                 gamePanel.currentMap = gamePanel.eventHandler.tempMap;
@@ -122,7 +122,7 @@ public class UI {
                 // MOVE THE ROBOT
                 if(gamePanel.bot != null){
                     gamePanel.bot.worldX = gamePanel.player.worldX + 64;
-                    gamePanel.bot.worldY = gamePanel.player.worldY + 64;
+                    gamePanel.bot.worldY = gamePanel.player.worldY;
                 }
                 gamePanel.eventHandler.previousEventX = gamePanel.player.worldX;
                 gamePanel.eventHandler.previousEventY = gamePanel.player.worldY;

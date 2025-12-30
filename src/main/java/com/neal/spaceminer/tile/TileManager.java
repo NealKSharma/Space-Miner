@@ -50,6 +50,12 @@ public class TileManager {
 
         // Black Tile
         setup(16, "16_black", true);
+
+        // Habitat
+        setup(17, "17_wall", true);
+        setup(18, "18_floor", false);
+        setup(19, "19_door", true);
+
     }
     public void setup(int index, String imageName, boolean collision) {
         Utility utility = new Utility();

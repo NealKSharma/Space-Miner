@@ -44,13 +44,13 @@ public class EventHandler {
         int xDistance = Math.abs(gamePanel.player.worldX - previousEventX);
         int yDistance = Math.abs(gamePanel.player.worldY - previousEventY);
         int distance = Math.max(xDistance, yDistance);
-        if(distance > gamePanel.tileSize){
+        if(distance > gamePanel.tileSize/2){
             canTouchEvent = true;
         }
 
         if(canTouchEvent){
-            if(hit(0, 72, 81, "any")){ mapSwitch(1, 70, 79); }
-            else if(hit(1, 70, 79, "any")){ mapSwitch(0, 72, 81); }
+            if(hit(0, 74, 70, "any")){ mapSwitch(1, 50, 59); }
+            else if(hit(1, 50, 59, "any")){ mapSwitch(0, 74, 70); }
         }
     }
     public boolean hit(int map, int col, int row, String reqDirection){
