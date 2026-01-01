@@ -1,7 +1,9 @@
 package com.neal.spaceminer.main;
 
 import com.neal.spaceminer.entity.Entity;
-import com.neal.spaceminer.object.OBJ_LumenCell;
+import com.neal.spaceminer.object.OBJ_ChronoFilament;
+import com.neal.spaceminer.object.OBJ_EMPNullifier;
+import com.neal.spaceminer.object.OBJ_SignalJammer;
 
 import java.util.ArrayList;
 
@@ -22,60 +24,15 @@ public class Crafting {
         recipeNames.clear();
         recipeAmounts.clear();
 
-        // RECIPE 1
-        craftableItems.add(new OBJ_LumenCell(gamePanel));
+        // RECIPE 1: EMP NULLIFIER
+        craftableItems.add(new OBJ_EMPNullifier(gamePanel));
         recipeNames.add(new String[]{ "Rock", "Chrono Filament", "Pulsarite", "Void Shard" });
-        recipeAmounts.add(new int[]{ 5, 2, 2, 1 });
+        recipeAmounts.add(new int[]{ 2, 4, 4, 1 });
 
-        // RECIPE 1
-        craftableItems.add(new OBJ_LumenCell(gamePanel));
-        recipeNames.add(new String[]{ "Rock", "Chrono Filament", "Pulsarite", "Void Shard" });
-        recipeAmounts.add(new int[]{ 5, 2, 2, 1 });
-
-        // RECIPE 1
-        craftableItems.add(new OBJ_LumenCell(gamePanel));
-        recipeNames.add(new String[]{ "Rock", "Chrono Filament", "Pulsarite", "Void Shard" });
-        recipeAmounts.add(new int[]{ 5, 2, 2, 1 });
-
-        // RECIPE 1
-        craftableItems.add(new OBJ_LumenCell(gamePanel));
-        recipeNames.add(new String[]{ "Rock", "Chrono Filament", "Pulsarite", "Void Shard" });
-        recipeAmounts.add(new int[]{ 5, 2, 2, 1 });
-
-        // RECIPE 1
-        craftableItems.add(new OBJ_LumenCell(gamePanel));
-        recipeNames.add(new String[]{ "Rock", "Chrono Filament", "Pulsarite", "Void Shard" });
-        recipeAmounts.add(new int[]{ 5, 2, 2, 1 });
-
-        // RECIPE 1
-        craftableItems.add(new OBJ_LumenCell(gamePanel));
-        recipeNames.add(new String[]{ "Rock", "Chrono Filament", "Pulsarite", "Void Shard" });
-        recipeAmounts.add(new int[]{ 5, 2, 2, 1 });
-
-        // RECIPE 1
-        craftableItems.add(new OBJ_LumenCell(gamePanel));
-        recipeNames.add(new String[]{ "Rock", "Chrono Filament", "Pulsarite", "Void Shard" });
-        recipeAmounts.add(new int[]{ 5, 2, 2, 1 });
-
-        // RECIPE 1
-        craftableItems.add(new OBJ_LumenCell(gamePanel));
-        recipeNames.add(new String[]{ "Rock", "Chrono Filament", "Pulsarite", "Void Shard" });
-        recipeAmounts.add(new int[]{ 5, 2, 2, 1 });
-
-        // RECIPE 1
-        craftableItems.add(new OBJ_LumenCell(gamePanel));
-        recipeNames.add(new String[]{ "Rock", "Chrono Filament", "Pulsarite", "Void Shard" });
-        recipeAmounts.add(new int[]{ 5, 2, 2, 1 });
-
-        // RECIPE 1
-        craftableItems.add(new OBJ_LumenCell(gamePanel));
-        recipeNames.add(new String[]{ "Rock", "Chrono Filament", "Pulsarite", "Void Shard" });
-        recipeAmounts.add(new int[]{ 5, 2, 2, 1 });
-
-        // RECIPE 1
-        craftableItems.add(new OBJ_LumenCell(gamePanel));
-        recipeNames.add(new String[]{ "Rock", "Chrono Filament", "Pulsarite", "Void Shard" });
-        recipeAmounts.add(new int[]{ 5, 2, 2, 1 });
+        // RECIPE 2: CHRONO SIGNAL JAMMER
+        craftableItems.add(new OBJ_SignalJammer(gamePanel));
+        recipeNames.add(new String[]{ "Scoria", "Chrono Filament", "Pulsarite", "Void Shard" });
+        recipeAmounts.add(new int[]{ 3, 2, 2, 3 });
     }
     public boolean canCraft(int index){
         if(index >= craftableItems.size()) return false;
@@ -93,7 +50,7 @@ public class Crafting {
     public void craft(int index){
         if(!canCraft(index)) return;
         int slot = gamePanel.player.getFirstEmptySlot();
-        if(slot == -1) return;
+        if(slot == -1) return; // INVENTORY FULL
 
         String[] requiredNames = recipeNames.get(index);
         int[] requiredAmounts = recipeAmounts.get(index);
@@ -118,7 +75,8 @@ public class Crafting {
     }
     private Entity generateNewItem(String itemName) {
         switch(itemName) {
-            case "Lumen Cell": return new OBJ_LumenCell(gamePanel);
+            case "EMP Nullifier": return new OBJ_EMPNullifier(gamePanel);
+            case "Chronal Signal Jammer": return new OBJ_SignalJammer(gamePanel);
             default: return null;
         }
     }
