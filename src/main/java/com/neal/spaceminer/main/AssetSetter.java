@@ -58,12 +58,11 @@ public class AssetSetter {
         place(new OBJ_Habitat(gamePanel), 0, 72, 66, true);
 
         // MAP 2
-        OBJ_Chest chest3 = (OBJ_Chest) place(new OBJ_Chest(gamePanel), 1, 70, 77, true);
+        OBJ_Chest chest3 = (OBJ_Chest) place(new OBJ_Chest(gamePanel), 1, 47, 47, true);
         chest3.chestInv.set(0, new OBJ_Pickaxe(gamePanel));
         chest3.chestInv.set(7, cells);
 
-        place(new OBJ_Astronaut(gamePanel), 1, 70, 75, true);
-        place(new OBJ_Pickaxe(gamePanel), 1, 72, 75, true);
+        place(new OBJ_CraftingStation(gamePanel), 1, 50, 53, true);
     }
     public void setNPC(){
         // NPC THAT FOLLOWS PLAYER - MAP 1

@@ -23,6 +23,6 @@ public class OBJ_Scoria extends Entity {
         solidAreaDefaultY = solidArea.y;
 
         down1 = setup("/objects/scoria", gamePanel.tileSize, gamePanel.tileSize);
-        description = "[" + name + "]\n Resource use for crafting.";
+        description = "[" + name + "]\nResource use for crafting.";
     }
 }

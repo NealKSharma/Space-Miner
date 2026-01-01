@@ -34,6 +34,7 @@ public class EntityGenerator {
             case OBJ_Scoria.objName: obj = new OBJ_Scoria(gamePanel); break;
             case OBJ_VoidShard.objName: obj = new OBJ_VoidShard(gamePanel); break;
             case OBJ_Habitat.objName: obj = new OBJ_Habitat(gamePanel); break;
+            case OBJ_CraftingStation.objName: obj = new OBJ_CraftingStation(gamePanel); break;
         }
         return obj;
     }

@@ -51,6 +51,7 @@ public class GamePanel extends JPanel implements Runnable {
     public EntityGenerator entityGenerator = new EntityGenerator(this);
     public PathFinder pathFinder = new PathFinder(this);
     public EventHandler eventHandler = new EventHandler(this);
+    public Crafting crafting = new Crafting(this);
     Map map = new Map(this);
     Thread gameThread;
 
@@ -69,8 +70,9 @@ public class GamePanel extends JPanel implements Runnable {
     public final int pauseState = 2;
     public final int inventoryState = 3;
     public final int chestState = 4;
-    public final int transitionState = 5;
-    public final int mapState = 6;
+    public final int craftingState = 5;
+    public final int transitionState = 6;
+    public final int mapState = 7;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));

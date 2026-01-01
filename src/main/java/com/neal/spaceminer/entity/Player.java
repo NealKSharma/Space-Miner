@@ -16,13 +16,12 @@ public class Player extends Entity {
     public ArrayList<Entity> inventory = new ArrayList<>();
     public final int maxInventorySize = 20;
 
-    public Entity currentChest = null;
-    public boolean canOpen;
+    public Entity currentObj = null;
     public boolean hasLight = false;
+    public int objType;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
         super(gamePanel);
-
         this.keyHandler = keyHandler;
 
         screenX = gamePanel.screenWidth / 2 - gamePanel.tileSize / 2;
@@ -58,7 +57,7 @@ public class Player extends Entity {
         initialize();
         direction = "down";
 
-        currentChest = null;
+        currentObj = null;
         hasLight = false;
         mineCount = 0;
 
@@ -89,27 +88,39 @@ public class Player extends Entity {
         mineRight2 = setup("/astronaut_pickaxing/pickaxe_right2", gamePanel.tileSize*2, gamePanel.tileSize);
     }
     public void interactWithObject(int index) {
-        Entity objOnGround = gamePanel.obj.get(gamePanel.currentMap).get(index);
-            if (objOnGround.canPickup) {
-                if(objOnGround.isStackable && searchInventory(objOnGround.name) != -1) {
-                    inventory.get(searchInventory(objOnGround.name)).itemAmount += objOnGround.itemAmount;
+        currentObj = gamePanel.obj.get(gamePanel.currentMap).get(index);
+            if (currentObj.canPickup) {
+                if(currentObj.isStackable && searchInventory(currentObj.name) != -1) {
+                    inventory.get(searchInventory(currentObj.name)).itemAmount += currentObj.itemAmount;
                     gamePanel.obj.get(gamePanel.currentMap).remove(index);
                 } else {
                     int emptySlot = getFirstEmptySlot();
                     if (emptySlot != -1) {
-                        inventory.set(emptySlot, objOnGround);
+                        inventory.set(emptySlot, currentObj);
                         gamePanel.obj.get(gamePanel.currentMap).remove(index);
                         itemBehaviour();
                     } else {
                         // INVENTORY FULL
                     }
-                    inventory.set(emptySlot, objOnGround);
+                    inventory.set(emptySlot, currentObj);
                     itemBehaviour();
                 }
-            } else if ("Chest".equals(objOnGround.name)) {
-                canOpen = true;
-                currentChest = objOnGround;
+            } else {
+                switch (currentObj.name) {
+                    case "Chest": objType = 1; break;
+                    case "Crafting Station": objType = 2; break;
+                }
             }
+    }
+    public void removeItems(String name, int amount){
+        int itemSlot = searchInventory(name);
+        if(itemSlot == -1) return;
+        if(inventory.get(itemSlot).itemAmount > amount){
+            inventory.get(itemSlot).itemAmount -= amount;
+        } else {
+            inventory.set(itemSlot, null);
+        }
+        itemBehaviour();
     }
     public void interactWithEntity(int index) { }
     public void setItems(){
@@ -133,8 +144,8 @@ public class Player extends Entity {
         return -1;  // inventory full
     }
     public void transferChestItem(int slotCol, int slotRow){
-        if(currentChest == null) return;
-        OBJ_Chest chest = (OBJ_Chest) currentChest;
+        if(currentObj == null) return;
+        OBJ_Chest chest = (OBJ_Chest) currentObj;
 
         if(slotCol < 6) {
             // Taking from chest
@@ -229,7 +240,7 @@ public class Player extends Entity {
             if (keyHandler.left) direction = "left";
             if (keyHandler.right) direction = "right";
 
-            canOpen = false;
+            objType = 0;
             collisionOn = false;
             gamePanel.collisionChecker.checkTile(this);
 
@@ -332,5 +343,4 @@ public class Player extends Entity {
             }
         }
     }
-
 }
