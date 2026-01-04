@@ -253,7 +253,8 @@ public class Player extends Entity {
             // CHECK COLLISION WITH BOT
             boolean collision = gamePanel.collisionChecker.checkBot(this, gamePanel.bot);
             if(collision) {
-                // BOT SPECIFIC ACTIONS
+                gamePanel.gameState = gamePanel.dialogueState;
+                gamePanel.bot.speak();
             }
 
             // CHECK EVENTS

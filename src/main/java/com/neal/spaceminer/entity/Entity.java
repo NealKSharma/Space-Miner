@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Entity {
@@ -24,6 +25,7 @@ public class Entity {
     public int spriteNum = 1;
     public int actionCooldown = 0;
     boolean mining = false;
+    ArrayList<String> dialogue = new  ArrayList<>();
 
     // COLLISION
     public Rectangle solidArea = new Rectangle(0, 0, 64, 64);
@@ -34,6 +36,7 @@ public class Entity {
     // STATE
     public boolean alive = true;
     public boolean onPath = false;
+    public int dialogueIndex = 0;
 
     // ITEM ATTRIBUTES
     public String description = "";
@@ -157,6 +160,7 @@ public class Entity {
     public void setAction() {
 
     }
+    public void speak(){}
     public BufferedImage setup(String imagePath, int width, int height) {
         Utility utility = new Utility();
         BufferedImage image = null;

@@ -24,13 +24,14 @@ public class KeyHandler implements KeyListener {
 
         int key = e.getKeyCode();
 
-        if (gamePanel.gameState == gamePanel.titleState){ titleState(key); }
-        else if (gamePanel.gameState == gamePanel.playState){ playState(key); }
-        else if (gamePanel.gameState == gamePanel.pauseState){ pauseState(key); }
-        else if (gamePanel.gameState == gamePanel.inventoryState){ inventoryState(key); }
-        else if (gamePanel.gameState == gamePanel.chestState){ chestState(key); }
-        else if(gamePanel.gameState == gamePanel.craftingState) { craftingState(key); }
-        else if (gamePanel.gameState == gamePanel.mapState) { mapState(key); }
+        if (gamePanel.gameState == gamePanel.titleState) titleState(key);
+        else if (gamePanel.gameState == gamePanel.playState) playState(key);
+        else if (gamePanel.gameState == gamePanel.pauseState) pauseState(key);
+        else if (gamePanel.gameState == gamePanel.inventoryState) inventoryState(key);
+        else if (gamePanel.gameState == gamePanel.chestState) chestState(key);
+        else if(gamePanel.gameState == gamePanel.craftingState) craftingState(key);
+        else if (gamePanel.gameState == gamePanel.mapState) mapState(key);
+        else if (gamePanel.gameState == gamePanel.dialogueState) dialogueState(key);
     }
     public void titleState(int key){
         if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) {
@@ -366,6 +367,17 @@ public class KeyHandler implements KeyListener {
     }
     public void mapState(int key) {
         if(key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_M) gamePanel.gameState = gamePanel.playState;
+    }
+    public void dialogueState(int key){
+        if(key == KeyEvent.VK_ESCAPE) gamePanel.gameState = gamePanel.playState;
+        if(key == KeyEvent.VK_ENTER) gamePanel.bot.speak();
+        if(key == KeyEvent.VK_BACK_SPACE) {
+            gamePanel.bot.dialogueIndex -= 2;
+            if(gamePanel.bot.dialogueIndex < 0){
+                gamePanel.bot.dialogueIndex = 0;
+            }
+            gamePanel.bot.speak();
+        }
     }
     @Override
     public void keyReleased(KeyEvent e) {

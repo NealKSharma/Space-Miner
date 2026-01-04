@@ -22,17 +22,40 @@ public class NPC_Robot extends Entity {
         solidArea.height = gamePanel.tileSize - 25;
 
         getImage();
+        setDialogue();
     }
 
     public void getImage() {
-        up1 = setup("/astronaut/back1", gamePanel.tileSize, gamePanel.tileSize);
-        up2 = setup("/astronaut/back2", gamePanel.tileSize, gamePanel.tileSize);
-        down1 = setup("/astronaut/front1", gamePanel.tileSize, gamePanel.tileSize);
-        down2 = setup("/astronaut/front2", gamePanel.tileSize, gamePanel.tileSize);
-        left1 = setup("/astronaut/left1", gamePanel.tileSize, gamePanel.tileSize);
-        left2 = setup("/astronaut/left2", gamePanel.tileSize, gamePanel.tileSize);
-        right1 = setup("/astronaut/right1", gamePanel.tileSize, gamePanel.tileSize);
-        right2 = setup("/astronaut/right2", gamePanel.tileSize, gamePanel.tileSize);
+        // ONE TYPE OF IMAGE FOR THE ROBOT
+        up1 = setup("/robot/robot", gamePanel.tileSize, gamePanel.tileSize);
+
+        up2 = up1;
+        down1 = up1;
+        down2 = up1;
+        left1 = up1;
+        left2 = up1;
+        right1 = up1;
+        right2 = up1;
+    }
+    public void setDialogue(){
+        dialogue.add("First Text");
+        dialogue.add("Second Text");
+        dialogue.add("Third Text");
+        dialogue.add("Fourth Text");
+    }
+    public void speak(){
+        if(dialogueIndex >= dialogue.size()){
+            dialogueIndex = 0;
+        }
+        gamePanel.ui.currentDialogue = dialogue.get(dialogueIndex);
+        dialogueIndex++;
+
+        switch(gamePanel.player.direction){
+            case "up": direction = "down"; break;
+            case "down": direction = "up"; break;
+            case "left": direction = "right"; break;
+            case "right": direction = "left"; break;
+        }
     }
     public void setAction() {
         speed = (speed == 0) ? gamePanel.player.speed : 0;

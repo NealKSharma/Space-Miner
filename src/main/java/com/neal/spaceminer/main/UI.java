@@ -7,12 +7,13 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 
 public class UI {
     GamePanel gamePanel;
     Graphics2D g2;
-    Font arial_40;
+    Font maruMonica;
 
     BufferedImage titleScreenBackground;
     Color subWindowBackground = new Color(0, 0, 0, 170);
@@ -26,10 +27,18 @@ public class UI {
 
     public int slotCol = 0;
     public int slotRow = 0;
+    public String currentDialogue = "";
 
     public UI(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
-        arial_40 = new Font("Arial", Font.PLAIN, 25);
+        try {
+            InputStream is = getClass().getResourceAsStream("/font/MaruMonica.ttf");
+            maruMonica = Font.createFont(Font.TRUETYPE_FONT, is);
+        } catch (FontFormatException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         loadTitleBackground();
     }
@@ -39,7 +48,7 @@ public class UI {
 
         Font originalFont = g2.getFont();
 
-        g2.setFont(arial_40);
+        g2.setFont(maruMonica);
         g2.setColor(Color.white);
 
         if (gamePanel.gameState == gamePanel.playState) drawPlayScreen();
@@ -48,10 +57,12 @@ public class UI {
         else if (gamePanel.gameState == gamePanel.inventoryState) drawInventoryScreen();
         else if (gamePanel.gameState == gamePanel.chestState) drawChestScreen();
         else if (gamePanel.gameState == gamePanel.craftingState) drawCraftingScreen();
+        else if (gamePanel.gameState == gamePanel.dialogueState) drawDialogueScreen();
         else if (gamePanel.gameState == gamePanel.transitionState) {
             if (transitionType == 1 && counter < 85) drawTitleScreen();
             drawTransition();
         }
+
         g2.setFont(originalFont);
     }
     public void drawTitleScreen() {
@@ -733,6 +744,22 @@ public class UI {
                     g2.drawString("Inventory Full!", textX, textY);
                 }
             }
+        }
+    }
+    public void drawDialogueScreen(){
+        int x = gamePanel.tileSize*2;
+        int y = gamePanel.tileSize/2;
+        int width = gamePanel.screenWidth - (gamePanel.tileSize * 4);
+        int height = gamePanel.tileSize * 5;
+
+        drawSubWindow(x, y, width, height);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN,32F));
+        x += gamePanel.tileSize;
+        y += gamePanel.tileSize;
+        for(String line: currentDialogue.split("\n")){
+            g2.drawString(line, x, y);
+            y += 40;
         }
     }
     public int getItemIndexOnSlotInventory(){
