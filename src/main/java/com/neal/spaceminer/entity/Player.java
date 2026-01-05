@@ -15,6 +15,10 @@ public class Player extends Entity {
     public final int screenY;
     public ArrayList<Entity> inventory = new ArrayList<>();
     public final int maxInventorySize = 20;
+    public int maxStamina = gamePanel.FPS;;
+    public int stamina = maxStamina;
+    public int staminaRechargeCounter = 0;
+    public int suiteIntegrity = 100;
 
     public Entity currentObj = null;
     public boolean hasLight = false;
@@ -260,6 +264,13 @@ public class Player extends Entity {
             // CHECK EVENTS
             gamePanel.eventHandler.checkEvent();
 
+            if(keyHandler.sprint){
+                if(stamina > 0){
+                    stamina--;
+                    speed = speed*2;
+                }
+            }
+
             // IF COLLISION IS FALSE, PLAYER CAN MOVE
             if (!collisionOn) {
                 switch (direction) {
@@ -269,6 +280,8 @@ public class Player extends Entity {
                     case "right": worldX += speed; break;
                 }
             }
+
+            speed = 1;
 
             spriteCounter++;
             if (spriteCounter > 32) {
@@ -283,6 +296,13 @@ public class Player extends Entity {
             // PLAYER IS STANDING STILL
             int objIndex = gamePanel.collisionChecker.checkObject(this, true);
             if (objIndex != -1) interactWithObject(objIndex);
+        }
+        if (stamina < maxStamina) {
+            staminaRechargeCounter++;
+            if(staminaRechargeCounter > 12){
+                stamina++;
+                staminaRechargeCounter = 0;
+            }
         }
     }
     public void mining() {

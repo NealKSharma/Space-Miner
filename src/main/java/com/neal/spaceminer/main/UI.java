@@ -177,6 +177,26 @@ public class UI {
             slotX += slotSize;
         }
 
+        // DRAW INTEGRITY BAR
+        frameX += 20;
+        frameY -= gamePanel.tileSize/2;
+        g2.setColor(Color.LIGHT_GRAY);
+        g2.drawRect(frameX, frameY, (gamePanel.tileSize*5) + 9, gamePanel.tileSize/3);
+        int integrityWidth = (int) (((double)gamePanel.player.suiteIntegrity/100) * (gamePanel.tileSize*5));
+        g2.setColor(Color.RED);
+        g2.fillRect(frameX + 5, frameY + 5, integrityWidth, (gamePanel.tileSize/3) - 9);
+
+        // DRAW STAMINA BAR
+        frameY -= gamePanel.tileSize/2;
+        g2.setColor(Color.LIGHT_GRAY);
+        g2.drawRect(frameX, frameY, (gamePanel.tileSize*5) + 9, gamePanel.tileSize/3);
+        int staminaWidth = (int) (((double)gamePanel.player.stamina/gamePanel.player.maxStamina) * (gamePanel.tileSize*5));
+        g2.setColor(Color.CYAN);
+        g2.fillRect(frameX + 5, frameY + 5, staminaWidth, (gamePanel.tileSize/3) - 9);
+
+
+        g2.setColor(Color.WHITE);
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN,32F));
         if (gamePanel.player.objType != 0) {
             g2.drawString("Press E to interact", 10, gamePanel.screenHeight / 2);
         }
@@ -190,6 +210,11 @@ public class UI {
         int frameY = gamePanel.tileSize;
         int frameWidth = gamePanel.tileSize * 8;
         int frameHeight = gamePanel.tileSize * 10;
+
+        if(subState == 2) {
+            frameX = gamePanel.tileSize * 2;
+            frameWidth = gamePanel.tileSize * 16;
+        }
 
         drawSubWindow(frameX, frameY, frameWidth, frameHeight);
 
@@ -315,6 +340,7 @@ public class UI {
         int textY = frameY + gamePanel.tileSize;
         g2.drawString(text, textX, textY);
 
+        // LEFT HALF
         textX = frameX + gamePanel.tileSize;
         textY += (int) (gamePanel.tileSize*1.5);
         g2.drawString("Move", textX, textY); textY += gamePanel.tileSize;
@@ -324,7 +350,7 @@ public class UI {
         g2.drawString("Map", textX, textY); textY += gamePanel.tileSize;
         g2.drawString("Options", textX, textY);
 
-        textX = frameX + gamePanel.tileSize*5;
+        textX += gamePanel.tileSize*4;
         textY = (int) (frameY + gamePanel.tileSize*2.5);
         g2.drawString("W A S D", textX, textY); textY += gamePanel.tileSize;
         g2.drawString("F", textX, textY); textY += gamePanel.tileSize;
@@ -332,6 +358,17 @@ public class UI {
         g2.drawString("1 2 3 4 5", textX, textY); textY += gamePanel.tileSize;
         g2.drawString("M", textX, textY); textY += gamePanel.tileSize;
         g2.drawString("ESC", textX, textY);
+
+        // RIGHT HALF
+        textX += gamePanel.tileSize*5;
+        textY = (int) (frameY + gamePanel.tileSize*2.5);
+        g2.drawString("Sprint", textX, textY); textY += gamePanel.tileSize;
+        g2.drawString("Debug", textX, textY); textY += gamePanel.tileSize;
+
+        textX += gamePanel.tileSize*4;
+        textY = (int) (frameY + gamePanel.tileSize*2.5);
+        g2.drawString("Shift", textX, textY); textY += gamePanel.tileSize;
+        g2.drawString("F3", textX, textY); textY += gamePanel.tileSize;
 
         textX = frameX + gamePanel.tileSize;
         textY = frameY + gamePanel.tileSize*9;

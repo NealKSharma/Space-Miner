@@ -7,7 +7,7 @@ public class KeyHandler implements KeyListener {
 
     GamePanel gamePanel;
 
-    public boolean up, down, left, right, saved;
+    public boolean up, down, left, right, sprint, saved;
 
     public boolean showDebug = false;
 
@@ -69,6 +69,7 @@ public class KeyHandler implements KeyListener {
         if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) left = true;
         if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) down = true;
         if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) right = true;
+        if(key == KeyEvent.VK_SHIFT) sprint = true;
 
         // SLOTS
         if (key == KeyEvent.VK_1) {
@@ -369,7 +370,7 @@ public class KeyHandler implements KeyListener {
         if(key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_M) gamePanel.gameState = gamePanel.playState;
     }
     public void dialogueState(int key){
-        if(key == KeyEvent.VK_ESCAPE) gamePanel.gameState = gamePanel.playState;
+        if(key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_E) gamePanel.gameState = gamePanel.playState;
         if(key == KeyEvent.VK_ENTER) gamePanel.bot.speak();
         if(key == KeyEvent.VK_BACK_SPACE) {
             gamePanel.bot.dialogueIndex -= 2;
@@ -387,5 +388,6 @@ public class KeyHandler implements KeyListener {
         if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) left = false;
         if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) down = false;
         if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) right = false;
+        if (key == KeyEvent.VK_SHIFT) sprint = false;
     }
 }
