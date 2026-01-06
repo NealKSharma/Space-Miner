@@ -54,7 +54,7 @@ public class TileManager {
         // Habitat
         setup(17, "17_wall", true);
         setup(18, "18_floor", false);
-        setup(19, "19_door", true);
+        setup(19, "groundEnterance", true);
 
     }
     public void setup(int index, String imageName, boolean collision) {

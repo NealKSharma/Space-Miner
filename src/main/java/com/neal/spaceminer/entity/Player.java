@@ -82,14 +82,14 @@ public class Player extends Entity {
         right2 = setup("/astronaut/right2", gamePanel.tileSize, gamePanel.tileSize);
     }
     public void getMineImage(){
-        mineUp1 = setup("/astronaut_pickaxing/pickaxe_back1", gamePanel.tileSize, gamePanel.tileSize*2);
-        mineUp2 = setup("/astronaut_pickaxing/pickaxe_back2", gamePanel.tileSize, gamePanel.tileSize*2);
-        mineDown1 = setup("/astronaut_pickaxing/pickaxe_front1", gamePanel.tileSize, gamePanel.tileSize*2);
-        mineDown2 = setup("/astronaut_pickaxing/pickaxe_front2", gamePanel.tileSize, gamePanel.tileSize*2);
-        mineLeft1 = setup("/astronaut_pickaxing/pickaxe_left1", gamePanel.tileSize*2, gamePanel.tileSize);
-        mineLeft2 = setup("/astronaut_pickaxing/pickaxe_left2", gamePanel.tileSize*2, gamePanel.tileSize);
-        mineRight1 = setup("/astronaut_pickaxing/pickaxe_right1", gamePanel.tileSize*2, gamePanel.tileSize);
-        mineRight2 = setup("/astronaut_pickaxing/pickaxe_right2", gamePanel.tileSize*2, gamePanel.tileSize);
+        mineUp1 = setup("/astronaut/pickaxe_back1", gamePanel.tileSize, gamePanel.tileSize*2);
+        mineUp2 = setup("/astronaut/pickaxe_back2", gamePanel.tileSize, gamePanel.tileSize*2);
+        mineDown1 = setup("/astronaut/pickaxe_front1", gamePanel.tileSize, gamePanel.tileSize*2);
+        mineDown2 = setup("/astronaut/pickaxe_front2", gamePanel.tileSize, gamePanel.tileSize*2);
+        mineLeft1 = setup("/astronaut/pickaxe_left1", gamePanel.tileSize*2, gamePanel.tileSize);
+        mineLeft2 = setup("/astronaut/pickaxe_left2", gamePanel.tileSize*2, gamePanel.tileSize);
+        mineRight1 = setup("/astronaut/pickaxe_right1", gamePanel.tileSize*2, gamePanel.tileSize);
+        mineRight2 = setup("/astronaut/pickaxe_right2", gamePanel.tileSize*2, gamePanel.tileSize);
     }
     public void interactWithObject(int index) {
         currentObj = gamePanel.obj.get(gamePanel.currentMap).get(index);

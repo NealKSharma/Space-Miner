@@ -70,7 +70,7 @@ public class UI {
 
         // HEADING
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 64F));
-        String text = "THE LICH PROTOCOL";
+        String text = "SPACE-MINER";
         int x = gamePanel.tileSize;
         int y = gamePanel.tileSize * 2;
         g2.setColor(Color.DARK_GRAY);

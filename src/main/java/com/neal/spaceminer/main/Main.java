@@ -8,7 +8,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        window = new JFrame("The Lich Protocol");
+        window = new JFrame("Space-Miner");
 
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
