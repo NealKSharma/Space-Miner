@@ -8,11 +8,11 @@ import java.util.Random;
 public class HOS_Virus extends Entity {
 
     int speedLock = 0;
+    public static final String name = "Virus";
 
     public HOS_Virus(GamePanel gamePanel) {
         super(gamePanel);
 
-        name = "Virus";
         type = 2;
         speed = 1;
         maxLife = 4;
@@ -50,7 +50,7 @@ public class HOS_Virus extends Entity {
         if(onPath && tileDistance > 8) onPath = false;
     }
     public void setAction() {
-        if(speedLock == 5){
+        if(speedLock == 3){
             speed = gamePanel.player.speed;
             speedLock = 0;
         } else {

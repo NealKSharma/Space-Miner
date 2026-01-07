@@ -1,7 +1,6 @@
 package com.neal.spaceminer.entity;
 
 import com.neal.spaceminer.main.GamePanel;
-
 import java.awt.*;
 import java.util.Random;
 
@@ -57,7 +56,6 @@ public class NPC_Robot extends Entity {
         }
     }
     public void setAction() {
-        speed = (speed == 0) ? gamePanel.player.speed : 0;
         if(onPath){
             int goalCol = (gamePanel.player.worldX + gamePanel.player.solidArea.x) / gamePanel.tileSize;
             int goalRow = (gamePanel.player.worldY + gamePanel.player.solidArea.y) / gamePanel.tileSize;
@@ -68,6 +66,7 @@ public class NPC_Robot extends Entity {
             int range = 128;
 
             if(distanceX > range || distanceY > range) {
+                speed = 1;
                 searchPath(goalCol, goalRow);
             } else {
                 speed = 0;
@@ -75,7 +74,6 @@ public class NPC_Robot extends Entity {
             }
         } else {
             actionCooldown++;
-
             if(actionCooldown == gamePanel.FPS*2){
                 actionCooldown = 0;
 

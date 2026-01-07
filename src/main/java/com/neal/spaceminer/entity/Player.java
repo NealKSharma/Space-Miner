@@ -55,7 +55,7 @@ public class Player extends Entity {
     public void initialize() {
         worldX = gamePanel.tileSize * 75;
         worldY = gamePanel.tileSize * 80;
-        speed = 1;
+        speed = 2;
     }
     public void setDefaultValues() {
         initialize();
@@ -290,7 +290,7 @@ public class Player extends Entity {
                 }
             }
 
-            speed = 1;
+            speed = 2;
 
             spriteCounter++;
             if (spriteCounter > 32) {
@@ -310,7 +310,7 @@ public class Player extends Entity {
         // STAMINA REGAIN
         if (stamina < maxStamina) {
             staminaRechargeCounter++;
-            if(staminaRechargeCounter > 12){
+            if(staminaRechargeCounter > 6){
                 stamina++;
                 staminaRechargeCounter = 0;
             }
@@ -373,7 +373,6 @@ public class Player extends Entity {
             for (int k = 0; k < randAmount; k++) {
                 gamePanel.obj.get(gamePanel.currentMap).add(ore.getDrop());
             }
-
             gamePanel.assetSetter.replaceTile(ore);
             gamePanel.obj.get(gamePanel.currentMap).remove(i);
             ore.mineCount = 0;

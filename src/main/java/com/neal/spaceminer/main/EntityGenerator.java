@@ -23,11 +23,6 @@ public class EntityGenerator {
             case OBJ_ShipMiddle.objName: obj = new OBJ_ShipMiddle(gamePanel); break;
             case OBJ_SuitGenerator.objName: obj = new OBJ_SuitGenerator(gamePanel); break;
             case OBJ_Teleporter.objName: obj = new OBJ_Teleporter(gamePanel); break;
-            case IT_Rock.objName: obj = new IT_Rock(gamePanel); break;
-            case IT_Chrono.objName: obj = new IT_Chrono(gamePanel); break;
-            case IT_Pulsarite.objName: obj = new IT_Pulsarite(gamePanel); break;
-            case IT_Scoria.objName: obj = new IT_Scoria(gamePanel); break;
-            case IT_Void.objName: obj = new IT_Void(gamePanel); break;
             case OBJ_Rock.objName: obj = new OBJ_Rock(gamePanel); break;
             case OBJ_ChronoFilament.objName: obj = new OBJ_ChronoFilament(gamePanel); break;
             case OBJ_Pulsarite.objName: obj = new OBJ_Pulsarite(gamePanel); break;
@@ -37,6 +32,11 @@ public class EntityGenerator {
             case OBJ_CraftingStation.objName: obj = new OBJ_CraftingStation(gamePanel); break;
             case OBJ_EMPNullifier.objName: obj = new OBJ_EMPNullifier(gamePanel); break;
             case OBJ_SignalJammer.objName: obj = new OBJ_SignalJammer(gamePanel); break;
+            case IT_Rock.objName: obj = new IT_Rock(gamePanel); break;
+            case IT_Chrono.objName: obj = new IT_Chrono(gamePanel); break;
+            case IT_Pulsarite.objName: obj = new IT_Pulsarite(gamePanel); break;
+            case IT_Scoria.objName: obj = new IT_Scoria(gamePanel); break;
+            case IT_Void.objName: obj = new IT_Void(gamePanel); break;
         }
         return obj;
     }

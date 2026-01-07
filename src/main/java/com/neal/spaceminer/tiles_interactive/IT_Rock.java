@@ -47,6 +47,6 @@ public class IT_Rock extends Entity {
     }
     @Override
     public int getParticleDuration(){
-        return 80;
+        return 40;
     }
 }

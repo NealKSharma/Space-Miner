@@ -17,6 +17,10 @@ public class DataStorage implements Serializable {
     int[][] NPCX;
     int[][] NPCY;
 
+    // HOSTILE LOCATIONS
+    int[][] hostileX;
+    int[][] hostileY;
+
     // PLAYER INVENTORY
     ArrayList<String> itemNames = new ArrayList<String>();
     ArrayList<Integer> itemSlot = new ArrayList<>();

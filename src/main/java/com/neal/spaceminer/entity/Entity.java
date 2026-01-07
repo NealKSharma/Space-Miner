@@ -198,10 +198,10 @@ public class Entity {
         int size = generator.getParticleSize();
         int duration = generator.getParticleDuration();
 
-        Particle p1 = new Particle(gamePanel, generator, color, size, duration, -2, -1);
-        Particle p2 = new Particle(gamePanel, generator, color, size, duration, 2, -1);
-        Particle p3 = new Particle(gamePanel, generator, color, size, duration, -2, 1);
-        Particle p4 = new Particle(gamePanel, generator, color, size, duration, 2, 1);
+        Particle p1 = new Particle(gamePanel, generator, color, size, duration, -4, -2);
+        Particle p2 = new Particle(gamePanel, generator, color, size, duration, 4, -2);
+        Particle p3 = new Particle(gamePanel, generator, color, size, duration, -4, 2);
+        Particle p4 = new Particle(gamePanel, generator, color, size, duration, 4, 2);
         gamePanel.particleList.add(p1);
         gamePanel.particleList.add(p2);
         gamePanel.particleList.add(p3);

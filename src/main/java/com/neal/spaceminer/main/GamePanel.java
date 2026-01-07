@@ -36,7 +36,7 @@ public class GamePanel extends JPanel implements Runnable {
     public boolean fullScreen = true;
 
     // FPS
-    public int FPS = 265;
+    public int FPS = 120;
     public int currentFPS = 0;
 
     // SYSTEM

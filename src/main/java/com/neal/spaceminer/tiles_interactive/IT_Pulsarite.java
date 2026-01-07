@@ -16,7 +16,7 @@ public class IT_Pulsarite extends Entity {
         name = objName;
         collision = true;
         isBreakable = true;
-        strength = 2;
+        strength = 3;
 
         solidArea.x = 12;
         solidArea.y = 16;
@@ -47,6 +47,6 @@ public class IT_Pulsarite extends Entity {
     }
     @Override
     public int getParticleDuration(){
-        return 80;
+        return 40;
     }
 }

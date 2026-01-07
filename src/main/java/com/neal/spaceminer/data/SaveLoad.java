@@ -35,9 +35,14 @@ public class SaveLoad {
             ds.NPCX = new int[gamePanel.maxMap][];
             ds.NPCY = new int[gamePanel.maxMap][];
 
+            // HOSTILE LOCATIONS
+            ds.hostileX = new int[gamePanel.maxMap][];
+            ds.hostileY = new int[gamePanel.maxMap][];
+
             // CURRENT MAP
             ds.currentMap = gamePanel.currentMap;
 
+            // NPC
             for(int i = 0; i < gamePanel.maxMap; i++){
                 // Check if the NPC list for this map exists
                 if(gamePanel.npc.get(i) == null) continue;
@@ -50,6 +55,22 @@ public class SaveLoad {
                     if(gamePanel.npc.get(i).get(j) != null){
                         ds.NPCX[i][j] = gamePanel.npc.get(i).get(j).worldX;
                         ds.NPCY[i][j] = gamePanel.npc.get(i).get(j).worldY;
+                    }
+                }
+            }
+
+            // HOSTILE
+            for(int i = 0; i < gamePanel.maxMap; i++){
+                if(gamePanel.hostile.get(i) == null) continue;
+                int hostileCount = gamePanel.hostile.get(i).size();
+
+                ds.hostileX[i] = new int[hostileCount];
+                ds.hostileY[i] = new int[hostileCount];
+
+                for(int j = 0; j < hostileCount; j++){
+                    if(gamePanel.hostile.get(i).get(j) != null){
+                        ds.hostileX[i][j] = gamePanel.hostile.get(i).get(j).worldX;
+                        ds.hostileY[i][j] = gamePanel.hostile.get(i).get(j).worldY;
                     }
                 }
             }
@@ -131,11 +152,23 @@ public class SaveLoad {
             if (ds.NPCX != null) {
                 for(int i = 0; i < ds.NPCX.length; i++){
                     if(ds.NPCX[i] == null) continue;
-
                     for(int j = 0; j < ds.NPCX[i].length; j++){
                         if(j < gamePanel.npc.get(i).size() && gamePanel.npc.get(i).get(j) != null){
                             gamePanel.npc.get(i).get(j).worldX = ds.NPCX[i][j];
                             gamePanel.npc.get(i).get(j).worldY = ds.NPCY[i][j];
+                        }
+                    }
+                }
+            }
+
+            // HOSTILE LOCATIONS
+            if(ds.hostileX != null) {
+                for(int i = 0; i < ds.hostileX.length; i++){
+                    if(ds.hostileX[i] == null) continue;
+                    for(int j = 0; j < ds.hostileX[i].length; j++){
+                        if(j < gamePanel.hostile.get(i).size() && gamePanel.hostile.get(i).get(j) != null){
+                            gamePanel.hostile.get(i).get(j).worldX = ds.hostileX[i][j];
+                            gamePanel.hostile.get(i).get(j).worldY = ds.hostileY[i][j];
                         }
                     }
                 }
