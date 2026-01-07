@@ -127,6 +127,12 @@ public class Player extends Entity {
         itemBehaviour();
     }
     public void interactWithEntity(int index) { }
+    public void interactWithMonster(int index){
+        if(!invincible){
+            suiteIntegrity -= gamePanel.hostile.get(gamePanel.currentMap).get(index).damage;
+            invincible = true;
+        }
+    }
     public void setItems(){
         inventory.set(0, new OBJ_Pickaxe(gamePanel));
         itemBehaviour();
@@ -254,6 +260,9 @@ public class Player extends Entity {
             // CHECK COLLISION WITH ENTITIES
             int entityIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
             if(entityIndex != -1) interactWithEntity(entityIndex);
+            // CHECK COLLISION WITH HOSTILES
+            int hostileIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.hostile);
+            if(hostileIndex != -1) interactWithMonster(hostileIndex);
             // CHECK COLLISION WITH BOT
             boolean collision = gamePanel.collisionChecker.checkBot(this, gamePanel.bot);
             if(collision) {
@@ -297,11 +306,22 @@ public class Player extends Entity {
             int objIndex = gamePanel.collisionChecker.checkObject(this, true);
             if (objIndex != -1) interactWithObject(objIndex);
         }
+
+        // STAMINA REGAIN
         if (stamina < maxStamina) {
             staminaRechargeCounter++;
             if(staminaRechargeCounter > 12){
                 stamina++;
                 staminaRechargeCounter = 0;
+            }
+        }
+
+        // INVINCIBILITY COUNTER
+        if(invincible){
+            invincibleCounter++;
+            if(invincibleCounter > gamePanel.FPS){
+                invincible = false;
+                invincibleCounter = 0;
             }
         }
     }

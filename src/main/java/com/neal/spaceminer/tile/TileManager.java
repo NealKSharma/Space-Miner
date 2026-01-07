@@ -54,8 +54,7 @@ public class TileManager {
         // Habitat
         setup(17, "17_wall", true);
         setup(18, "18_floor", false);
-        setup(19, "groundEnterance", true);
-
+        setup(19, "19_door", true);
     }
     public void setup(int index, String imageName, boolean collision) {
         Utility utility = new Utility();
@@ -110,7 +109,6 @@ public class TileManager {
                 worldY - gamePanel.tileSize < playerWorldY + playerScreenY + buffer;
     }
     public void draw(Graphics2D g2) {
-
         int startCol = Math.max(0, (gamePanel.player.worldX - gamePanel.player.screenX) / gamePanel.tileSize - 2);
         int endCol = Math.min(gamePanel.maxWorldCol, (gamePanel.player.worldX + gamePanel.player.screenX) / gamePanel.tileSize + 3);
         int startRow = Math.max(0, (gamePanel.player.worldY - gamePanel.player.screenY) / gamePanel.tileSize - 2);
@@ -129,16 +127,14 @@ public class TileManager {
             }
         }
         if(drawPath){
-            g2.setColor(new Color(255, 0, 0, 60));
+            g2.setColor(new Color(255, 0, 0, 70));
             for(int i = 0; i < gamePanel.pathFinder.pathList.size(); i++){
-                if(gamePanel.pathFinder.pathList.get(i) != null ){
                     int worldX = gamePanel.pathFinder.pathList.get(i).col * gamePanel.tileSize;
                     int worldY = gamePanel.pathFinder.pathList.get(i).row * gamePanel.tileSize;
                     if(isOnScreen(worldX, worldY)){
                         int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
                         int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
                         g2.fillRect(screenX, screenY, gamePanel.tileSize, gamePanel.tileSize);
-                    }
                 }
             }
         }

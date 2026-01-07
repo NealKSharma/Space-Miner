@@ -1,33 +1,36 @@
-package com.neal.spaceminer.entity;
+package com.neal.spaceminer.hostiles;
 
+import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.main.GamePanel;
 
-import java.awt.*;
 import java.util.Random;
 
-public class NPC_Robot extends Entity {
+public class HOS_Virus extends Entity {
 
-    public NPC_Robot(GamePanel gamePanel){
+    int speedLock = 0;
+
+    public HOS_Virus(GamePanel gamePanel) {
         super(gamePanel);
 
-        direction = "down";
-        onPath = true;
+        name = "Virus";
+        type = 2;
+        speed = 1;
+        maxLife = 4;
+        life = maxLife;
+        damage = 20;
 
-        solidArea = new Rectangle();
-        solidArea.x = 18;
-        solidArea.y = 15;
+        solidArea.x = 12;
+        solidArea.y = 12;
+        solidArea.width = 40;
+        solidArea.height = 40;
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
-        solidArea.width = gamePanel.tileSize - 35;
-        solidArea.height = gamePanel.tileSize - 25;
 
         getImage();
-        setDialogue();
     }
-
     public void getImage() {
         // ONE TYPE OF IMAGE FOR THE ROBOT
-        up1 = setup("/robot/robot", gamePanel.tileSize, gamePanel.tileSize);
+        up1 = setup("/hostiles/hostile_1", gamePanel.tileSize, gamePanel.tileSize);
         up2 = up1;
         down1 = up1;
         down2 = up1;
@@ -36,43 +39,29 @@ public class NPC_Robot extends Entity {
         right1 = up1;
         right2 = up1;
     }
-    public void setDialogue(){
-        dialogue.add("First Text");
-        dialogue.add("Second Text");
-        dialogue.add("Third Text");
-        dialogue.add("Fourth Text");
-    }
-    public void speak(){
-        if(dialogueIndex >= dialogue.size()){
-            dialogueIndex = 0;
-        }
-        gamePanel.ui.currentDialogue = dialogue.get(dialogueIndex);
-        dialogueIndex++;
+    public void update(){
+        super.update();
 
-        switch(gamePanel.player.direction){
-            case "up": direction = "down"; break;
-            case "down": direction = "up"; break;
-            case "left": direction = "right"; break;
-            case "right": direction = "left"; break;
-        }
+        int xDistance = Math.abs(worldX - gamePanel.player.worldX);
+        int yDistance = Math.abs(worldY - gamePanel.player.worldY);
+        int tileDistance = (xDistance + yDistance)/gamePanel.tileSize;
+
+        if(!onPath && tileDistance < 5 && Math.random() < 0.005) onPath = true;
+        if(onPath && tileDistance > 8) onPath = false;
     }
     public void setAction() {
-        speed = (speed == 0) ? gamePanel.player.speed : 0;
+        if(speedLock == 5){
+            speed = gamePanel.player.speed;
+            speedLock = 0;
+        } else {
+            speed = 0;
+        }
+        speedLock++;
+
         if(onPath){
             int goalCol = (gamePanel.player.worldX + gamePanel.player.solidArea.x) / gamePanel.tileSize;
             int goalRow = (gamePanel.player.worldY + gamePanel.player.solidArea.y) / gamePanel.tileSize;
-
-            int distanceX = Math.abs(worldX - gamePanel.player.worldX);
-            int distanceY = Math.abs(worldY - gamePanel.player.worldY);
-
-            int range = 128;
-
-            if(distanceX > range || distanceY > range) {
-                searchPath(goalCol, goalRow);
-            } else {
-                speed = 0;
-                spriteCounter = 0;
-            }
+            searchPath(goalCol, goalRow);
         } else {
             actionCooldown++;
 
@@ -145,9 +134,6 @@ public class NPC_Robot extends Entity {
                 checkCollision();
                 if(collisionOn) direction = "right";
             }
-
-            // IF NPC HAS TO GET TO A CERTAIN ROW AND COL
-            // if(nextCol == goalCol && nextRow == goalRow) onPath = false;
         }
     }
 }

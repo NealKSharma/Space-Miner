@@ -25,7 +25,14 @@ public class Entity {
     public int spriteNum = 1;
     public int actionCooldown = 0;
     boolean mining = false;
+
+    // ENTITIES
     ArrayList<String> dialogue = new  ArrayList<>();
+    public int maxLife, life;
+    public boolean invincible = false;
+    public int invincibleCounter = 0;
+    public int damage = 0;
+    public int type; // 0 - Player, 1 - NPC, 2 - Hostile
 
     // COLLISION
     public Rectangle solidArea = new Rectangle(0, 0, 64, 64);
@@ -131,7 +138,17 @@ public class Entity {
         collisionOn = false;
         gamePanel.collisionChecker.checkTile(this);
         gamePanel.collisionChecker.checkObject(this, false);
-        gamePanel.collisionChecker.checkPlayer(this);
+        gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
+        gamePanel.collisionChecker.checkEntity(this, gamePanel.hostile);
+        gamePanel.collisionChecker.checkBot(this, gamePanel.bot);
+        boolean contactPlayer = gamePanel.collisionChecker.checkPlayer(this);
+
+        if(this.type == 2 && contactPlayer){
+            if(!gamePanel.player.invincible){
+                gamePanel.player.suiteIntegrity -= this.damage;
+                gamePanel.player.invincible = true;
+            }
+        }
     }
     public void update() {
         setAction();

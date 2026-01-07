@@ -60,6 +60,7 @@ public class GamePanel extends JPanel implements Runnable {
     public Entity bot;
     public ArrayList<ArrayList<Entity>> obj = new ArrayList<>();
     public ArrayList<ArrayList<Entity>> npc = new ArrayList<>();
+    public ArrayList<ArrayList<Entity>> hostile = new ArrayList<>();
     public ArrayList<Entity> particleList = new  ArrayList<>();
     public ArrayList<Entity> entityList = new ArrayList<>();
 
@@ -86,22 +87,21 @@ public class GamePanel extends JPanel implements Runnable {
         for (int i = 0; i < maxMap; i++) {
             obj.add(new ArrayList<>());
             npc.add(new ArrayList<>());
+            hostile.add(new ArrayList<>());
         }
 
         assetSetter.setObject();
-        assetSetter.setInteractiveTile();
         assetSetter.setNPC();
+        assetSetter.setHostile();
+        assetSetter.setInteractiveTile();
         environmentManager.setup();
-
-        // DRY RUN TO LOAD ASSETS
-        gameState = playState;
-        update();
 
         gameState = titleState;
     }
     public void reinitializeGame() {
         obj.clear();
         npc.clear();
+        hostile.clear();
         particleList.clear();
 
         currentMap = 0;
@@ -161,13 +161,17 @@ public class GamePanel extends JPanel implements Runnable {
         if(gameState == playState) {
             player.update();
 
-            if(bot != null){
-                bot.update();
+            if (bot != null) bot.update();
+
+            for (Entity npc : npc.get(currentMap)) {
+                if (npc != null) {
+                    npc.update();
+                }
             }
 
-            for (Entity entity : npc.get(currentMap)) {
-                if (entity != null) {
-                    entity.update();
+            for (Entity hostile : hostile.get(currentMap)){
+                if(hostile != null){
+                    hostile.update();
                 }
             }
 
@@ -215,16 +219,23 @@ public class GamePanel extends JPanel implements Runnable {
             }
 
             // ADD OBJECTS TO LIST
-            for (Entity value : obj.get(currentMap)) {
-                if (value != null) {
-                    entityList.add(value);
+            for (Entity obj : obj.get(currentMap)) {
+                if (obj != null) {
+                    entityList.add(obj);
                 }
             }
 
             // NPC
-            for(Entity value : npc.get(currentMap)) {
-                if (value != null) {
-                    entityList.add(value);
+            for(Entity npc : npc.get(currentMap)) {
+                if (npc != null) {
+                    entityList.add(npc);
+                }
+            }
+
+            // HOSTILE
+            for(Entity hostile : hostile.get(currentMap)) {
+                if(hostile != null){
+                    entityList.add(hostile);
                 }
             }
 
@@ -236,15 +247,17 @@ public class GamePanel extends JPanel implements Runnable {
             }
 
             // SORTING
-            entityList.sort(Comparator.comparingInt(e -> {
-                if (e.isBreakable || e.placedOnGround) {
-                    // For breakable or placedOnGround blocks always appear behind player.
-                    return e.worldY + e.solidArea.y;
-                } else {
-                    // For everything else sort using the FEET (Bottom).
-                    return e.worldY + e.solidArea.y + e.solidArea.height;
-                }
-            }));
+            try {
+                entityList.sort(Comparator.comparingInt(e -> {
+                    if (e.isBreakable || e.placedOnGround) {
+                        return e.worldY + e.solidArea.y;
+                    } else {
+                        return e.worldY + e.solidArea.y + e.solidArea.height;
+                    }
+                }));
+            } catch (IllegalArgumentException e) {
+                // INCASE SORT FAILS
+            }
 
             // DRAW ENTITIES
             for (Entity entity : entityList) {
