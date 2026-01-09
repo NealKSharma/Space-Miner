@@ -7,12 +7,13 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 
 public class UI {
     GamePanel gamePanel;
     Graphics2D g2;
-    Font arial_40;
+    Font maruMonica;
 
     BufferedImage titleScreenBackground;
     Color subWindowBackground = new Color(0, 0, 0, 170);
@@ -20,16 +21,23 @@ public class UI {
 
     public int commandNum = 0;
     public int subState = 0;
-    public int volume = 0;
     int counter = 0;
     public int transitionType = 0;
 
     public int slotCol = 0;
     public int slotRow = 0;
+    public String currentDialogue = "";
 
     public UI(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
-        arial_40 = new Font("Arial", Font.PLAIN, 25);
+        try {
+            InputStream is = getClass().getResourceAsStream("/font/MaruMonica.ttf");
+            maruMonica = Font.createFont(Font.TRUETYPE_FONT, is);
+        } catch (FontFormatException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         loadTitleBackground();
     }
@@ -39,18 +47,21 @@ public class UI {
 
         Font originalFont = g2.getFont();
 
-        g2.setFont(arial_40);
+        g2.setFont(maruMonica);
         g2.setColor(Color.white);
 
-        if (gamePanel.gameState == gamePanel.playState) { drawPlayScreen(); }
-        else if (gamePanel.gameState == gamePanel.titleState){ drawTitleScreen(); }
-        else if (gamePanel.gameState == gamePanel.pauseState) { drawPauseScreen(); }
-        else if(gamePanel.gameState == gamePanel.inventoryState){ drawInventory(); }
-        else if(gamePanel.gameState == gamePanel.chestState){ drawChest(); }
-        else if(gamePanel.gameState == gamePanel.transitionState){
-            if (transitionType == 1 && counter < 85) { drawTitleScreen(); }
+        if (gamePanel.gameState == gamePanel.playState) drawPlayScreen();
+        else if (gamePanel.gameState == gamePanel.titleState) drawTitleScreen();
+        else if (gamePanel.gameState == gamePanel.pauseState) drawPauseScreen();
+        else if (gamePanel.gameState == gamePanel.inventoryState) drawInventoryScreen();
+        else if (gamePanel.gameState == gamePanel.chestState) drawChestScreen();
+        else if (gamePanel.gameState == gamePanel.craftingState) drawCraftingScreen();
+        else if (gamePanel.gameState == gamePanel.dialogueState) drawDialogueScreen();
+        else if (gamePanel.gameState == gamePanel.transitionState) {
+            if (transitionType == 1 && counter < 85) drawTitleScreen();
             drawTransition();
         }
+
         g2.setFont(originalFont);
     }
     public void drawTitleScreen() {
@@ -102,17 +113,17 @@ public class UI {
     }
     public void loadTitleBackground() {
         try {
-            titleScreenBackground = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/misc/titleBackground.png")));
+            titleScreenBackground = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/misc/title_background.png")));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     public void drawTransition(){
         counter++;
-        g2.setColor(new Color(0, 0, 0, counter * 5));
+        g2.setColor(new Color(0, 0, 0, counter * 8));
         g2.fillRect(0, 0, gamePanel.screenWidth, gamePanel.screenHeight);
 
-        if(counter == 50){
+        if(counter == 30){
             counter = 0;
             if(transitionType == 0) {
                 gamePanel.currentMap = gamePanel.eventHandler.tempMap;
@@ -121,8 +132,8 @@ public class UI {
 
                 // MOVE THE ROBOT
                 if(gamePanel.bot != null){
-                    gamePanel.bot.worldX = gamePanel.player.worldX + 32;
-                    gamePanel.bot.worldY = gamePanel.player.worldY + 32;
+                    gamePanel.bot.worldX = gamePanel.player.worldX + 64;
+                    gamePanel.bot.worldY = gamePanel.player.worldY;
                 }
                 gamePanel.eventHandler.previousEventX = gamePanel.player.worldX;
                 gamePanel.eventHandler.previousEventY = gamePanel.player.worldY;
@@ -165,7 +176,27 @@ public class UI {
             slotX += slotSize;
         }
 
-        if (gamePanel.player.canOpen) {
+        // DRAW INTEGRITY BAR
+        frameX += 20;
+        frameY -= gamePanel.tileSize/2;
+        g2.setColor(Color.LIGHT_GRAY);
+        g2.drawRect(frameX, frameY, (gamePanel.tileSize*5) + 9, gamePanel.tileSize/3);
+        int integrityWidth = (int) (((double)gamePanel.player.suiteIntegrity/100) * (gamePanel.tileSize*5));
+        g2.setColor(Color.RED);
+        g2.fillRect(frameX + 5, frameY + 5, integrityWidth, (gamePanel.tileSize/3) - 9);
+
+        // DRAW STAMINA BAR
+        frameY -= gamePanel.tileSize/2;
+        g2.setColor(Color.LIGHT_GRAY);
+        g2.drawRect(frameX, frameY, (gamePanel.tileSize*5) + 9, gamePanel.tileSize/3);
+        int staminaWidth = (int) (((double)gamePanel.player.stamina/gamePanel.player.maxStamina) * (gamePanel.tileSize*5));
+        g2.setColor(Color.CYAN);
+        g2.fillRect(frameX + 5, frameY + 5, staminaWidth, (gamePanel.tileSize/3) - 9);
+
+
+        g2.setColor(Color.WHITE);
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN,32F));
+        if (gamePanel.player.objType != 0) {
             g2.drawString("Press E to interact", 10, gamePanel.screenHeight / 2);
         }
     }
@@ -175,9 +206,14 @@ public class UI {
 
         // SUB WINDOW
         int frameX = gamePanel.tileSize * 6;
-        int frameY = gamePanel.tileSize;
+        int frameY = gamePanel.tileSize/2;
         int frameWidth = gamePanel.tileSize * 8;
-        int frameHeight = gamePanel.tileSize * 10;
+        int frameHeight = gamePanel.tileSize * 10 + gamePanel.tileSize/2;
+
+        if(subState == 2) {
+            frameX = gamePanel.tileSize * 2;
+            frameWidth = gamePanel.tileSize * 16;
+        }
 
         drawSubWindow(frameX, frameY, frameWidth, frameHeight);
 
@@ -210,38 +246,45 @@ public class UI {
             g2.drawString(">", textX-32, textY);
         }
 
-        // SOUND
+        // MUSIC
         textY += gamePanel.tileSize;
-        g2.drawString("Sound", textX, textY);
+        g2.drawString("Music", textX, textY);
         if(commandNum == 2){
+            g2.drawString(">", textX-32, textY);
+        }
+
+        // Sound Effects
+        textY += gamePanel.tileSize;
+        g2.drawString("SE", textX, textY);
+        if(commandNum == 3){
             g2.drawString(">", textX-32, textY);
         }
 
         // CONTROLS
         textY += gamePanel.tileSize;
         g2.drawString("Controls", textX, textY);
-        if(commandNum == 3){
+        if(commandNum == 4){
             g2.drawString(">", textX-32, textY);
         }
 
         // SAVE GAME
         textY += gamePanel.tileSize;
         g2.drawString("Save Game", textX, textY);
-        if(commandNum == 4){
+        if(commandNum == 5){
             g2.drawString(">", textX-32, textY);
         }
 
         // QUIT
         textY += gamePanel.tileSize;
         g2.drawString("Quit", textX, textY);
-        if(commandNum == 5){
+        if(commandNum == 6){
             g2.drawString(">", textX-32, textY);
         }
 
         // BACK
         textY = frameY + gamePanel.tileSize*9;
         g2.drawString("Back", textX, textY);
-        if(commandNum == 6){
+        if(commandNum == 7){
             g2.drawString(">", textX-32, textY);
         }
 
@@ -264,9 +307,15 @@ public class UI {
 
         // SOUND VOLUME
         textY += gamePanel.tileSize;
-        g2.drawRect(textX, textY, (gamePanel.tileSize*3) + 9, gamePanel.tileSize/2);
-        int volumeWidth = (gamePanel.tileSize/2) * volume; // TEMPORARY VARIABLE
+        g2.drawRect(textX, textY, (gamePanel.tileSize*3) + 7, gamePanel.tileSize/2);
+        int volumeWidth = ((gamePanel.tileSize*3) / 5) * gamePanel.music.volumeScale;
         g2.fillRect(textX + 5, textY + 5, volumeWidth, (gamePanel.tileSize/2) - 9);
+
+        // SE VOLUME
+        textY += gamePanel.tileSize;
+        g2.drawRect(textX, textY, (gamePanel.tileSize*3) + 7, gamePanel.tileSize/2);
+        int seWidth = ((gamePanel.tileSize*3) / 5) * gamePanel.se.volumeScale;
+        g2.fillRect(textX + 5, textY + 5, seWidth, (gamePanel.tileSize/2) - 9);
 
         // GAME SAVE
         if(gamePanel.keyHandler.saved){
@@ -303,6 +352,7 @@ public class UI {
         int textY = frameY + gamePanel.tileSize;
         g2.drawString(text, textX, textY);
 
+        // LEFT HALF
         textX = frameX + gamePanel.tileSize;
         textY += (int) (gamePanel.tileSize*1.5);
         g2.drawString("Move", textX, textY); textY += gamePanel.tileSize;
@@ -312,7 +362,7 @@ public class UI {
         g2.drawString("Map", textX, textY); textY += gamePanel.tileSize;
         g2.drawString("Options", textX, textY);
 
-        textX = frameX + gamePanel.tileSize*5;
+        textX += gamePanel.tileSize*4;
         textY = (int) (frameY + gamePanel.tileSize*2.5);
         g2.drawString("W A S D", textX, textY); textY += gamePanel.tileSize;
         g2.drawString("F", textX, textY); textY += gamePanel.tileSize;
@@ -320,6 +370,17 @@ public class UI {
         g2.drawString("1 2 3 4 5", textX, textY); textY += gamePanel.tileSize;
         g2.drawString("M", textX, textY); textY += gamePanel.tileSize;
         g2.drawString("ESC", textX, textY);
+
+        // RIGHT HALF
+        textX += gamePanel.tileSize*5;
+        textY = (int) (frameY + gamePanel.tileSize*2.5);
+        g2.drawString("Sprint", textX, textY); textY += gamePanel.tileSize;
+        g2.drawString("Debug", textX, textY); textY += gamePanel.tileSize;
+
+        textX += gamePanel.tileSize*4;
+        textY = (int) (frameY + gamePanel.tileSize*2.5);
+        g2.drawString("Shift", textX, textY); textY += gamePanel.tileSize;
+        g2.drawString("F3", textX, textY); textY += gamePanel.tileSize;
 
         textX = frameX + gamePanel.tileSize;
         textY = frameY + gamePanel.tileSize*9;
@@ -355,8 +416,8 @@ public class UI {
             g2.drawString(">", textX-32, textY);
         }
     }
-    public void drawInventory() {
-        int frameX = gamePanel.tileSize * 13;
+    public void drawInventoryScreen() {
+        int frameX = gamePanel.tileSize * 11;
         int frameY = gamePanel.tileSize * 2;
         int frameWidth = gamePanel.tileSize * 6;
         int frameHeight = gamePanel.tileSize * 5;
@@ -391,9 +452,7 @@ public class UI {
                     g2.drawString(s, amountX-2, amountY-2);
                 }
             }
-
             slotX += slotSize;
-
             if (i == 4 || i == 9 || i == 14){
                 slotX = slotXstart;
                 slotY += slotSize;
@@ -433,11 +492,11 @@ public class UI {
             }
         }
     }
-    public void drawChest() {
+    public void drawChestScreen() {
         // GET THE CURRENT CHEST OBJECT
-        OBJ_Chest chest = (OBJ_Chest) gamePanel.player.currentChest;
+        OBJ_Chest chest = (OBJ_Chest) gamePanel.player.currentObj;
 
-        int frameChestX = gamePanel.tileSize * 5;
+        int frameChestX = gamePanel.tileSize * 3;
         int frameChestY = gamePanel.tileSize * 2;
         int frameChestWidth = gamePanel.tileSize * 7;
         int frameChestHeight = gamePanel.tileSize * 8;
@@ -449,7 +508,7 @@ public class UI {
         drawSubWindow(frameChestX, frameChestY, frameChestWidth, frameChestHeight);
 
         // PLAYER INVENTORY WINDOW (Right side - 5 cols x 4 rows)
-        int frameX = gamePanel.tileSize * 13;
+        int frameX = gamePanel.tileSize * 11;
         int frameY = gamePanel.tileSize * 2;
         int frameWidth = gamePanel.tileSize * 6;
         int frameHeight = gamePanel.tileSize * 5;
@@ -484,9 +543,7 @@ public class UI {
                     g2.drawString(s, amountX-2, amountY-2);
                 }
             }
-
             slotX += slotSize;
-
             if ((i + 1) % 6 == 0) { // 6 columns
                 slotX = chestSlotXstart;
                 slotY += slotSize;
@@ -516,9 +573,7 @@ public class UI {
                     g2.drawString(s, amountX-2, amountY-2);
                 }
             }
-
             slotX += slotSize;
-
             if (i == 4 || i == 9 || i == 14 || i == 19) { // 5 columns
                 slotX = invSlotXstart;
                 slotY += slotSize;
@@ -577,6 +632,183 @@ public class UI {
                 g2.drawString(line, textX, textY);
                 textY += 32;
             }
+        }
+    }
+    public void drawCraftingScreen() {
+        int frameCraftingX = gamePanel.tileSize * 3;
+        int frameCraftingY = gamePanel.tileSize * 2;
+        int frameCraftingWidth = gamePanel.tileSize * 7;
+        int frameCraftingHeight = gamePanel.tileSize * 4;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 50));
+        String text = "Craftable Items";
+        g2.drawString(text, frameCraftingX, frameCraftingY - 15);
+
+        drawSubWindow(frameCraftingX, frameCraftingY, frameCraftingWidth, frameCraftingHeight);
+
+        // PLAYER INVENTORY WINDOW (Right side - 5 cols x 4 rows)
+        int frameX = gamePanel.tileSize * 11;
+        int frameY = gamePanel.tileSize * 2;
+        int frameWidth = gamePanel.tileSize * 6;
+        int frameHeight = gamePanel.tileSize * 5;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 50));
+        text = "Inventory";
+        g2.drawString(text, frameX, frameY - 15);
+
+        drawSubWindow(frameX, frameY, frameWidth, frameHeight);
+
+        // DRAW CRAFTABLE ITEMS (6x7 grid)
+        final int craftingSlotXstart = frameCraftingX + 20;
+        final int craftingSlotYstart = frameCraftingY + 20;
+        int slotSize = gamePanel.tileSize + 3;
+
+        int slotX = craftingSlotXstart;
+        int slotY = craftingSlotYstart;
+
+        for (int i = 0; i < gamePanel.crafting.craftableItems.size(); i++) {
+            Entity item = gamePanel.crafting.craftableItems.get(i);
+            g2.drawImage(item.down1, slotX, slotY, null);
+            slotX += slotSize;
+            if ((i + 1) % 6 == 0) {
+                slotX = craftingSlotXstart;
+                slotY += slotSize;
+            }
+        }
+
+        // DRAW PLAYER INVENTORY ITEMS (5x4 grid)
+        final int invSlotXstart = frameX + 20;
+        final int invSlotYstart = frameY + 20;
+
+        slotX = invSlotXstart;
+        slotY = invSlotYstart;
+
+        for (int i = 0; i < gamePanel.player.inventory.size(); i++) {
+            Entity item = gamePanel.player.inventory.get(i);
+            if (item != null) {
+                g2.drawImage(item.down1, slotX, slotY, null);
+                if (item.itemAmount > 1) {
+                    g2.setFont(g2.getFont().deriveFont(28f));
+                    String s = "" + item.itemAmount;
+                    int amountX = getXforAlignToRightText(s, slotX + gamePanel.tileSize - 3);
+                    int amountY = slotY + gamePanel.tileSize - 3;
+
+                    g2.setColor(new Color(60, 60, 60));
+                    g2.drawString(s, amountX, amountY);
+                    g2.setColor(Color.white);
+                    g2.drawString(s, amountX - 2, amountY - 2);
+                }
+            }
+            slotX += slotSize;
+            if (i == 4 || i == 9 || i == 14 || i == 19) { // 5 columns
+                slotX = invSlotXstart;
+                slotY += slotSize;
+            }
+        }
+
+        // DRAW CURSOR
+        int cursorX, cursorY;
+        if (slotCol < 6) {
+            // Cursor is in crafting area
+            cursorX = craftingSlotXstart + (slotSize * slotCol);
+            cursorY = craftingSlotYstart + (slotSize * slotRow);
+        } else {
+            // Cursor is in inventory area (offset by 8 to account for gap)
+            cursorX = invSlotXstart + (slotSize * (slotCol - 8));
+            cursorY = invSlotYstart + (slotSize * slotRow);
+        }
+
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(cursorX, cursorY, gamePanel.tileSize, gamePanel.tileSize, 10, 10);
+
+        // DESCRIPTION FRAME
+        int dFrameX = frameX;
+        int dFrameY = frameY + frameHeight + 10;
+        int dFrameWidth = frameWidth;
+        int dFrameHeight = gamePanel.tileSize * 3;
+
+        // DRAW DESCRIPTION TEXT
+        int textX = dFrameX + 20;
+        int textY = dFrameY + gamePanel.tileSize - 20;
+        g2.setFont(g2.getFont().deriveFont(28F));
+        String itemDescription = null;
+
+        // DISPLAY ITEM DESCRIPTION
+        if (slotCol >= 6) {
+            // Cursor is in inventory area
+            int invIndex = (slotCol - 8) + (slotRow * 5);
+            if (invIndex < gamePanel.player.inventory.size()) {
+                if (gamePanel.player.inventory.get(invIndex) != null) {
+                    itemDescription = gamePanel.player.inventory.get(invIndex).description;
+                    drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
+                    for (String line : itemDescription.split("\n")) {
+                        g2.drawString(line, textX, textY);
+                        textY += 32;
+                    }
+                }
+            }
+        } else {
+            int craftingIndex = slotCol + (slotRow * 6);
+            if (craftingIndex < gamePanel.crafting.craftableItems.size()) {
+                Entity selectedItem = gamePanel.crafting.craftableItems.get(craftingIndex);
+                drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
+                for (String line : selectedItem.description.split("\n")) {
+                    g2.drawString(line, textX, textY);
+                    textY += 32;
+                }
+
+                String[] reqNames = gamePanel.crafting.recipeNames.get(craftingIndex);
+                int[] reqAmounts = gamePanel.crafting.recipeAmounts.get(craftingIndex);
+                String recipe = "";
+                for(int i = 0; i < reqNames.length; i++){
+                    recipe += reqNames[i] + " [" + reqAmounts[i] + "]\n";
+                }
+
+                frameX = frameCraftingX;
+                frameY = frameCraftingY + frameCraftingHeight + 10;
+                textX = frameX + 20;
+                textY = frameY + gamePanel.tileSize - 20;
+
+                if (gamePanel.player.getFirstEmptySlot() != -1) {
+                    drawSubWindow(frameX, frameY, frameCraftingWidth, gamePanel.tileSize * 4);
+                    if (gamePanel.crafting.canCraft(craftingIndex)) {
+                        g2.drawString("Press [ENTER] to craft!", textX, textY);
+                        textY += 56;
+                        for(String line: recipe.split("\n")){
+                            g2.drawString(line, textX, textY);
+                            textY += 30;
+                        }
+                    } else {
+                        g2.drawString("Missing Resources to craft!", textX, textY);
+                        textY += 56;
+                        for(String line: recipe.split("\n")){
+                            g2.drawString(line, textX, textY);
+                            textY += 30;
+                        }
+                    }
+                } else {
+                    // PRINT INVENTORY FULL
+                    drawSubWindow(frameX, frameY, frameCraftingWidth, gamePanel.tileSize*2);
+                    g2.drawString("Inventory Full!", textX, textY);
+                }
+            }
+        }
+    }
+    public void drawDialogueScreen(){
+        int x = gamePanel.tileSize*2;
+        int y = gamePanel.tileSize/2;
+        int width = gamePanel.screenWidth - (gamePanel.tileSize * 4);
+        int height = gamePanel.tileSize * 5;
+
+        drawSubWindow(x, y, width, height);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN,32F));
+        x += gamePanel.tileSize;
+        y += gamePanel.tileSize;
+        for(String line: currentDialogue.split("\n")){
+            g2.drawString(line, x, y);
+            y += 40;
         }
     }
     public int getItemIndexOnSlotInventory(){

@@ -79,7 +79,7 @@ public class Lighting {
         // CHECK THE STATE OF THE DAY
         if(dayState == day){
             dayCounter++;
-            if(dayCounter > 60*265){ // SECONDS AT 265 FPS
+            if(dayCounter > 60*gamePanel.FPS){ // 60 SECONDS
                 dayState = dusk;
                 dayCounter = 0;
             }
@@ -93,7 +93,7 @@ public class Lighting {
         }
         if(dayState == night){
             dayCounter++;
-            if(dayCounter > 10*265){ // SECONDS AT 265 FPS
+            if(dayCounter > 10*gamePanel.FPS){ // 10 SECONDS
                 dayState = dawn;
                 dayCounter = 0;
             }

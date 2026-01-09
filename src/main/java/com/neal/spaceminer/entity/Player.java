@@ -15,15 +15,17 @@ public class Player extends Entity {
     public final int screenY;
     public ArrayList<Entity> inventory = new ArrayList<>();
     public final int maxInventorySize = 20;
+    public int maxStamina = gamePanel.FPS;;
+    public int stamina = maxStamina;
+    public int staminaRechargeCounter = 0;
+    public int suiteIntegrity = 100;
 
-    public Entity currentChest = null;
-    public boolean canOpen;
+    public Entity currentObj = null;
     public boolean hasLight = false;
-    public int mineCount = 0;
+    public int objType;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
         super(gamePanel);
-
         this.keyHandler = keyHandler;
 
         screenX = gamePanel.screenWidth / 2 - gamePanel.tileSize / 2;
@@ -53,13 +55,13 @@ public class Player extends Entity {
     public void initialize() {
         worldX = gamePanel.tileSize * 75;
         worldY = gamePanel.tileSize * 80;
-        speed = 1;
+        speed = 2;
     }
     public void setDefaultValues() {
         initialize();
         direction = "down";
 
-        currentChest = null;
+        currentObj = null;
         hasLight = false;
         mineCount = 0;
 
@@ -80,39 +82,57 @@ public class Player extends Entity {
         right2 = setup("/astronaut/right2", gamePanel.tileSize, gamePanel.tileSize);
     }
     public void getMineImage(){
-        mineUp1 = setup("/astronaut_pickaxing/pickaxe_back1", gamePanel.tileSize, gamePanel.tileSize*2);
-        mineUp2 = setup("/astronaut_pickaxing/pickaxe_back2", gamePanel.tileSize, gamePanel.tileSize*2);
-        mineDown1 = setup("/astronaut_pickaxing/pickaxe_front1", gamePanel.tileSize, gamePanel.tileSize*2);
-        mineDown2 = setup("/astronaut_pickaxing/pickaxe_front2", gamePanel.tileSize, gamePanel.tileSize*2);
-        mineLeft1 = setup("/astronaut_pickaxing/pickaxe_left1", gamePanel.tileSize*2, gamePanel.tileSize);
-        mineLeft2 = setup("/astronaut_pickaxing/pickaxe_left2", gamePanel.tileSize*2, gamePanel.tileSize);
-        mineRight1 = setup("/astronaut_pickaxing/pickaxe_right1", gamePanel.tileSize*2, gamePanel.tileSize);
-        mineRight2 = setup("/astronaut_pickaxing/pickaxe_right2", gamePanel.tileSize*2, gamePanel.tileSize);
+        mineUp1 = setup("/astronaut/pickaxe_back1", gamePanel.tileSize, gamePanel.tileSize*2);
+        mineUp2 = setup("/astronaut/pickaxe_back2", gamePanel.tileSize, gamePanel.tileSize*2);
+        mineDown1 = setup("/astronaut/pickaxe_front1", gamePanel.tileSize, gamePanel.tileSize*2);
+        mineDown2 = setup("/astronaut/pickaxe_front2", gamePanel.tileSize, gamePanel.tileSize*2);
+        mineLeft1 = setup("/astronaut/pickaxe_left1", gamePanel.tileSize*2, gamePanel.tileSize);
+        mineLeft2 = setup("/astronaut/pickaxe_left2", gamePanel.tileSize*2, gamePanel.tileSize);
+        mineRight1 = setup("/astronaut/pickaxe_right1", gamePanel.tileSize*2, gamePanel.tileSize);
+        mineRight2 = setup("/astronaut/pickaxe_right2", gamePanel.tileSize*2, gamePanel.tileSize);
     }
     public void interactWithObject(int index) {
-        Entity objOnGround = gamePanel.obj.get(gamePanel.currentMap).get(index);
-            if (objOnGround.canPickup) {
-                if(objOnGround.isStackable && searchInventory(objOnGround.name) != -1) {
-                    inventory.get(searchInventory(objOnGround.name)).itemAmount++;
+        currentObj = gamePanel.obj.get(gamePanel.currentMap).get(index);
+            if (currentObj.canPickup) {
+                if(currentObj.isStackable && searchInventory(currentObj.name) != -1) {
+                    inventory.get(searchInventory(currentObj.name)).itemAmount += currentObj.itemAmount;
                     gamePanel.obj.get(gamePanel.currentMap).remove(index);
                 } else {
                     int emptySlot = getFirstEmptySlot();
                     if (emptySlot != -1) {
-                        inventory.set(emptySlot, objOnGround);
+                        inventory.set(emptySlot, currentObj);
                         gamePanel.obj.get(gamePanel.currentMap).remove(index);
                         itemBehaviour();
                     } else {
                         // INVENTORY FULL
                     }
-                    inventory.set(emptySlot, objOnGround);
+                    inventory.set(emptySlot, currentObj);
                     itemBehaviour();
                 }
-            } else if ("Chest".equals(objOnGround.name)) {
-                canOpen = true;
-                currentChest = objOnGround;
+            } else {
+                switch (currentObj.name) {
+                    case "Chest": objType = 1; break;
+                    case "Crafting Station": objType = 2; break;
+                }
             }
     }
+    public void removeItems(String name, int amount){
+        int itemSlot = searchInventory(name);
+        if(itemSlot == -1) return;
+        if(inventory.get(itemSlot).itemAmount > amount){
+            inventory.get(itemSlot).itemAmount -= amount;
+        } else {
+            inventory.set(itemSlot, null);
+        }
+        itemBehaviour();
+    }
     public void interactWithEntity(int index) { }
+    public void interactWithMonster(int index){
+        if(!invincible){
+            suiteIntegrity -= gamePanel.hostile.get(gamePanel.currentMap).get(index).damage;
+            invincible = true;
+        }
+    }
     public void setItems(){
         inventory.set(0, new OBJ_Pickaxe(gamePanel));
         itemBehaviour();
@@ -134,8 +154,8 @@ public class Player extends Entity {
         return -1;  // inventory full
     }
     public void transferChestItem(int slotCol, int slotRow){
-        if(currentChest == null) return;
-        OBJ_Chest chest = (OBJ_Chest) currentChest;
+        if(currentObj == null) return;
+        OBJ_Chest chest = (OBJ_Chest) currentObj;
 
         if(slotCol < 6) {
             // Taking from chest
@@ -230,7 +250,7 @@ public class Player extends Entity {
             if (keyHandler.left) direction = "left";
             if (keyHandler.right) direction = "right";
 
-            canOpen = false;
+            objType = 0;
             collisionOn = false;
             gamePanel.collisionChecker.checkTile(this);
 
@@ -240,14 +260,25 @@ public class Player extends Entity {
             // CHECK COLLISION WITH ENTITIES
             int entityIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
             if(entityIndex != -1) interactWithEntity(entityIndex);
+            // CHECK COLLISION WITH HOSTILES
+            int hostileIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.hostile);
+            if(hostileIndex != -1) interactWithMonster(hostileIndex);
             // CHECK COLLISION WITH BOT
             boolean collision = gamePanel.collisionChecker.checkBot(this, gamePanel.bot);
             if(collision) {
-                // BOT SPECIFIC ACTIONS
+                gamePanel.gameState = gamePanel.dialogueState;
+                gamePanel.bot.speak();
             }
 
             // CHECK EVENTS
             gamePanel.eventHandler.checkEvent();
+
+            if(keyHandler.sprint){
+                if(stamina > 0){
+                    stamina--;
+                    speed = speed*2;
+                }
+            }
 
             // IF COLLISION IS FALSE, PLAYER CAN MOVE
             if (!collisionOn) {
@@ -258,6 +289,8 @@ public class Player extends Entity {
                     case "right": worldX += speed; break;
                 }
             }
+
+            speed = 2;
 
             spriteCounter++;
             if (spriteCounter > 32) {
@@ -272,6 +305,24 @@ public class Player extends Entity {
             // PLAYER IS STANDING STILL
             int objIndex = gamePanel.collisionChecker.checkObject(this, true);
             if (objIndex != -1) interactWithObject(objIndex);
+        }
+
+        // STAMINA REGAIN
+        if (stamina < maxStamina) {
+            staminaRechargeCounter++;
+            if(staminaRechargeCounter > 6){
+                stamina++;
+                staminaRechargeCounter = 0;
+            }
+        }
+
+        // INVINCIBILITY COUNTER
+        if(invincible){
+            invincibleCounter++;
+            if(invincibleCounter > gamePanel.FPS){
+                invincible = false;
+                invincibleCounter = 0;
+            }
         }
     }
     public void mining() {
@@ -313,19 +364,22 @@ public class Player extends Entity {
             mining = false;
         }
     }
-    public void mineObject(int i){
-        // MULTIPLIED BY 39 SINCE IT'S CALLED MULTIPLE TIMES WHILE THE ANIMATION IS HAPPENING
-        if(mineCount >= gamePanel.obj.get(gamePanel.currentMap).get(i).strength * 39){
-            generateParticle(gamePanel.obj.get(gamePanel.currentMap).get(i), gamePanel.obj.get(gamePanel.currentMap).get(i));
-            Entity drop = gamePanel.obj.get(gamePanel.currentMap).get(i).getDrop();
-            gamePanel.assetSetter.replaceTile(gamePanel.obj.get(gamePanel.currentMap).get(i)); // REPLACE THE TILE
+    public void mineObject(int i) {
+        Entity ore = gamePanel.obj.get(gamePanel.currentMap).get(i);
+        if (ore.mineCount >= ore.strength * 39) {
+            generateParticle(ore, ore);
+
+            int randAmount = (int)(Math.random() * 3) + 1;
+            for (int k = 0; k < randAmount; k++) {
+                gamePanel.obj.get(gamePanel.currentMap).add(ore.getDrop());
+            }
+            gamePanel.assetSetter.replaceTile(ore);
             gamePanel.obj.get(gamePanel.currentMap).remove(i);
-            gamePanel.obj.get(gamePanel.currentMap).add(drop);
-            mineCount = 0;
+            ore.mineCount = 0;
         } else {
-            mineCount++;
-            if(mineCount % 40 == 0){
-                generateParticle(gamePanel.obj.get(gamePanel.currentMap).get(i), gamePanel.obj.get(gamePanel.currentMap).get(i));
+            ore.mineCount++;
+            if (ore.mineCount % 40 == 0) {
+                generateParticle(ore, ore);
             }
         }
     }

@@ -2,6 +2,7 @@ package com.neal.spaceminer.main;
 
 import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.entity.NPC_Robot;
+import com.neal.spaceminer.hostiles.HOS_Virus;
 import com.neal.spaceminer.object.*;
 import com.neal.spaceminer.tiles_interactive.*;
 
@@ -17,6 +18,9 @@ public class AssetSetter {
     final int maxTotalIT = numIT * maxIT; // TOTAL MAX INTERACTIVE TILES ON MAP
     int currIT = 0;
     int[] ITCount = new int[numIT];
+    final int object = 1;
+    final int npc = 2;
+    final int hostile = 3;
 
     public AssetSetter(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -32,45 +36,46 @@ public class AssetSetter {
         cells.itemAmount = 5;
 
         // CHESTS
-        OBJ_Chest chest1 = (OBJ_Chest) place(new OBJ_Chest(gamePanel), 0, 76, 79, true);
+        OBJ_Chest chest1 = (OBJ_Chest) place(new OBJ_Chest(gamePanel), 0, 76, 79, object);
         chest1.chestInv.set(0, new OBJ_Pickaxe(gamePanel));
         chest1.chestInv.set(7, cells);
 
         cells.itemAmount = 10;
-        OBJ_Chest chest2 = (OBJ_Chest) place(new OBJ_Chest(gamePanel), 0, 77, 79, true);
+        OBJ_Chest chest2 = (OBJ_Chest) place(new OBJ_Chest(gamePanel), 0, 77, 79, object);
         chest2.chestInv.set(1, new OBJ_Pickaxe(gamePanel));
         chest2.chestInv.set(3, cells);
 
         // ITEMS
-        place(new OBJ_Pickaxe(gamePanel), 0, 72, 80, true);
-        place(new OBJ_LumenCell(gamePanel), 0, 73, 80, true);
-        place(new OBJ_SuitGenerator(gamePanel), 0, 72, 76, true);
+        place(new OBJ_Pickaxe(gamePanel), 0, 72, 80, object);
+        place(new OBJ_LumenCell(gamePanel), 0, 73, 80, object);
+        place(new OBJ_SuitGenerator(gamePanel), 0, 72, 76, object);
 
         // SHIP
-        place(new OBJ_ShipFront(gamePanel), 0, 12, 90, true);
-        place(new OBJ_ShipMiddle(gamePanel), 0, 16, 86, true);
-        place(new OBJ_ShipBack(gamePanel), 0, 21, 82, true);
+        place(new OBJ_ShipFront(gamePanel), 0, 12, 90, object);
+        place(new OBJ_ShipMiddle(gamePanel), 0, 16, 86, object);
+        place(new OBJ_ShipBack(gamePanel), 0, 21, 82, object);
 
         // MISC
-        place(new OBJ_Astronaut(gamePanel), 0, 18, 90, true);
-        place(new OBJ_Astronaut(gamePanel), 0, 18, 84, true);
-        place(new OBJ_Astronaut(gamePanel), 0, 11, 90, true);
-        place(new OBJ_Teleporter(gamePanel), 0, 72, 81, true);
+        place(new OBJ_Astronaut(gamePanel), 0, 18, 90, object);
+        place(new OBJ_Astronaut(gamePanel), 0, 18, 84, object);
+        place(new OBJ_Astronaut(gamePanel), 0, 11, 90, object);
+        place(new OBJ_Habitat(gamePanel), 0, 72, 66, object);
 
         // MAP 2
-        OBJ_Chest chest3 = (OBJ_Chest) place(new OBJ_Chest(gamePanel), 1, 70, 77, true);
+        OBJ_Chest chest3 = (OBJ_Chest) place(new OBJ_Chest(gamePanel), 1, 47, 47, object);
         chest3.chestInv.set(0, new OBJ_Pickaxe(gamePanel));
         chest3.chestInv.set(7, cells);
 
-        place(new OBJ_Astronaut(gamePanel), 1, 70, 75, true);
-        place(new OBJ_Pickaxe(gamePanel), 1, 72, 75, true);
-        place(new OBJ_Teleporter(gamePanel), 1, 70, 79, true);
+        place(new OBJ_CraftingStation(gamePanel), 1, 50, 53, object);
     }
     public void setNPC(){
         // NPC THAT FOLLOWS PLAYER - MAP 1
         gamePanel.bot = new NPC_Robot(gamePanel);
         gamePanel.bot.worldX = gamePanel.player.worldX + 32; // Start next to player
         gamePanel.bot.worldY = gamePanel.player.worldY + 32;
+    }
+    public void setHostile(){
+        place(new HOS_Virus(gamePanel), 0, 70, 80, hostile);
     }
     public void setInteractiveTile(){
         currIT = 0;
@@ -93,7 +98,7 @@ public class AssetSetter {
 
                 // CHECK IF THIS SPECIFIC TILE HAS REACHED ITS MAX CAP
                 if(ITCount[randIT] < maxIT && interactiveTile != null) {
-                    place(interactiveTile, 0, randCol, randRow, true);
+                    place(interactiveTile, 0, randCol, randRow, object);
                     ITCount[randIT]++;
                     currIT++;
                 }
@@ -117,7 +122,7 @@ public class AssetSetter {
         }
 
         // CHECK IF THE ROBOT IS ON THE TILE
-        if(gamePanel.player.worldX + 32 == worldX && gamePanel.player.worldY + 32 == worldY){
+        if(gamePanel.bot.worldX == worldX && gamePanel.bot.worldY == worldY){
             return false;
         }
 
@@ -155,15 +160,31 @@ public class AssetSetter {
             npc.solidArea.y = npc.solidAreaDefaultY;
         }
 
+        // CHECK FOR HOSTILES
+        for(int i = 0; i < gamePanel.hostile.get(gamePanel.currentMap).size(); i++) {
+            Entity hostile = gamePanel.hostile.get(gamePanel.currentMap).get(i);
+
+            hostile.solidArea.x = hostile.worldX + hostile.solidArea.x;
+            hostile.solidArea.y = hostile.worldY + hostile.solidArea.y;
+
+            if(hostile.solidArea.intersects(worldX, worldY, height, width)) {
+                hostile.solidArea.x = hostile.solidAreaDefaultX;
+                hostile.solidArea.y = hostile.solidAreaDefaultY;
+                return false;
+            }
+            hostile.solidArea.x = hostile.solidAreaDefaultX;
+            hostile.solidArea.y = hostile.solidAreaDefaultY;
+        }
+
         return true;
     }
-    public Entity place(Entity entity, int map, int col, int row, boolean isObject) {
+    public Entity place(Entity entity, int map, int col, int row, int type) {
         entity.worldX = col * gamePanel.tileSize;
         entity.worldY = row * gamePanel.tileSize;
-        if(isObject){
-            gamePanel.obj.get(map).add(entity);
-        } else {
-            gamePanel.npc.get(map).add(entity);
+        switch(type) {
+            case object: gamePanel.obj.get(map).add(entity); break;
+            case npc: gamePanel.npc.get(map).add(entity); break;
+            case hostile: gamePanel.hostile.get(map).add(entity); break;
         }
         return entity;
     }
@@ -174,7 +195,7 @@ public class AssetSetter {
             int randRow = (int)(Math.random() * (99 - 1 + 1) + 1);
             if(canPlaceIT(randCol, randRow) && !gamePanel.tileManager.isOnScreen(randCol*gamePanel.tileSize, randRow*gamePanel.tileSize)) {
                 placed = true;
-                place(entity, gamePanel.currentMap, randCol, randRow, true);
+                place(entity, gamePanel.currentMap, randCol, randRow, object);
             }
         }
     }

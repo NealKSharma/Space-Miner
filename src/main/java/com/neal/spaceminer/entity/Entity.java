@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Entity {
@@ -25,6 +26,14 @@ public class Entity {
     public int actionCooldown = 0;
     boolean mining = false;
 
+    // ENTITIES
+    ArrayList<String> dialogue = new  ArrayList<>();
+    public int maxLife, life;
+    public boolean invincible = false;
+    public int invincibleCounter = 0;
+    public int damage = 0;
+    public int type; // 0 - Player, 1 - NPC, 2 - Hostile
+
     // COLLISION
     public Rectangle solidArea = new Rectangle(0, 0, 64, 64);
     public Rectangle swingArea = new Rectangle(0, 0, 0, 0);
@@ -34,6 +43,7 @@ public class Entity {
     // STATE
     public boolean alive = true;
     public boolean onPath = false;
+    public int dialogueIndex = 0;
 
     // ITEM ATTRIBUTES
     public String description = "";
@@ -46,6 +56,7 @@ public class Entity {
     public int itemAmount = 1;
     public int strength;
     public boolean placedOnGround = false;
+    public int mineCount = 0;
 
     public Entity(GamePanel gamePanel){
         this.gamePanel = gamePanel;
@@ -127,7 +138,17 @@ public class Entity {
         collisionOn = false;
         gamePanel.collisionChecker.checkTile(this);
         gamePanel.collisionChecker.checkObject(this, false);
-        gamePanel.collisionChecker.checkPlayer(this);
+        gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
+        gamePanel.collisionChecker.checkEntity(this, gamePanel.hostile);
+        gamePanel.collisionChecker.checkBot(this, gamePanel.bot);
+        boolean contactPlayer = gamePanel.collisionChecker.checkPlayer(this);
+
+        if(this.type == 2 && contactPlayer){
+            if(!gamePanel.player.invincible){
+                gamePanel.player.suiteIntegrity -= this.damage;
+                gamePanel.player.invincible = true;
+            }
+        }
     }
     public void update() {
         setAction();
@@ -156,6 +177,7 @@ public class Entity {
     public void setAction() {
 
     }
+    public void speak(){}
     public BufferedImage setup(String imagePath, int width, int height) {
         Utility utility = new Utility();
         BufferedImage image = null;
@@ -176,10 +198,10 @@ public class Entity {
         int size = generator.getParticleSize();
         int duration = generator.getParticleDuration();
 
-        Particle p1 = new Particle(gamePanel, generator, color, size, duration, -2, -1);
-        Particle p2 = new Particle(gamePanel, generator, color, size, duration, 2, -1);
-        Particle p3 = new Particle(gamePanel, generator, color, size, duration, -2, 1);
-        Particle p4 = new Particle(gamePanel, generator, color, size, duration, 2, 1);
+        Particle p1 = new Particle(gamePanel, generator, color, size, duration, -4, -2);
+        Particle p2 = new Particle(gamePanel, generator, color, size, duration, 4, -2);
+        Particle p3 = new Particle(gamePanel, generator, color, size, duration, -4, 2);
+        Particle p4 = new Particle(gamePanel, generator, color, size, duration, 4, 2);
         gamePanel.particleList.add(p1);
         gamePanel.particleList.add(p2);
         gamePanel.particleList.add(p3);

@@ -32,12 +32,17 @@ public class GamePanel extends JPanel implements Runnable {
     // FULLSCREEN
     int screenWidth2 = screenWidth;
     int screenHeight2 = screenHeight;
-    Graphics2D g2;
     public boolean fullScreen = true;
 
     // FPS
-    public int FPS = 265;
+    public int FPS = 120;
     public int currentFPS = 0;
+    public int currentUPS = 0;
+    private long lastPaintTime = 0;
+    private long paintTimer = 0;
+    private int paintFrames = 0;
+    private long updateTimer = 0;
+    private int updateCount = 0;
 
     // SYSTEM
     public TileManager tileManager = new TileManager(this);
@@ -51,6 +56,9 @@ public class GamePanel extends JPanel implements Runnable {
     public EntityGenerator entityGenerator = new EntityGenerator(this);
     public PathFinder pathFinder = new PathFinder(this);
     public EventHandler eventHandler = new EventHandler(this);
+    public Crafting crafting = new Crafting(this);
+    public Sound music = new Sound();
+    public Sound se = new Sound();
     Map map = new Map(this);
     Thread gameThread;
 
@@ -59,6 +67,7 @@ public class GamePanel extends JPanel implements Runnable {
     public Entity bot;
     public ArrayList<ArrayList<Entity>> obj = new ArrayList<>();
     public ArrayList<ArrayList<Entity>> npc = new ArrayList<>();
+    public ArrayList<ArrayList<Entity>> hostile = new ArrayList<>();
     public ArrayList<Entity> particleList = new  ArrayList<>();
     public ArrayList<Entity> entityList = new ArrayList<>();
 
@@ -69,8 +78,10 @@ public class GamePanel extends JPanel implements Runnable {
     public final int pauseState = 2;
     public final int inventoryState = 3;
     public final int chestState = 4;
-    public final int transitionState = 5;
-    public final int mapState = 6;
+    public final int craftingState = 5;
+    public final int transitionState = 6;
+    public final int mapState = 7;
+    public final int dialogueState = 8;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -83,22 +94,21 @@ public class GamePanel extends JPanel implements Runnable {
         for (int i = 0; i < maxMap; i++) {
             obj.add(new ArrayList<>());
             npc.add(new ArrayList<>());
+            hostile.add(new ArrayList<>());
         }
 
         assetSetter.setObject();
-        assetSetter.setInteractiveTile();
         assetSetter.setNPC();
+        assetSetter.setHostile();
+        assetSetter.setInteractiveTile();
         environmentManager.setup();
-
-        // DRY RUN TO LOAD ASSETS
-        gameState = playState;
-        update();
 
         gameState = titleState;
     }
     public void reinitializeGame() {
         obj.clear();
         npc.clear();
+        hostile.clear();
         particleList.clear();
 
         currentMap = 0;
@@ -120,34 +130,43 @@ public class GamePanel extends JPanel implements Runnable {
     public void startGame() {
         gameThread = new Thread(this);
         gameThread.start();
+        playBackgroundMusic(0);
     }
     @Override
     public void run() {
-        double drawInterval = 1000000000.0 / FPS;
+        double drawInterval = 1_000_000_000.0 / FPS;
         double delta = 0;
+
         long lastTime = System.nanoTime();
         long currentTime;
-        long timer = 0;
-        int drawCount = 0;
 
         while (gameThread != null) {
             currentTime = System.nanoTime();
-            delta += (currentTime - lastTime) / drawInterval;
-            timer += (currentTime - lastTime);
+            long elapsed = currentTime - lastTime;
             lastTime = currentTime;
 
-            if (delta >= 1) {
+            delta += elapsed / drawInterval;
+            delta = Math.min(delta, 5);
+            updateTimer += elapsed;
+
+            while (delta >= 1) {
                 update();
-                repaint();
+                updateCount++;
                 delta--;
-                drawCount++;
             }
 
-            // SAVE FPS TO THE VARIABLE
-            if (timer >= 1000000000) {
-                currentFPS = drawCount;
-                drawCount = 0;
-                timer = timer % 1000000000;
+            repaint();
+
+            if (updateTimer >= 1_000_000_000) {
+                currentUPS = updateCount;
+                updateCount = 0;
+                updateTimer -= 1_000_000_000;
+            }
+
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -158,23 +177,26 @@ public class GamePanel extends JPanel implements Runnable {
         if(gameState == playState) {
             player.update();
 
-            if(bot != null){
-                bot.update();
-            }
+            if (bot != null) bot.update();
 
-            for (Entity entity : npc.get(currentMap)) {
-                if (entity != null) {
-                    entity.update();
+            for (Entity npc : npc.get(currentMap)) {
+                if (npc != null) {
+                    npc.update();
                 }
             }
 
-            for (int i = 0; i < particleList.size(); i++) {
-                if(particleList.get(i) != null) {
-                    if(particleList.get(i).alive){
-                        particleList.get(i).update();
-                    } else {
-                        particleList.remove(i);
-                    }
+            for (Entity hostile : hostile.get(currentMap)){
+                if(hostile != null){
+                    hostile.update();
+                }
+            }
+
+            for (int i = particleList.size() - 1; i >= 0; i--) {
+                Entity p = particleList.get(i);
+                if (p == null || !p.alive) {
+                    particleList.remove(i);
+                } else {
+                    p.update();
                 }
             }
         }
@@ -182,6 +204,20 @@ public class GamePanel extends JPanel implements Runnable {
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g);
+
+        long now = System.nanoTime();
+        if (lastPaintTime != 0) {
+            paintTimer += now - lastPaintTime;
+            paintFrames++;
+        }
+        lastPaintTime = now;
+
+        if (paintTimer >= 1_000_000_000) {
+            currentFPS = paintFrames;
+            paintFrames = 0;
+            paintTimer -= 1_000_000_000;
+        }
+
         Graphics2D g2 = (Graphics2D) g;
 
         // CALCULATE SCALING
@@ -212,16 +248,23 @@ public class GamePanel extends JPanel implements Runnable {
             }
 
             // ADD OBJECTS TO LIST
-            for (Entity value : obj.get(currentMap)) {
-                if (value != null) {
-                    entityList.add(value);
+            for (Entity obj : obj.get(currentMap)) {
+                if (obj != null) {
+                    entityList.add(obj);
                 }
             }
 
             // NPC
-            for(Entity value : npc.get(currentMap)) {
-                if (value != null) {
-                    entityList.add(value);
+            for(Entity npc : npc.get(currentMap)) {
+                if (npc != null) {
+                    entityList.add(npc);
+                }
+            }
+
+            // HOSTILE
+            for(Entity hostile : hostile.get(currentMap)) {
+                if(hostile != null){
+                    entityList.add(hostile);
                 }
             }
 
@@ -233,15 +276,17 @@ public class GamePanel extends JPanel implements Runnable {
             }
 
             // SORTING
-            entityList.sort(Comparator.comparingInt(e -> {
-                if (e.isBreakable || e.placedOnGround) {
-                    // For breakable or placedOnGround blocks always appear behind player.
-                    return e.worldY + e.solidArea.y;
-                } else {
-                    // For everything else sort using the FEET (Bottom).
-                    return e.worldY + e.solidArea.y + e.solidArea.height;
-                }
-            }));
+            try {
+                entityList.sort(Comparator.comparingInt(e -> {
+                    if (e.isBreakable || e.placedOnGround) {
+                        return e.worldY + e.solidArea.y;
+                    } else {
+                        return e.worldY + e.solidArea.y + e.solidArea.height;
+                    }
+                }));
+            } catch (IllegalArgumentException e) {
+                // INCASE SORT FAILS
+            }
 
             // DRAW ENTITIES
             for (Entity entity : entityList) {
@@ -268,10 +313,26 @@ public class GamePanel extends JPanel implements Runnable {
         if (keyHandler.showDebug){
             g2.setColor(Color.white);
             g2.drawString("FPS: " + currentFPS, 10, 20);
-            g2.drawString("WorldX: " + player.worldX, 10, 40);
-            g2.drawString("WorldY: " + player.worldY, 10, 60);
-            g2.drawString("Col: " + (player.worldX/tileSize), 10, 80);
-            g2.drawString("Row: " + (player.worldY/tileSize), 10, 100);
+            g2.drawString("UPS: " + currentUPS, 10, 40);
+            g2.drawString("WorldX: " + player.worldX, 10, 60);
+            g2.drawString("WorldY: " + player.worldY, 10, 80);
+            g2.drawString("Col: " + (player.worldX/tileSize), 10, 100);
+            g2.drawString("Row: " + (player.worldY/tileSize), 10, 120);
         }
+    }
+    public void playBackgroundMusic(int i){
+        music.setFile(i);
+        music.play();
+        music.loop();
+    }
+    public void stopMusic(){
+        music.stop();
+    }
+    public void playSE(int i){
+        if(se.clip != null && se.clip.isRunning()) {
+            se.stop();
+        }
+        se.setFile(i);
+        se.play();
     }
 }

@@ -31,7 +31,11 @@ public class Config {
             bw.newLine();
 
             // SOUND VOLUME
-            bw.write(String.valueOf(gamePanel.ui.volume));
+            bw.write(String.valueOf(gamePanel.music.volumeScale));
+            bw.newLine();
+
+            // SE VOLUME
+            bw.write(String.valueOf(gamePanel.se.volumeScale));
             bw.newLine();
 
         } catch(IOException e){
@@ -48,7 +52,6 @@ public class Config {
                 gamePanel.fullScreen = false;
             }
 
-
             // MINIMAP
             s = br.readLine();
             if(s.equals("On")){
@@ -59,7 +62,11 @@ public class Config {
 
             // SOUND
             s = br.readLine();
-            gamePanel.ui.volume = Integer.parseInt(s);
+            gamePanel.music.volumeScale = Integer.parseInt(s);
+
+            // SE
+            s = br.readLine();
+            gamePanel.se.volumeScale = Integer.parseInt(s);
 
         } catch(FileNotFoundException e){
             e.printStackTrace();

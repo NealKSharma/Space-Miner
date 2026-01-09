@@ -2,13 +2,13 @@ package com.neal.spaceminer.tiles_interactive;
 
 import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.main.GamePanel;
-import com.neal.spaceminer.object.OBJ_LumenCell;
+import com.neal.spaceminer.object.OBJ_VoidShard;
 
 import java.awt.*;
 
 public class IT_Void extends Entity {
 
-    public static final String objName = "Void Shard";
+    public static final String objName = "Void Shard Ore";
 
     public IT_Void(GamePanel gamePanel) {
         super(gamePanel);
@@ -16,7 +16,7 @@ public class IT_Void extends Entity {
         name = objName;
         collision = true;
         isBreakable = true;
-        strength = 2;
+        strength = 5;
 
         solidArea.x = 12;
         solidArea.y = 16;
@@ -26,13 +26,15 @@ public class IT_Void extends Entity {
         solidAreaDefaultY = solidArea.y;
 
         down1 = setup("/tiled_objects/void_shard", gamePanel.tileSize, gamePanel.tileSize);
-        description = "[" + name + "]";
+        description = "[" + name + "]\n Ore for Void Shards.";
     }
     @Override
     public Entity getDrop (){
-        Entity drop = new OBJ_LumenCell(gamePanel);
-        drop.worldX = this.worldX;
-        drop.worldY = this.worldY;
+        Entity drop = new OBJ_VoidShard(gamePanel);
+        int randX = (int)(Math.random() * 65) - 32;
+        int randY = (int)(Math.random() * 65) - 32;
+        drop.worldX = this.worldX + randX;
+        drop.worldY = this.worldY + randY;
         return drop;
     }
     @Override
@@ -45,6 +47,6 @@ public class IT_Void extends Entity {
     }
     @Override
     public int getParticleDuration(){
-        return 80;
+        return 40;
     }
 }
