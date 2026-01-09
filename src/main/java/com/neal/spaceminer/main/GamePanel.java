@@ -32,12 +32,17 @@ public class GamePanel extends JPanel implements Runnable {
     // FULLSCREEN
     int screenWidth2 = screenWidth;
     int screenHeight2 = screenHeight;
-    Graphics2D g2;
     public boolean fullScreen = true;
 
     // FPS
     public int FPS = 120;
     public int currentFPS = 0;
+    public int currentUPS = 0;
+    private long lastPaintTime = 0;
+    private long paintTimer = 0;
+    private int paintFrames = 0;
+    private long updateTimer = 0;
+    private int updateCount = 0;
 
     // SYSTEM
     public TileManager tileManager = new TileManager(this);
@@ -52,6 +57,8 @@ public class GamePanel extends JPanel implements Runnable {
     public PathFinder pathFinder = new PathFinder(this);
     public EventHandler eventHandler = new EventHandler(this);
     public Crafting crafting = new Crafting(this);
+    public Sound music = new Sound();
+    public Sound se = new Sound();
     Map map = new Map(this);
     Thread gameThread;
 
@@ -123,34 +130,43 @@ public class GamePanel extends JPanel implements Runnable {
     public void startGame() {
         gameThread = new Thread(this);
         gameThread.start();
+        playBackgroundMusic(0);
     }
     @Override
     public void run() {
-        double drawInterval = 1000000000.0 / FPS;
+        double drawInterval = 1_000_000_000.0 / FPS;
         double delta = 0;
+
         long lastTime = System.nanoTime();
         long currentTime;
-        long timer = 0;
-        int drawCount = 0;
 
         while (gameThread != null) {
             currentTime = System.nanoTime();
-            delta += (currentTime - lastTime) / drawInterval;
-            timer += (currentTime - lastTime);
+            long elapsed = currentTime - lastTime;
             lastTime = currentTime;
 
-            if (delta >= 1) {
+            delta += elapsed / drawInterval;
+            delta = Math.min(delta, 5);
+            updateTimer += elapsed;
+
+            while (delta >= 1) {
                 update();
-                repaint();
+                updateCount++;
                 delta--;
-                drawCount++;
             }
 
-            // SAVE FPS TO THE VARIABLE
-            if (timer >= 1000000000) {
-                currentFPS = drawCount;
-                drawCount = 0;
-                timer = timer % 1000000000;
+            repaint();
+
+            if (updateTimer >= 1_000_000_000) {
+                currentUPS = updateCount;
+                updateCount = 0;
+                updateTimer -= 1_000_000_000;
+            }
+
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -175,13 +191,12 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
-            for (int i = 0; i < particleList.size(); i++) {
-                if(particleList.get(i) != null) {
-                    if(particleList.get(i).alive){
-                        particleList.get(i).update();
-                    } else {
-                        particleList.remove(i);
-                    }
+            for (int i = particleList.size() - 1; i >= 0; i--) {
+                Entity p = particleList.get(i);
+                if (p == null || !p.alive) {
+                    particleList.remove(i);
+                } else {
+                    p.update();
                 }
             }
         }
@@ -189,6 +204,20 @@ public class GamePanel extends JPanel implements Runnable {
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g);
+
+        long now = System.nanoTime();
+        if (lastPaintTime != 0) {
+            paintTimer += now - lastPaintTime;
+            paintFrames++;
+        }
+        lastPaintTime = now;
+
+        if (paintTimer >= 1_000_000_000) {
+            currentFPS = paintFrames;
+            paintFrames = 0;
+            paintTimer -= 1_000_000_000;
+        }
+
         Graphics2D g2 = (Graphics2D) g;
 
         // CALCULATE SCALING
@@ -284,10 +313,26 @@ public class GamePanel extends JPanel implements Runnable {
         if (keyHandler.showDebug){
             g2.setColor(Color.white);
             g2.drawString("FPS: " + currentFPS, 10, 20);
-            g2.drawString("WorldX: " + player.worldX, 10, 40);
-            g2.drawString("WorldY: " + player.worldY, 10, 60);
-            g2.drawString("Col: " + (player.worldX/tileSize), 10, 80);
-            g2.drawString("Row: " + (player.worldY/tileSize), 10, 100);
+            g2.drawString("UPS: " + currentUPS, 10, 40);
+            g2.drawString("WorldX: " + player.worldX, 10, 60);
+            g2.drawString("WorldY: " + player.worldY, 10, 80);
+            g2.drawString("Col: " + (player.worldX/tileSize), 10, 100);
+            g2.drawString("Row: " + (player.worldY/tileSize), 10, 120);
         }
+    }
+    public void playBackgroundMusic(int i){
+        music.setFile(i);
+        music.play();
+        music.loop();
+    }
+    public void stopMusic(){
+        music.stop();
+    }
+    public void playSE(int i){
+        if(se.clip != null && se.clip.isRunning()) {
+            se.stop();
+        }
+        se.setFile(i);
+        se.play();
     }
 }

@@ -21,7 +21,6 @@ public class UI {
 
     public int commandNum = 0;
     public int subState = 0;
-    public int volume = 0;
     int counter = 0;
     public int transitionType = 0;
 
@@ -207,9 +206,9 @@ public class UI {
 
         // SUB WINDOW
         int frameX = gamePanel.tileSize * 6;
-        int frameY = gamePanel.tileSize;
+        int frameY = gamePanel.tileSize/2;
         int frameWidth = gamePanel.tileSize * 8;
-        int frameHeight = gamePanel.tileSize * 10;
+        int frameHeight = gamePanel.tileSize * 10 + gamePanel.tileSize/2;
 
         if(subState == 2) {
             frameX = gamePanel.tileSize * 2;
@@ -247,38 +246,45 @@ public class UI {
             g2.drawString(">", textX-32, textY);
         }
 
-        // SOUND
+        // MUSIC
         textY += gamePanel.tileSize;
-        g2.drawString("Sound", textX, textY);
+        g2.drawString("Music", textX, textY);
         if(commandNum == 2){
+            g2.drawString(">", textX-32, textY);
+        }
+
+        // Sound Effects
+        textY += gamePanel.tileSize;
+        g2.drawString("SE", textX, textY);
+        if(commandNum == 3){
             g2.drawString(">", textX-32, textY);
         }
 
         // CONTROLS
         textY += gamePanel.tileSize;
         g2.drawString("Controls", textX, textY);
-        if(commandNum == 3){
+        if(commandNum == 4){
             g2.drawString(">", textX-32, textY);
         }
 
         // SAVE GAME
         textY += gamePanel.tileSize;
         g2.drawString("Save Game", textX, textY);
-        if(commandNum == 4){
+        if(commandNum == 5){
             g2.drawString(">", textX-32, textY);
         }
 
         // QUIT
         textY += gamePanel.tileSize;
         g2.drawString("Quit", textX, textY);
-        if(commandNum == 5){
+        if(commandNum == 6){
             g2.drawString(">", textX-32, textY);
         }
 
         // BACK
         textY = frameY + gamePanel.tileSize*9;
         g2.drawString("Back", textX, textY);
-        if(commandNum == 6){
+        if(commandNum == 7){
             g2.drawString(">", textX-32, textY);
         }
 
@@ -301,9 +307,15 @@ public class UI {
 
         // SOUND VOLUME
         textY += gamePanel.tileSize;
-        g2.drawRect(textX, textY, (gamePanel.tileSize*3) + 9, gamePanel.tileSize/2);
-        int volumeWidth = (gamePanel.tileSize/2) * volume; // TEMPORARY VARIABLE
+        g2.drawRect(textX, textY, (gamePanel.tileSize*3) + 7, gamePanel.tileSize/2);
+        int volumeWidth = ((gamePanel.tileSize*3) / 5) * gamePanel.music.volumeScale;
         g2.fillRect(textX + 5, textY + 5, volumeWidth, (gamePanel.tileSize/2) - 9);
+
+        // SE VOLUME
+        textY += gamePanel.tileSize;
+        g2.drawRect(textX, textY, (gamePanel.tileSize*3) + 7, gamePanel.tileSize/2);
+        int seWidth = ((gamePanel.tileSize*3) / 5) * gamePanel.se.volumeScale;
+        g2.fillRect(textX + 5, textY + 5, seWidth, (gamePanel.tileSize/2) - 9);
 
         // GAME SAVE
         if(gamePanel.keyHandler.saved){

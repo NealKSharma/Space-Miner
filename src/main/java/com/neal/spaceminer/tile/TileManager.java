@@ -135,14 +135,18 @@ public class TileManager {
 
         if(drawPath){
             g2.setColor(new Color(255, 0, 0, 70));
-            for(int i = 0; i < gamePanel.pathFinder.pathList.size(); i++){
-                int worldX = gamePanel.pathFinder.pathList.get(i).col * gamePanel.tileSize;
-                int worldY = gamePanel.pathFinder.pathList.get(i).row * gamePanel.tileSize;
-                if(isOnScreen(worldX, worldY)){
-                    int screenX = worldX - currentWorldX + screenXOffset;
-                    int screenY = worldY - currentWorldY + screenYOffset;
-                    g2.fillRect(screenX, screenY, gamePanel.tileSize, gamePanel.tileSize);
+            try {
+                for (int i = 0; i < gamePanel.pathFinder.pathList.size(); i++) {
+                    int worldX = gamePanel.pathFinder.pathList.get(i).col * gamePanel.tileSize;
+                    int worldY = gamePanel.pathFinder.pathList.get(i).row * gamePanel.tileSize;
+                    if (isOnScreen(worldX, worldY)) {
+                        int screenX = worldX - currentWorldX + screenXOffset;
+                        int screenY = worldY - currentWorldY + screenYOffset;
+                        g2.fillRect(screenX, screenY, gamePanel.tileSize, gamePanel.tileSize);
+                    }
                 }
+            } catch (IndexOutOfBoundsException e) {
+                // THROW THE EXCEPTION - GENERATES A NEW FRAME
             }
         }
     }

@@ -129,21 +129,33 @@ public class KeyHandler implements KeyListener {
         switch (key) {
             case KeyEvent.VK_W, KeyEvent.VK_UP -> {
                 ui.commandNum--;
-                if (ui.commandNum < 0) ui.commandNum = 6;
+                if (ui.commandNum < 0) ui.commandNum = 7;
             }
             case KeyEvent.VK_S, KeyEvent.VK_DOWN -> {
                 ui.commandNum++;
-                if (ui.commandNum > 6) ui.commandNum = 0;
+                if (ui.commandNum > 7) ui.commandNum = 0;
             }
             case KeyEvent.VK_A, KeyEvent.VK_LEFT -> {
-                if (ui.commandNum == 2 && ui.volume > 0) {
-                    ui.volume--;
+                if (ui.commandNum == 2 && gamePanel.music.volumeScale > 0) {
+                    gamePanel.music.volumeScale--;
+                    gamePanel.music.checkVolume();
+                    gamePanel.config.saveConfig();
+                }
+                if(ui.commandNum == 3 && gamePanel.se.volumeScale > 0) {
+                    gamePanel.se.volumeScale--;
+                    gamePanel.playSE(1);
                     gamePanel.config.saveConfig();
                 }
             }
             case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> {
-                if (ui.commandNum == 2 && ui.volume < 6) {
-                    ui.volume++;
+                if (ui.commandNum == 2 && gamePanel.music.volumeScale < 5) {
+                    gamePanel.music.volumeScale++;
+                    gamePanel.music.checkVolume();
+                    gamePanel.config.saveConfig();
+                }
+                if(ui.commandNum == 3 && gamePanel.se.volumeScale < 5) {
+                    gamePanel.se.volumeScale++;
+                    gamePanel.playSE(1);
                     gamePanel.config.saveConfig();
                 }
             }
@@ -152,10 +164,11 @@ public class KeyHandler implements KeyListener {
                     case 0 -> ui.subState = 1;  // FULLSCREEN MENU
                     case 1 -> { gamePanel.map.miniMapOn = !gamePanel.map.miniMapOn; gamePanel.config.saveConfig(); } // MINIMAP
                     case 2 -> {} // VOLUME
-                    case 3 -> ui.subState = 2; // CONTROLS
-                    case 4 -> { gamePanel.saveLoad.save(); saved = true; } // SAVE
-                    case 5 -> { ui.subState = 3; ui.commandNum = 1; saved = false;} // QUIT CONFIRM MENU
-                    case 6 -> { gamePanel.gameState = gamePanel.playState; ui.commandNum = 0; gamePanel.config.saveConfig(); saved = false;} // BACK
+                    case 3 -> {} // SE
+                    case 4 -> ui.subState = 2; // CONTROLS
+                    case 5 -> { gamePanel.saveLoad.save(); saved = true; } // SAVE
+                    case 6 -> { ui.subState = 3; ui.commandNum = 1; saved = false;} // QUIT CONFIRM MENU
+                    case 7 -> { gamePanel.gameState = gamePanel.playState; ui.commandNum = 0; gamePanel.config.saveConfig(); saved = false;} // BACK
                 }
             }
         }
