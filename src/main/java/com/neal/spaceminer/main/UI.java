@@ -110,6 +110,16 @@ public class UI {
         g2.drawString(text, x+3, y+3);
         g2.setColor(Color.WHITE);
         g2.drawString(text, x, y);
+
+        // COPYRIGHT
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
+        text = "Space Miner © 2026 Neal Kaushik Sharma";
+        x = gamePanel.screenWidth - gamePanel.tileSize * 4;
+        y = gamePanel.screenHeight - gamePanel.tileSize/4;
+        g2.setColor(Color.DARK_GRAY);
+        g2.drawString(text, x+3, y+3);
+        g2.setColor(Color.WHITE);
+        g2.drawString(text, x, y);
     }
     public void loadTitleBackground() {
         try {
@@ -196,7 +206,7 @@ public class UI {
 
         g2.setColor(Color.WHITE);
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN,32F));
-        if (gamePanel.player.objType != 0) {
+        if (gamePanel.player.objType != 0 || gamePanel.player.botCollision) {
             g2.drawString("Press E to interact", 10, gamePanel.screenHeight / 2);
         }
     }
@@ -233,7 +243,7 @@ public class UI {
 
         // FULLSCREEN
         textX = frameX + gamePanel.tileSize;
-        textY += (int) (gamePanel.tileSize*1.5);
+        textY += (int) (gamePanel.tileSize*1.3);
         g2.drawString("Full Screen", textX, textY);
         if(commandNum == 0){
             g2.drawString(">", textX-32, textY);
@@ -282,7 +292,7 @@ public class UI {
         }
 
         // BACK
-        textY = frameY + gamePanel.tileSize*9;
+        textY += (int) (gamePanel.tileSize*1.3);
         g2.drawString("Back", textX, textY);
         if(commandNum == 7){
             g2.drawString(">", textX-32, textY);

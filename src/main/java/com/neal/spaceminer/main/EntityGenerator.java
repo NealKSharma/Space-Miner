@@ -32,6 +32,8 @@ public class EntityGenerator {
             case OBJ_CraftingStation.objName: obj = new OBJ_CraftingStation(gamePanel); break;
             case OBJ_EMPNullifier.objName: obj = new OBJ_EMPNullifier(gamePanel); break;
             case OBJ_SignalJammer.objName: obj = new OBJ_SignalJammer(gamePanel); break;
+            case OBJ_PlasmaRipper.objName: obj = new OBJ_PlasmaRipper(gamePanel); break;
+
             case IT_Rock.objName: obj = new IT_Rock(gamePanel); break;
             case IT_Chrono.objName: obj = new IT_Chrono(gamePanel); break;
             case IT_Pulsarite.objName: obj = new IT_Pulsarite(gamePanel); break;

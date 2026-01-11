@@ -72,26 +72,29 @@ public class KeyHandler implements KeyListener {
         if(key == KeyEvent.VK_SHIFT) sprint = true;
 
         // SLOTS
-        if (key == KeyEvent.VK_1) {
-            gamePanel.player.useHotbarItem(0);
-        }
+        if (key == KeyEvent.VK_1) gamePanel.player.useHotbarItem(0);
         if (key == KeyEvent.VK_2) gamePanel.player.useHotbarItem(1);
         if (key == KeyEvent.VK_3) gamePanel.player.useHotbarItem(2);
         if (key == KeyEvent.VK_4) gamePanel.player.useHotbarItem(3);
         if (key == KeyEvent.VK_5) gamePanel.player.useHotbarItem(4);
 
-        // MISC
         if(key == KeyEvent.VK_ESCAPE) gamePanel.gameState = gamePanel.pauseState;
+
         if(key == KeyEvent.VK_E) {
             if(gamePanel.player.objType == 1){
                 gamePanel.gameState = gamePanel.chestState;
             } else if (gamePanel.player.objType == 2){
                 gamePanel.gameState = gamePanel.craftingState;
+            } else if (gamePanel.player.botCollision){
+                gamePanel.gameState = gamePanel.dialogueState;
+                gamePanel.bot.speak();
             } else {
                 gamePanel.gameState = gamePanel.inventoryState;
             }
         }
+
         if(key == KeyEvent.VK_M) gamePanel.gameState = gamePanel.mapState;
+
         if(key == KeyEvent.VK_F3) {
             showDebug = !showDebug;
             gamePanel.tileManager.drawPath = !gamePanel.tileManager.drawPath;

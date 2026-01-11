@@ -4,6 +4,7 @@ import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.main.KeyHandler;
 import com.neal.spaceminer.object.OBJ_Chest;
 import com.neal.spaceminer.object.OBJ_Pickaxe;
+import com.neal.spaceminer.object.OBJ_PlasmaRipper;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -23,6 +24,10 @@ public class Player extends Entity {
     public Entity currentObj = null;
     public boolean hasLight = false;
     public int objType;
+    public boolean botCollision = false;
+    boolean actionLocked = false;
+
+    private final Entity swingCheck = new Entity(gamePanel);
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
         super(gamePanel);
@@ -45,6 +50,7 @@ public class Player extends Entity {
         initialize();
         getImage();
         getMineImage();
+        getAttackImage();
 
         for(int i = 0; i < maxInventorySize; i++) {
             inventory.add(null);
@@ -91,6 +97,16 @@ public class Player extends Entity {
         mineRight1 = setup("/astronaut/pickaxe_right1", gamePanel.tileSize*2, gamePanel.tileSize);
         mineRight2 = setup("/astronaut/pickaxe_right2", gamePanel.tileSize*2, gamePanel.tileSize);
     }
+    public void getAttackImage(){
+        attackUp1 = setup("/astronaut/attack_back1", gamePanel.tileSize, gamePanel.tileSize*2);
+        attackUp2 = setup("/astronaut/attack_back2", gamePanel.tileSize, gamePanel.tileSize*2);
+        attackDown1 = setup("/astronaut/attack_front1", gamePanel.tileSize, gamePanel.tileSize*2);
+        attackDown2 = setup("/astronaut/attack_front2", gamePanel.tileSize, gamePanel.tileSize*2);
+        attackLeft1 = setup("/astronaut/attack_left1", gamePanel.tileSize*2, gamePanel.tileSize);
+        attackLeft2 = setup("/astronaut/attack_left2", gamePanel.tileSize*2, gamePanel.tileSize);
+        attackRight1 = setup("/astronaut/attack_right1", gamePanel.tileSize*2, gamePanel.tileSize);
+        attackRight2 = setup("/astronaut/attack_right2", gamePanel.tileSize*2, gamePanel.tileSize);
+    }
     public void interactWithObject(int index) {
         currentObj = gamePanel.obj.get(gamePanel.currentMap).get(index);
             if (currentObj.canPickup) {
@@ -135,6 +151,7 @@ public class Player extends Entity {
     }
     public void setItems(){
         inventory.set(0, new OBJ_Pickaxe(gamePanel));
+        inventory.set(1, new OBJ_PlasmaRipper(gamePanel));
         itemBehaviour();
     }
     public void swapItems(int at, int to){
@@ -233,16 +250,23 @@ public class Player extends Entity {
         return -1;
     }
     public void useHotbarItem(int index){
-        // MINING
+        if(actionLocked) return;
+
         if(inventory.get(index) != null && inventory.get(index).name.equals("Pickaxe")) {
             mining = true;
+            attacking = false;
             spriteCounter = 0;
+            actionLocked = true;
+        } else if(inventory.get(index) != null && inventory.get(index).name.equals("Plasma Ripper")) {
+            attacking = true;
+            mining = false;
+            spriteCounter = 0;
+            actionLocked = true;
         }
     }
     public void update() {
-        if(mining){
-            // PLAYER IS MINING
-            mining();
+        if(mining ^ attacking){
+            swinging();
         } else if (keyHandler.up || keyHandler.down || keyHandler.left || keyHandler.right) {
             // PLAYER IS MOVING
             if (keyHandler.up) direction = "up";
@@ -264,11 +288,7 @@ public class Player extends Entity {
             int hostileIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.hostile);
             if(hostileIndex != -1) interactWithMonster(hostileIndex);
             // CHECK COLLISION WITH BOT
-            boolean collision = gamePanel.collisionChecker.checkBot(this, gamePanel.bot);
-            if(collision) {
-                gamePanel.gameState = gamePanel.dialogueState;
-                gamePanel.bot.speak();
-            }
+            botCollision = gamePanel.collisionChecker.checkBot(this, gamePanel.bot);
 
             // CHECK EVENTS
             gamePanel.eventHandler.checkEvent();
@@ -325,14 +345,13 @@ public class Player extends Entity {
             }
         }
     }
-    public void mining() {
+    public void swinging() {
         spriteCounter++;
         if (spriteCounter <= 10) {
             spriteNum = 1;
         }
         if (spriteCounter > 10 && spriteCounter <= 50) {
             spriteNum = 2;
-            Entity swingCheck = new Entity(gamePanel);
 
             swingCheck.worldX = this.worldX;
             swingCheck.worldY = this.worldY;
@@ -353,20 +372,30 @@ public class Player extends Entity {
                 case "right": swingCheck.worldX += swingArea.width; break;
             }
 
-            int objectIndex = gamePanel.collisionChecker.checkObject(swingCheck, true);
-            if (objectIndex != -1 && gamePanel.obj.get(gamePanel.currentMap).get(objectIndex).isBreakable) {
-                mineObject(objectIndex);
+            if(mining){
+                int objectIndex = gamePanel.collisionChecker.checkObject(swingCheck, true);
+                if (objectIndex != -1 && gamePanel.obj.get(gamePanel.currentMap).get(objectIndex).isBreakable) {
+                    mineObject(objectIndex);
+                }
+            } else {
+                int hostileIndex = gamePanel.collisionChecker.checkEntity(swingCheck, gamePanel.hostile);
+                if(hostileIndex != -1) {
+                    attack(hostileIndex);
+                }
             }
         }
         if (spriteCounter > 50 && spriteCounter <= 100) {
             spriteNum = 1;
             spriteCounter = 0;
             mining = false;
+            attacking = false;
+            actionLocked = false;
         }
     }
     public void mineObject(int i) {
         Entity ore = gamePanel.obj.get(gamePanel.currentMap).get(i);
         if (ore.mineCount >= ore.strength * 39) {
+            // ORE MINED
             generateParticle(ore, ore);
 
             int randAmount = (int)(Math.random() * 3) + 1;
@@ -375,11 +404,20 @@ public class Player extends Entity {
             }
             gamePanel.assetSetter.replaceTile(ore);
             gamePanel.obj.get(gamePanel.currentMap).remove(i);
-            ore.mineCount = 0;
         } else {
             ore.mineCount++;
             if (ore.mineCount % 40 == 0) {
                 generateParticle(ore, ore);
+            }
+        }
+    }
+    public void attack(int i){
+        Entity hostile = gamePanel.hostile.get(gamePanel.currentMap).get(i);
+        if(!hostile.invincible){
+            hostile.life--;
+            hostile.invincible = true;
+            if(hostile.life <= 0){
+                gamePanel.hostile.get(gamePanel.currentMap).remove(i);
             }
         }
     }

@@ -19,12 +19,14 @@ public class Entity {
 
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
     public BufferedImage mineUp1, mineUp2, mineDown1, mineDown2, mineLeft1,  mineLeft2, mineRight1, mineRight2;
+    public BufferedImage attackUp1, attackUp2, attackDown1, attackDown2, attackLeft1, attackLeft2, attackRight1, attackRight2;
     public String direction = "down";
 
     public int spriteCounter = 0;
     public int spriteNum = 1;
     public int actionCooldown = 0;
     boolean mining = false;
+    boolean attacking = false;
 
     // ENTITIES
     ArrayList<String> dialogue = new  ArrayList<>();
@@ -73,39 +75,32 @@ public class Entity {
         // DETERMINE WHICH IMAGE TO USE FIRST
         switch (direction) {
             case "up":
-                if (!mining) {
-                    image = (spriteNum == 1) ? up1 : up2;
-                } else {
-                    tempScreenY = screenY - gamePanel.tileSize;
-                    image = (spriteNum == 1) ? mineUp1 : mineUp2;
-                }
+                if (mining || attacking) tempScreenY = screenY - gamePanel.tileSize;
+
+                if (mining) image = (spriteNum == 1) ? mineUp1 : mineUp2;
+                else if (attacking) image = (spriteNum == 1) ? attackUp1 : attackUp2;
+                else image = (spriteNum == 1) ? up1 : up2;
                 break;
             case "down":
-                if (!mining) {
-                    image = (spriteNum == 1) ? down1 : down2;
-                } else {
-                    image = (spriteNum == 1) ? mineDown1 : mineDown2;
-                }
+                if (mining) image = (spriteNum == 1) ? mineDown1 : mineDown2;
+                else if (attacking) image = (spriteNum == 1) ? attackDown1 : attackDown2;
+                else image = (spriteNum == 1) ? down1 : down2;
                 break;
             case "left":
-                if (!mining) {
-                    image = (spriteNum == 1) ? left1 : left2;
-                } else {
-                    tempScreenX = screenX - gamePanel.tileSize;
-                    image = (spriteNum == 1) ? mineLeft1 : mineLeft2;
-                }
+                if (mining || attacking) tempScreenX = screenX - gamePanel.tileSize;
+
+                if (mining) image = (spriteNum == 1) ? mineLeft1 : mineLeft2;
+                else if (attacking) image = (spriteNum == 1) ? attackLeft1 : attackLeft2;
+                else image = (spriteNum == 1) ? left1 : left2;
                 break;
             case "right":
-                if (!mining) {
-                    image = (spriteNum == 1) ? right1 : right2;
-                } else {
-                    image = (spriteNum == 1) ? mineRight1 : mineRight2;
-                }
+                if (mining) image = (spriteNum == 1) ? mineRight1 : mineRight2;
+                else if (attacking) image = (spriteNum == 1) ? attackRight1 : attackRight2;
+                else image = (spriteNum == 1) ? right1 : right2;
                 break;
         }
 
-        // Safety check
-        if (image == null) return;
+
 
         // GET THE ACTUAL SIZE OF THE ENTITY
         int width = image.getWidth();
@@ -125,7 +120,9 @@ public class Entity {
                 worldY + height > gamePanel.player.worldY - gamePanel.player.screenY &&
                 worldY - gamePanel.tileSize < gamePanel.player.worldY + gamePanel.player.screenY) {
 
+            if(invincible) g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
             g2.drawImage(image, tempScreenX, tempScreenY, width, height, null);
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 
             // Draw collision box for debugging
             if(gamePanel.keyHandler.showDebug) {
@@ -172,6 +169,14 @@ public class Entity {
                 spriteNum = 1;
             }
             spriteCounter = 0;
+        }
+
+        if(invincible){
+            invincibleCounter++;
+            if(invincibleCounter > gamePanel.FPS/2){
+                invincible = false;
+                invincibleCounter = 0;
+            }
         }
     }
     public void setAction() {

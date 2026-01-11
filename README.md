@@ -70,7 +70,7 @@ The world isn't just a static background.
 * **Context-Sensitive Actions:** Interact with specific objects in the world—open crates, pick up tools off the ground, or inspect machinery—dynamically based on where you are facing.
 
 ### ⚙️ Smooth Performance
-* **High Refresh Rate:** Running on a custom game loop optimized for **265 FPS**, providing fluid character animations and responsive controls.
+* **High Refresh Rate:** Running on a custom game loop optimized for **120 FPS**, providing fluid character animations and responsive controls.
 * **Save/Load System:** Your progress is persistent. Save your location, inventory, and world state and pick up exactly where you left off.
 * **Custom Settings:** Adjust audio levels, toggle fullscreen, and manage controls via a persistent configuration menu.
 

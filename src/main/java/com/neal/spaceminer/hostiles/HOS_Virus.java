@@ -8,7 +8,7 @@ import java.util.Random;
 public class HOS_Virus extends Entity {
 
     int speedLock = 0;
-    public static final String name = "Virus";
+    public static final String hosName = "Virus";
 
     public HOS_Virus(GamePanel gamePanel) {
         super(gamePanel);
@@ -18,6 +18,7 @@ public class HOS_Virus extends Entity {
         maxLife = 4;
         life = maxLife;
         damage = 20;
+        name = hosName;
 
         solidArea.x = 12;
         solidArea.y = 12;

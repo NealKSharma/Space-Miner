@@ -6,11 +6,14 @@ import java.util.Random;
 
 public class NPC_Robot extends Entity {
 
+    public static final String npcName = "Robot";
+
     public NPC_Robot(GamePanel gamePanel){
         super(gamePanel);
 
         direction = "down";
         onPath = true;
+        name = npcName;
 
         solidArea = new Rectangle();
         solidArea.x = 18;

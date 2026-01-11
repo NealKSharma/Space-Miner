@@ -1,3 +1,6 @@
+// Space Miner
+// Copyright © 2026 Neal Kaushik Sharma. All rights reserved.
+
 package com.neal.spaceminer.main;
 
 import javax.swing.*;
