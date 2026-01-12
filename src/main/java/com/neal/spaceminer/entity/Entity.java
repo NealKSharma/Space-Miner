@@ -35,6 +35,8 @@ public class Entity {
     public int invincibleCounter = 0;
     public int damage = 0;
     public int type; // 0 - Player, 1 - NPC, 2 - Hostile
+    public int speedLock = 0;
+    public int updateCounter = 0;
 
     // COLLISION
     public Rectangle solidArea = new Rectangle(0, 0, 64, 64);
@@ -100,8 +102,6 @@ public class Entity {
                 break;
         }
 
-
-
         // GET THE ACTUAL SIZE OF THE ENTITY
         int width = image.getWidth();
         int height = image.getHeight();
@@ -151,31 +151,36 @@ public class Entity {
         setAction();
         checkCollision();
 
-        // IF COLLISION IS FALSE, ENTITY CAN MOVE
-        if (!collisionOn) {
-            switch (direction) {
-                case "up": worldY -= speed; break;
-                case "down": worldY += speed; break;
-                case "left": worldX -= speed; break;
-                case "right": worldX += speed; break;
-            }
-        }
+        updateCounter++;
+        if(updateCounter > speedLock){
+            updateCounter = 0;
 
-        spriteCounter++;
-        if (spriteCounter > 32) {
-            if (spriteNum == 1) {
-                spriteNum = 2;
-            } else if (spriteNum == 2) {
-                spriteNum = 1;
+            // IF COLLISION IS FALSE, ENTITY CAN MOVE
+            if (!collisionOn) {
+                switch (direction) {
+                    case "up": worldY -= speed; break;
+                    case "down": worldY += speed; break;
+                    case "left": worldX -= speed; break;
+                    case "right": worldX += speed; break;
+                }
             }
-            spriteCounter = 0;
-        }
 
-        if(invincible){
-            invincibleCounter++;
-            if(invincibleCounter > gamePanel.FPS/2){
-                invincible = false;
-                invincibleCounter = 0;
+            spriteCounter++;
+            if (spriteCounter > 32) {
+                if (spriteNum == 1) {
+                    spriteNum = 2;
+                } else if (spriteNum == 2) {
+                    spriteNum = 1;
+                }
+                spriteCounter = 0;
+            }
+
+            if(invincible){
+                invincibleCounter++;
+                if(invincibleCounter > gamePanel.FPS/2){
+                    invincible = false;
+                    invincibleCounter = 0;
+                }
             }
         }
     }

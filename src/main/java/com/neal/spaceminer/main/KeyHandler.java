@@ -8,7 +8,6 @@ public class KeyHandler implements KeyListener {
     GamePanel gamePanel;
 
     public boolean up, down, left, right, sprint, saved;
-
     public boolean showDebug = false;
 
     public KeyHandler(GamePanel gamePanel) {
@@ -16,12 +15,7 @@ public class KeyHandler implements KeyListener {
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
-
-    }
-    @Override
     public void keyPressed(KeyEvent e) {
-
         int key = e.getKeyCode();
 
         if (gamePanel.gameState == gamePanel.titleState) titleState(key);
@@ -29,7 +23,7 @@ public class KeyHandler implements KeyListener {
         else if (gamePanel.gameState == gamePanel.pauseState) pauseState(key);
         else if (gamePanel.gameState == gamePanel.inventoryState) inventoryState(key);
         else if (gamePanel.gameState == gamePanel.chestState) chestState(key);
-        else if(gamePanel.gameState == gamePanel.craftingState) craftingState(key);
+        else if (gamePanel.gameState == gamePanel.craftingState) craftingState(key);
         else if (gamePanel.gameState == gamePanel.mapState) mapState(key);
         else if (gamePanel.gameState == gamePanel.dialogueState) dialogueState(key);
     }
@@ -405,5 +399,9 @@ public class KeyHandler implements KeyListener {
         if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) down = false;
         if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) right = false;
         if (key == KeyEvent.VK_SHIFT) sprint = false;
+    }
+    @Override
+    public void keyTyped(KeyEvent e) {
+
     }
 }

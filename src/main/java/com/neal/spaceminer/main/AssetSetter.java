@@ -2,7 +2,7 @@ package com.neal.spaceminer.main;
 
 import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.entity.NPC_Robot;
-import com.neal.spaceminer.hostiles.HOS_Virus;
+import com.neal.spaceminer.hostiles.*;
 import com.neal.spaceminer.object.*;
 import com.neal.spaceminer.tiles_interactive.*;
 
@@ -75,7 +75,9 @@ public class AssetSetter {
         gamePanel.bot.worldY = gamePanel.player.worldY + 32;
     }
     public void setHostile(){
-        place(new HOS_Virus(gamePanel), 0, 70, 80, hostile);
+        place(new HOS_Biophage(gamePanel), 0, 70, 80, hostile);
+        place(new HOS_Dronex(gamePanel), 0, 60, 80, hostile);
+        place(new HOS_Monolith(gamePanel), 0, 50, 80, hostile);
     }
     public void setInteractiveTile(){
         currIT = 0;

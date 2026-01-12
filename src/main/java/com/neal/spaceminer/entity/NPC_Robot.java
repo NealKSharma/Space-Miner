@@ -60,9 +60,6 @@ public class NPC_Robot extends Entity {
     }
     public void setAction() {
         if(onPath){
-            int goalCol = (gamePanel.player.worldX + gamePanel.player.solidArea.x) / gamePanel.tileSize;
-            int goalRow = (gamePanel.player.worldY + gamePanel.player.solidArea.y) / gamePanel.tileSize;
-
             int distanceX = Math.abs(worldX - gamePanel.player.worldX);
             int distanceY = Math.abs(worldY - gamePanel.player.worldY);
 
@@ -70,7 +67,7 @@ public class NPC_Robot extends Entity {
 
             if(distanceX > range || distanceY > range) {
                 speed = 1;
-                searchPath(goalCol, goalRow);
+                searchPath();
             } else {
                 speed = 0;
                 spriteCounter = 0;
@@ -80,8 +77,7 @@ public class NPC_Robot extends Entity {
             if(actionCooldown == gamePanel.FPS*2){
                 actionCooldown = 0;
 
-                Random rand = new Random();
-                int i = rand.nextInt(4) + 1; // PICK A NUMBER FROM 1 to 4
+                int i = new Random().nextInt(4) + 1; // PICK A NUMBER FROM 1 to 4
 
                 switch (i) {
                     case 1: direction = "up"; break;
@@ -92,17 +88,17 @@ public class NPC_Robot extends Entity {
             }
         }
     }
-    public void searchPath(int goalCol, int goalRow){
+    public void searchPath(){
         int startCol = (worldX + solidArea.x) / gamePanel.tileSize;
         int startRow = (worldY + solidArea.y) / gamePanel.tileSize;
+        int goalCol = (gamePanel.player.worldX + gamePanel.player.solidArea.x) / gamePanel.tileSize;
+        int goalRow = (gamePanel.player.worldY + gamePanel.player.solidArea.y) / gamePanel.tileSize;
 
         gamePanel.pathFinder.setNodes(startCol, startRow, goalCol, goalRow);
         if(gamePanel.pathFinder.search()){
             // NEXT WORLDX AND WORLDY
-            int nextCol = gamePanel.pathFinder.pathList.getFirst().col;
-            int nextRow = gamePanel.pathFinder.pathList.getFirst().row;
-            int nextX = nextCol * gamePanel.tileSize;
-            int nextY = nextRow * gamePanel.tileSize;
+            int nextX = gamePanel.pathFinder.pathList.getFirst().col * gamePanel.tileSize;
+            int nextY = gamePanel.pathFinder.pathList.getFirst().row * gamePanel.tileSize;
 
             // ENTITY'S SOLID AREA POSITION
             int enLeftX = worldX + solidArea.x;
@@ -110,18 +106,12 @@ public class NPC_Robot extends Entity {
             int enTopY = worldY + solidArea.y;
             int enBottomY = worldY + solidArea.y + solidArea.height;
 
-            if(enTopY > nextY && enLeftX >= nextX && enRightX < nextX + gamePanel.tileSize){
-                direction = "up";
-            } else if(enTopY < nextY && enLeftX >= nextX && enRightX < nextX + gamePanel.tileSize){
-                direction = "down";
-            } else if(enTopY >= nextY && enBottomY < nextY + gamePanel.tileSize){
-                // LEFT OR RIGHT
-                if(enLeftX > nextX) {
-                    direction = "left";
-                }
-                if(enLeftX < nextX) {
-                    direction = "right";
-                }
+            if(enTopY > nextY && enLeftX >= nextX && enRightX < nextX + gamePanel.tileSize) direction = "up";
+            else if(enTopY < nextY && enLeftX >= nextX && enRightX < nextX + gamePanel.tileSize) direction = "down";
+            else if(enTopY >= nextY && enBottomY < nextY + gamePanel.tileSize){
+                 // LEFT OR RIGHT
+                if(enLeftX > nextX) direction = "left";
+                if(enLeftX < nextX) direction = "right";
             } else if (enTopY > nextY && enLeftX > nextX){
                 // UP OR LEFT
                 direction = "up";
@@ -146,7 +136,6 @@ public class NPC_Robot extends Entity {
                 checkCollision();
                 if(collisionOn) direction = "right";
             }
-
             // IF NPC HAS TO GET TO A CERTAIN ROW AND COL
             // if(nextCol == goalCol && nextRow == goalRow) onPath = false;
         }

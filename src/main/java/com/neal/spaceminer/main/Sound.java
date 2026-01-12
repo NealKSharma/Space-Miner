@@ -16,7 +16,7 @@ public class Sound {
 
     public Sound(){
         soundURL[0] = getClass().getResource("/sound/SpaceMiner.wav");
-        soundURL[1] = getClass().getResource("/sound/test.wav");
+        soundURL[1] = getClass().getResource("/sound/cursor.wav");
     }
 
     public void setFile(int i){
