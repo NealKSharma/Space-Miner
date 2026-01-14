@@ -142,6 +142,7 @@ public class Entity {
 
         if(this.type == 2 && contactPlayer){
             if(!gamePanel.player.invincible){
+                gamePanel.playSE(3);
                 gamePanel.player.suiteIntegrity -= this.damage;
                 gamePanel.player.invincible = true;
             }

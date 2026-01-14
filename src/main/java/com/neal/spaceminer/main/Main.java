@@ -10,7 +10,6 @@ public class Main {
     public static JFrame window;
 
     public static void main(String[] args) {
-
         window = new JFrame("Space-Miner");
 
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

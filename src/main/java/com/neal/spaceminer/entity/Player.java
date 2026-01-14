@@ -111,11 +111,13 @@ public class Player extends Entity {
         currentObj = gamePanel.obj.get(gamePanel.currentMap).get(index);
             if (currentObj.canPickup) {
                 if(currentObj.isStackable && searchInventory(currentObj.name) != -1) {
+                    gamePanel.playSE(4);
                     inventory.get(searchInventory(currentObj.name)).itemAmount += currentObj.itemAmount;
                     gamePanel.obj.get(gamePanel.currentMap).remove(index);
                 } else {
                     int emptySlot = getFirstEmptySlot();
                     if (emptySlot != -1) {
+                        gamePanel.playSE(4);
                         inventory.set(emptySlot, currentObj);
                         gamePanel.obj.get(gamePanel.currentMap).remove(index);
                         itemBehaviour();
@@ -145,6 +147,7 @@ public class Player extends Entity {
     public void interactWithEntity(int index) { }
     public void interactWithMonster(int index){
         if(!invincible){
+            gamePanel.playSE(3);
             suiteIntegrity -= gamePanel.hostile.get(gamePanel.currentMap).get(index).damage;
             invincible = true;
         }
@@ -350,7 +353,7 @@ public class Player extends Entity {
         if (spriteCounter <= 10) {
             spriteNum = 1;
         }
-        if (spriteCounter > 10 && spriteCounter <= 50) {
+        if (spriteCounter == 11) {
             spriteNum = 2;
 
             swingCheck.worldX = this.worldX;
@@ -376,11 +379,15 @@ public class Player extends Entity {
                 int objectIndex = gamePanel.collisionChecker.checkObject(swingCheck, true);
                 if (objectIndex != -1 && gamePanel.obj.get(gamePanel.currentMap).get(objectIndex).isBreakable) {
                     mineObject(objectIndex);
+                } else {
+                    gamePanel.playSE(6);
                 }
             } else {
                 int hostileIndex = gamePanel.collisionChecker.checkEntity(swingCheck, gamePanel.hostile);
                 if(hostileIndex != -1) {
                     attack(hostileIndex);
+                } else {
+                    gamePanel.playSE(6);
                 }
             }
         }
@@ -393,32 +400,32 @@ public class Player extends Entity {
         }
     }
     public void mineObject(int i) {
+        gamePanel.playSE(5);
         Entity ore = gamePanel.obj.get(gamePanel.currentMap).get(i);
-        if (ore.mineCount >= ore.strength * 39) {
-            // ORE MINED
-            generateParticle(ore, ore);
+        generateParticle(ore, ore);
 
+        ore.strength--;
+        if(ore.strength <= 0){
+            // ORE MINED
             int randAmount = (int)(Math.random() * 3) + 1;
             for (int k = 0; k < randAmount; k++) {
                 gamePanel.obj.get(gamePanel.currentMap).add(ore.getDrop());
             }
             gamePanel.assetSetter.replaceTile(ore);
             gamePanel.obj.get(gamePanel.currentMap).remove(i);
-        } else {
-            ore.mineCount++;
-            if (ore.mineCount % 40 == 0) {
-                generateParticle(ore, ore);
             }
         }
-    }
     public void attack(int i){
         Entity hostile = gamePanel.hostile.get(gamePanel.currentMap).get(i);
         if(!hostile.invincible){
+            gamePanel.playSE(2);
             hostile.life--;
             hostile.invincible = true;
             if(hostile.life <= 0){
                 gamePanel.hostile.get(gamePanel.currentMap).remove(i);
             }
+        } else {
+            gamePanel.playSE(6);
         }
     }
 }

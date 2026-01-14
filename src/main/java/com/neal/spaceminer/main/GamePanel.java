@@ -325,9 +325,6 @@ public class GamePanel extends JPanel implements Runnable {
         music.play();
         music.loop();
     }
-    public void stopMusic(){
-        music.stop();
-    }
     public void playSE(int i){
         if(se.clip != null && se.clip.isRunning()) {
             se.stop();

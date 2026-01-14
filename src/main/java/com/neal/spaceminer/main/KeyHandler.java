@@ -30,12 +30,14 @@ public class KeyHandler implements KeyListener {
     public void titleState(int key){
         if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) {
             gamePanel.ui.commandNum--;
+            gamePanel.playSE(1);
             if(gamePanel.ui.commandNum < 0){
                 gamePanel.ui.commandNum = 2;
             }
         }
         if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) {
             gamePanel.ui.commandNum++;
+            gamePanel.playSE(1);
             if(gamePanel.ui.commandNum > 2){
                 gamePanel.ui.commandNum = 0;
             }
@@ -66,11 +68,21 @@ public class KeyHandler implements KeyListener {
         if(key == KeyEvent.VK_SHIFT) sprint = true;
 
         // SLOTS
-        if (key == KeyEvent.VK_1) gamePanel.player.useHotbarItem(0);
-        if (key == KeyEvent.VK_2) gamePanel.player.useHotbarItem(1);
-        if (key == KeyEvent.VK_3) gamePanel.player.useHotbarItem(2);
-        if (key == KeyEvent.VK_4) gamePanel.player.useHotbarItem(3);
-        if (key == KeyEvent.VK_5) gamePanel.player.useHotbarItem(4);
+        if (key == KeyEvent.VK_1) {
+            gamePanel.player.useHotbarItem(0);
+        }
+        if (key == KeyEvent.VK_2) {
+            gamePanel.player.useHotbarItem(1);
+        }
+        if (key == KeyEvent.VK_3) {
+            gamePanel.player.useHotbarItem(2);
+        }
+        if (key == KeyEvent.VK_4) {
+            gamePanel.player.useHotbarItem(3);
+        }
+        if (key == KeyEvent.VK_5) {
+            gamePanel.player.useHotbarItem(4);
+        }
 
         if(key == KeyEvent.VK_ESCAPE) gamePanel.gameState = gamePanel.pauseState;
 
@@ -125,14 +137,17 @@ public class KeyHandler implements KeyListener {
     private void handleMainMenuInput(int key, UI ui) {
         switch (key) {
             case KeyEvent.VK_W, KeyEvent.VK_UP -> {
+                gamePanel.playSE(1);
                 ui.commandNum--;
                 if (ui.commandNum < 0) ui.commandNum = 7;
             }
             case KeyEvent.VK_S, KeyEvent.VK_DOWN -> {
+                gamePanel.playSE(1);
                 ui.commandNum++;
                 if (ui.commandNum > 7) ui.commandNum = 0;
             }
             case KeyEvent.VK_A, KeyEvent.VK_LEFT -> {
+                gamePanel.playSE(1);
                 if (ui.commandNum == 2 && gamePanel.music.volumeScale > 0) {
                     gamePanel.music.volumeScale--;
                     gamePanel.music.checkVolume();
@@ -140,11 +155,11 @@ public class KeyHandler implements KeyListener {
                 }
                 if(ui.commandNum == 3 && gamePanel.se.volumeScale > 0) {
                     gamePanel.se.volumeScale--;
-                    gamePanel.playSE(1);
                     gamePanel.config.saveConfig();
                 }
             }
             case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> {
+                gamePanel.playSE(1);
                 if (ui.commandNum == 2 && gamePanel.music.volumeScale < 5) {
                     gamePanel.music.volumeScale++;
                     gamePanel.music.checkVolume();
@@ -152,7 +167,6 @@ public class KeyHandler implements KeyListener {
                 }
                 if(ui.commandNum == 3 && gamePanel.se.volumeScale < 5) {
                     gamePanel.se.volumeScale++;
-                    gamePanel.playSE(1);
                     gamePanel.config.saveConfig();
                 }
             }
@@ -172,10 +186,12 @@ public class KeyHandler implements KeyListener {
     }
     private void handleYesNoInput(int key, UI ui) {
         if (key == KeyEvent.VK_W  || key == KeyEvent.VK_UP) {
+            gamePanel.playSE(1);
             ui.commandNum--;
             if (ui.commandNum < 0) ui.commandNum = 1;
         }
         if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) {
+            gamePanel.playSE(1);
             ui.commandNum++;
             if (ui.commandNum > 1) ui.commandNum = 0;
         }
@@ -207,6 +223,7 @@ public class KeyHandler implements KeyListener {
 
         // CURSOR MOVEMENT
         if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) {
+            gamePanel.playSE(1);
             if(gamePanel.ui.slotRow > 0) {
                 gamePanel.ui.slotRow--;
             } else {
@@ -214,6 +231,7 @@ public class KeyHandler implements KeyListener {
             }
         }
         if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) {
+            gamePanel.playSE(1);
             if(gamePanel.ui.slotCol > 0) {
                 gamePanel.ui.slotCol--;
             } else {
@@ -221,6 +239,7 @@ public class KeyHandler implements KeyListener {
             }
         }
         if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) {
+            gamePanel.playSE(1);
             if(gamePanel.ui.slotRow < 3) {
                 gamePanel.ui.slotRow++;
             } else {
@@ -228,6 +247,7 @@ public class KeyHandler implements KeyListener {
             }
         }
         if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) {
+            gamePanel.playSE(1);
             if(gamePanel.ui.slotCol < 4) {
                 gamePanel.ui.slotCol++;
             } else {
@@ -252,6 +272,7 @@ public class KeyHandler implements KeyListener {
 
         // Navigation
         if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) {
+            gamePanel.playSE(1);
             if(gamePanel.ui.slotRow > 0) {
                 gamePanel.ui.slotRow--;
             } else {
@@ -265,6 +286,7 @@ public class KeyHandler implements KeyListener {
         }
 
         if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) {
+            gamePanel.playSE(1);
             // In chest (0-5 columns, max 6 rows)
             if(gamePanel.ui.slotCol < 6 && gamePanel.ui.slotRow < 6) {
                 gamePanel.ui.slotRow++;
@@ -278,6 +300,7 @@ public class KeyHandler implements KeyListener {
         }
 
         if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) {
+            gamePanel.playSE(1);
             if(gamePanel.ui.slotCol > 0) {
                 gamePanel.ui.slotCol--;
                 // Jump the gap between chest and inventory
@@ -293,6 +316,7 @@ public class KeyHandler implements KeyListener {
         }
 
         if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) {
+            gamePanel.playSE(1);
             if(gamePanel.ui.slotCol < 12) {
                 gamePanel.ui.slotCol++;
                 // Jump the gap between chest and inventory
@@ -321,6 +345,7 @@ public class KeyHandler implements KeyListener {
 
         // Navigation
         if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) {
+            gamePanel.playSE(1);
             if(gamePanel.ui.slotRow > 0) {
                 gamePanel.ui.slotRow--;
             } else {
@@ -333,6 +358,7 @@ public class KeyHandler implements KeyListener {
             }
         }
         if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) {
+            gamePanel.playSE(1);
             if(gamePanel.ui.slotCol < 6 && gamePanel.ui.slotRow < 2) {
                 gamePanel.ui.slotRow++;
             }
@@ -343,6 +369,7 @@ public class KeyHandler implements KeyListener {
             }
         }
         if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) {
+            gamePanel.playSE(1);
             if(gamePanel.ui.slotCol > 0) {
                 gamePanel.ui.slotCol--;
                 // Jump the gap between crafting station and inventory
@@ -357,6 +384,7 @@ public class KeyHandler implements KeyListener {
             }
         }
         if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) {
+            gamePanel.playSE(1);
             if(gamePanel.ui.slotCol < 12) {
                 gamePanel.ui.slotCol++;
                 // Jump the gap between crafting station and inventory

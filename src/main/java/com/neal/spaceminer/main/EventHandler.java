@@ -44,9 +44,7 @@ public class EventHandler {
         int xDistance = Math.abs(gamePanel.player.worldX - previousEventX);
         int yDistance = Math.abs(gamePanel.player.worldY - previousEventY);
         int distance = Math.max(xDistance, yDistance);
-        if(distance > gamePanel.tileSize/2){
-            canTouchEvent = true;
-        }
+        if(distance > gamePanel.tileSize/2) canTouchEvent = true;
 
         if(canTouchEvent){
             if(hit(0, 74, 70, "any")){ mapSwitch(1, 50, 59); }
