@@ -8,6 +8,7 @@ import com.neal.spaceminer.object.OBJ_PlasmaRipper;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Player extends Entity {
     KeyHandler keyHandler;
@@ -407,7 +408,7 @@ public class Player extends Entity {
         ore.strength--;
         if(ore.strength <= 0){
             // ORE MINED
-            int randAmount = (int)(Math.random() * 3) + 1;
+            int randAmount = ThreadLocalRandom.current().nextInt(1, 4);
             for (int k = 0; k < randAmount; k++) {
                 gamePanel.obj.get(gamePanel.currentMap).add(ore.getDrop());
             }
@@ -419,9 +420,16 @@ public class Player extends Entity {
         Entity hostile = gamePanel.hostile.get(gamePanel.currentMap).get(i);
         if(!hostile.invincible){
             gamePanel.playSE(2);
+            generateParticle(hostile, hostile);
             hostile.life--;
             hostile.invincible = true;
             if(hostile.life <= 0){
+                // HOSTILE DIED
+                int randAmount = ThreadLocalRandom.current().nextInt(1, 4);
+                for (int k = 0; k < randAmount; k++) {
+                    gamePanel.obj.get(gamePanel.currentMap).add(hostile.getDrop());
+                }
+                // TODO: Hostile needs to be respawned after checks.
                 gamePanel.hostile.get(gamePanel.currentMap).remove(i);
             }
         } else {

@@ -5,6 +5,7 @@ import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.object.OBJ_Pulsarite;
 
 import java.awt.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class IT_Pulsarite extends Entity {
 
@@ -31,8 +32,8 @@ public class IT_Pulsarite extends Entity {
     @Override
     public Entity getDrop (){
         Entity drop = new OBJ_Pulsarite(gamePanel);
-        int randX = (int)(Math.random() * 65) - 32;
-        int randY = (int)(Math.random() * 65) - 32;
+        int randX = ThreadLocalRandom.current().nextInt(-32, 33);
+        int randY = ThreadLocalRandom.current().nextInt(-32, 33);
         drop.worldX = this.worldX + randX;
         drop.worldY = this.worldY + randY;
         return drop;

@@ -2,7 +2,7 @@ package com.neal.spaceminer.entity;
 
 import com.neal.spaceminer.main.GamePanel;
 import java.awt.*;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class NPC_Robot extends Entity {
 
@@ -77,7 +77,7 @@ public class NPC_Robot extends Entity {
             if(actionCooldown == gamePanel.FPS*2){
                 actionCooldown = 0;
 
-                int i = new Random().nextInt(4) + 1; // PICK A NUMBER FROM 1 to 4
+                int i = ThreadLocalRandom.current().nextInt(1, 5);
 
                 switch (i) {
                     case 1: direction = "up"; break;

@@ -33,6 +33,12 @@ public class EntityGenerator {
             case OBJ_EMPNullifier.objName: obj = new OBJ_EMPNullifier(gamePanel); break;
             case OBJ_SignalJammer.objName: obj = new OBJ_SignalJammer(gamePanel); break;
             case OBJ_PlasmaRipper.objName: obj = new OBJ_PlasmaRipper(gamePanel); break;
+            case OBJ_DataCore.objName: obj = new OBJ_DataCore(gamePanel); break;
+            case OBJ_PowerCell.objName: obj = new OBJ_PowerCell(gamePanel); break;
+            case OBJ_TechScrap.objName: obj = new OBJ_TechScrap(gamePanel); break;
+            case OBJ_VirusCore.objName: obj = new OBJ_VirusCore(gamePanel); break;
+            case OBJ_VirusResidue.objName: obj = new OBJ_VirusResidue(gamePanel); break;
+            case OBJ_VirusSlurry.objName: obj = new OBJ_VirusSlurry(gamePanel); break;
 
             case IT_Rock.objName: obj = new IT_Rock(gamePanel); break;
             case IT_Chrono.objName: obj = new IT_Chrono(gamePanel); break;

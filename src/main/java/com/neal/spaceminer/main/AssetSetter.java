@@ -7,6 +7,7 @@ import com.neal.spaceminer.object.*;
 import com.neal.spaceminer.tiles_interactive.*;
 
 import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class AssetSetter {
 
@@ -76,7 +77,13 @@ public class AssetSetter {
     }
     public void setHostile(){
         place(new HOS_Biophage(gamePanel), 0, 70, 80, hostile);
+        place(new HOS_Biophage(gamePanel), 0, 70, 83, hostile);
+        place(new HOS_Biophage(gamePanel), 0, 70, 86, hostile);
+
         place(new HOS_Dronex(gamePanel), 0, 60, 80, hostile);
+        place(new HOS_Dronex(gamePanel), 0, 60, 83, hostile);
+        place(new HOS_Dronex(gamePanel), 0, 60, 86, hostile);
+
         place(new HOS_Monolith(gamePanel), 0, 50, 80, hostile);
     }
     public void setInteractiveTile(){
@@ -85,11 +92,11 @@ public class AssetSetter {
         Entity interactiveTile = null;
 
         while (currIT < maxTotalIT) {
-            int randCol = (int)(Math.random() * (99 - 1 + 1) + 1); // 99 IS FOR 100 MAP SIZE
-            int randRow = (int)(Math.random() * (99 - 1 + 1) + 1);
+            int randCol = ThreadLocalRandom.current().nextInt(0, 100); // 0 - 99
+            int randRow = ThreadLocalRandom.current().nextInt(0, 100);
 
             if(canPlaceIT(randCol, randRow)) {
-                int randIT = (int)(Math.random() * numIT);
+                int randIT = ThreadLocalRandom.current().nextInt(0, numIT);
                 switch(randIT) {
                     case 0: interactiveTile = new IT_Rock(gamePanel); break;
                     case 1: interactiveTile = new IT_Chrono(gamePanel); break;
@@ -108,6 +115,7 @@ public class AssetSetter {
         }
     }
     public boolean canPlaceIT(int col, int row){
+        // TODO: Needs improvements
         // CHECK IF AN INTERACTIVE TILE CAN BE PLACE ON THE TILE
         int tile = gamePanel.tileManager.mapTileNum[gamePanel.currentMap][col][row];
         // ONLY SURFACE'S COLLISION IS FALSE
@@ -193,8 +201,8 @@ public class AssetSetter {
     public void replaceTile(Entity entity){
         boolean placed = false;
         while(!placed){
-            int randCol = (int)(Math.random() * (99 - 1 + 1) + 1); // 99 IS FOR 100 MAP SIZE
-            int randRow = (int)(Math.random() * (99 - 1 + 1) + 1);
+            int randCol = ThreadLocalRandom.current().nextInt(0, 100); // 0 - 99
+            int randRow = ThreadLocalRandom.current().nextInt(0, 100);
             if(canPlaceIT(randCol, randRow) && !gamePanel.tileManager.isOnScreen(randCol*gamePanel.tileSize, randRow*gamePanel.tileSize)) {
                 placed = true;
                 place(entity, gamePanel.currentMap, randCol, randRow, object);

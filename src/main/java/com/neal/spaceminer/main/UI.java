@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class UI {
@@ -46,7 +47,6 @@ public class UI {
         this.g2 = g2;
 
         Font originalFont = g2.getFont();
-
         g2.setFont(maruMonica);
         g2.setColor(Color.white);
 
@@ -426,277 +426,26 @@ public class UI {
             g2.drawString(">", textX-32, textY);
         }
     }
-    public void drawInventoryScreen() {
-        int frameX = gamePanel.tileSize * 11;
-        int frameY = gamePanel.tileSize * 2;
-        int frameWidth = gamePanel.tileSize * 6;
-        int frameHeight = gamePanel.tileSize * 5;
-
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 50));
-        String text = "Inventory";
-        g2.drawString(text, frameX, frameY - 15);
-
-        drawSubWindow(frameX, frameY, frameWidth, frameHeight);
-
-        // SLOTS
-        final int slotXstart = frameX + 20;
-        final int slotYstart = frameY + 20;
-        int slotX = slotXstart;
-        int slotY = slotYstart;
-        int slotSize = gamePanel.tileSize+3;
-
-        // DRAW PLAYER'S ITEMS
-        for (int i = 0; i < gamePanel.player.inventory.size(); i++) {
-            Entity item = gamePanel.player.inventory.get(i);
-            if(item != null){
-                g2.drawImage(item.down1, slotX, slotY,null);
-                if(item.itemAmount > 1){
-                    g2.setFont(g2.getFont().deriveFont(28f));
-                    String s = "" +  item.itemAmount;
-                    int amountX = getXforAlignToRightText(s, slotX + gamePanel.tileSize - 3);
-                    int amountY = slotY + gamePanel.tileSize - 3;
-
-                    g2.setColor(new Color(60, 60, 60));
-                    g2.drawString(s, amountX, amountY);
-                    g2.setColor(Color.white);
-                    g2.drawString(s, amountX-2, amountY-2);
-                }
-            }
-            slotX += slotSize;
-            if (i == 4 || i == 9 || i == 14){
-                slotX = slotXstart;
-                slotY += slotSize;
-            }
-        }
-
-        // CURSOR
-        int cursorX = slotXstart + (slotSize * slotCol);
-        int cursorY = slotYstart + (slotSize * slotRow);
-        int cursorWidth = gamePanel.tileSize;
-        int cursorHeight = gamePanel.tileSize;
-
-        // DRAW CURSOR
-        g2.setColor(Color.white);
-        g2.setStroke(new BasicStroke(3));
-        g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
-
-        // DESCRIPTION FRAME
-        int dFrameX = frameX;
-        int dFrameY = frameY + frameHeight + 10;
-        int dFrameWidth = frameWidth;
-        int dFrameHeight = gamePanel.tileSize*3;
-
-        // DRAW DESCRIPTION TEXT
-        int textX = dFrameX + 20;
-        int textY = dFrameY + gamePanel.tileSize-20;
-        g2.setFont(g2.getFont().deriveFont(28F));
-
-        int itemIndex = getItemIndexOnSlotInventory();
-        Entity item = gamePanel.player.inventory.get(itemIndex);
-
-        if(item != null){
-            drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
-            for(String line: item.description.split("\n")){
-                g2.drawString(line, textX, textY);
-                textY += 32;
-            }
-        }
-    }
-    public void drawChestScreen() {
-        // GET THE CURRENT CHEST OBJECT
-        OBJ_Chest chest = (OBJ_Chest) gamePanel.player.currentObj;
-
-        int frameChestX = gamePanel.tileSize * 3;
-        int frameChestY = gamePanel.tileSize * 2;
-        int frameChestWidth = gamePanel.tileSize * 7;
-        int frameChestHeight = gamePanel.tileSize * 8;
-
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 50));
-        String text = "Chest";
-        g2.drawString(text, frameChestX, frameChestY - 15);
-
-        drawSubWindow(frameChestX, frameChestY, frameChestWidth, frameChestHeight);
-
-        // PLAYER INVENTORY WINDOW (Right side - 5 cols x 4 rows)
-        int frameX = gamePanel.tileSize * 11;
-        int frameY = gamePanel.tileSize * 2;
-        int frameWidth = gamePanel.tileSize * 6;
-        int frameHeight = gamePanel.tileSize * 5;
-
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 50));
-        text = "Inventory";
-        g2.drawString(text, frameX, frameY - 15);
-
-        drawSubWindow(frameX, frameY, frameWidth, frameHeight);
-
-        // DRAW CHEST ITEMS (6x7 grid)
-        final int chestSlotXstart = frameChestX + 20;
-        final int chestSlotYstart = frameChestY + 20;
+    private void drawItemGrid(int startX, int startY, int columns, int maxItems) {
         int slotSize = gamePanel.tileSize + 3;
+        int slotX = startX;
+        int slotY = startY;
 
-        int slotX = chestSlotXstart;
-        int slotY = chestSlotYstart;
-
-        for (int i = 0; i < chest.chestInv.size(); i++) {
-            Entity item = chest.chestInv.get(i);
-            if(item != null){
-                g2.drawImage(item.down1, slotX, slotY,null);
-                if(item.itemAmount > 1){
-                    g2.setFont(g2.getFont().deriveFont(28f));
-                    String s = "" +  item.itemAmount;
-                    int amountX = getXforAlignToRightText(s, slotX + gamePanel.tileSize - 3);
-                    int amountY = slotY + gamePanel.tileSize - 3;
-
-                    g2.setColor(new Color(60, 60, 60));
-                    g2.drawString(s, amountX, amountY);
-                    g2.setColor(Color.white);
-                    g2.drawString(s, amountX-2, amountY-2);
-                }
-            }
-            slotX += slotSize;
-            if ((i + 1) % 6 == 0) { // 6 columns
-                slotX = chestSlotXstart;
-                slotY += slotSize;
-            }
-        }
-
-        // DRAW PLAYER INVENTORY ITEMS (5x4 grid)
-        final int invSlotXstart = frameX + 20;
-        final int invSlotYstart = frameY + 20;
-
-        slotX = invSlotXstart;
-        slotY = invSlotYstart;
-
-        for (int i = 0; i < gamePanel.player.inventory.size(); i++) {
-            Entity item = gamePanel.player.inventory.get(i);
-            if(item != null){
-                g2.drawImage(item.down1, slotX, slotY,null);
-                if(item.itemAmount > 1){
-                    g2.setFont(g2.getFont().deriveFont(28f));
-                    String s = "" +  item.itemAmount;
-                    int amountX = getXforAlignToRightText(s, slotX + gamePanel.tileSize - 3);
-                    int amountY = slotY + gamePanel.tileSize - 3;
-
-                    g2.setColor(new Color(60, 60, 60));
-                    g2.drawString(s, amountX, amountY);
-                    g2.setColor(Color.white);
-                    g2.drawString(s, amountX-2, amountY-2);
-                }
-            }
-            slotX += slotSize;
-            if (i == 4 || i == 9 || i == 14 || i == 19) { // 5 columns
-                slotX = invSlotXstart;
-                slotY += slotSize;
-            }
-        }
-
-        // DRAW CURSOR
-        int cursorX, cursorY;
-
-        if(slotCol < 6) {
-            // Cursor is in chest area
-            cursorX = chestSlotXstart + (slotSize * slotCol);
-            cursorY = chestSlotYstart + (slotSize * slotRow);
+        ArrayList<Entity> itemList;
+        if(maxItems == gamePanel.player.maxInventorySize){
+            itemList = gamePanel.player.inventory;
+        } else if (maxItems == gamePanel.crafting.craftableItems.size()) {
+            itemList = gamePanel.crafting.craftableItems;
         } else {
-            // Cursor is in inventory area (offset by 8 to account for gap)
-            cursorX = invSlotXstart + (slotSize * (slotCol - 8));
-            cursorY = invSlotYstart + (slotSize * slotRow);
+            OBJ_Chest chest = (OBJ_Chest) gamePanel.player.currentObj;
+            itemList = chest.chestInv;
         }
 
-        g2.setColor(Color.white);
-        g2.setStroke(new BasicStroke(3));
-        g2.drawRoundRect(cursorX, cursorY, gamePanel.tileSize, gamePanel.tileSize, 10, 10);
-
-        // DESCRIPTION FRAME
-        int dFrameX = frameX;
-        int dFrameY = frameY + frameHeight + 10;
-        int dFrameWidth = frameWidth;
-        int dFrameHeight = gamePanel.tileSize * 3;
-
-        // DRAW DESCRIPTION TEXT
-        int textX = dFrameX + 20;
-        int textY = dFrameY + gamePanel.tileSize - 20;
-        g2.setFont(g2.getFont().deriveFont(28F));
-
-        Entity item = null;
-
-        // Determine which item to show based on cursor position
-        if(slotCol < 6) {
-            // Cursor is in chest area
-            int chestIndex = slotCol + (slotRow * 6);
-            if(chestIndex < chest.chestInv.size()) {
-                item = chest.chestInv.get(chestIndex);
-            }
-        } else {
-            // Cursor is in inventory area
-            int invIndex = (slotCol - 8) + (slotRow * 5);
-            if(invIndex < gamePanel.player.inventory.size()) {
-                item = gamePanel.player.inventory.get(invIndex);
-            }
-        }
-
-        // Draw description if item exists
-        if(item != null){
-            drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
-            for(String line: item.description.split("\n")){
-                g2.drawString(line, textX, textY);
-                textY += 32;
-            }
-        }
-    }
-    public void drawCraftingScreen() {
-        int frameCraftingX = gamePanel.tileSize * 3;
-        int frameCraftingY = gamePanel.tileSize * 2;
-        int frameCraftingWidth = gamePanel.tileSize * 7;
-        int frameCraftingHeight = gamePanel.tileSize * 4;
-
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 50));
-        String text = "Craftable Items";
-        g2.drawString(text, frameCraftingX, frameCraftingY - 15);
-
-        drawSubWindow(frameCraftingX, frameCraftingY, frameCraftingWidth, frameCraftingHeight);
-
-        // PLAYER INVENTORY WINDOW (Right side - 5 cols x 4 rows)
-        int frameX = gamePanel.tileSize * 11;
-        int frameY = gamePanel.tileSize * 2;
-        int frameWidth = gamePanel.tileSize * 6;
-        int frameHeight = gamePanel.tileSize * 5;
-
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 50));
-        text = "Inventory";
-        g2.drawString(text, frameX, frameY - 15);
-
-        drawSubWindow(frameX, frameY, frameWidth, frameHeight);
-
-        // DRAW CRAFTABLE ITEMS (6x7 grid)
-        final int craftingSlotXstart = frameCraftingX + 20;
-        final int craftingSlotYstart = frameCraftingY + 20;
-        int slotSize = gamePanel.tileSize + 3;
-
-        int slotX = craftingSlotXstart;
-        int slotY = craftingSlotYstart;
-
-        for (int i = 0; i < gamePanel.crafting.craftableItems.size(); i++) {
-            Entity item = gamePanel.crafting.craftableItems.get(i);
-            g2.drawImage(item.down1, slotX, slotY, null);
-            slotX += slotSize;
-            if ((i + 1) % 6 == 0) {
-                slotX = craftingSlotXstart;
-                slotY += slotSize;
-            }
-        }
-
-        // DRAW PLAYER INVENTORY ITEMS (5x4 grid)
-        final int invSlotXstart = frameX + 20;
-        final int invSlotYstart = frameY + 20;
-
-        slotX = invSlotXstart;
-        slotY = invSlotYstart;
-
-        for (int i = 0; i < gamePanel.player.inventory.size(); i++) {
-            Entity item = gamePanel.player.inventory.get(i);
+        for (int i = 0; i < maxItems; i++) {
+            Entity item = itemList.get(i);
             if (item != null) {
                 g2.drawImage(item.down1, slotX, slotY, null);
+
                 if (item.itemAmount > 1) {
                     g2.setFont(g2.getFont().deriveFont(28f));
                     String s = "" + item.itemAmount;
@@ -709,21 +458,162 @@ public class UI {
                     g2.drawString(s, amountX - 2, amountY - 2);
                 }
             }
+
             slotX += slotSize;
-            if (i == 4 || i == 9 || i == 14 || i == 19) { // 5 columns
-                slotX = invSlotXstart;
+            if ((i + 1) % columns == 0) {
+                slotX = startX;
                 slotY += slotSize;
             }
         }
+    }
+    private void drawFrameWithDescription(String title, int x, int y, int width, int height, Entity item) {
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 50));
+        g2.drawString(title, x, y - 15);
+        drawSubWindow(x, y, width, height);
 
-        // DRAW CURSOR
-        int cursorX, cursorY;
+        if (item != null) {
+            int dFrameY = y + height + 10;
+            int dFrameHeight = gamePanel.tileSize * 3;
+            drawSubWindow(x, dFrameY, width, dFrameHeight);
+
+            g2.setFont(g2.getFont().deriveFont(28F));
+            int textX = x + 20;
+            int textY = dFrameY + gamePanel.tileSize - 20;
+
+            for (String line : item.description.split("\n")) {
+                g2.drawString(line, textX, textY);
+                textY += 32;
+            }
+        }
+    }
+    public void drawInventoryScreen() {
+        int frameX = gamePanel.tileSize * 11;
+        int frameY = gamePanel.tileSize * 2;
+        int frameWidth = gamePanel.tileSize * 6;
+        int frameHeight = gamePanel.tileSize * 5;
+
+        int itemIndex = getItemIndexOnSlotInventory();
+        Entity item = gamePanel.player.inventory.get(itemIndex);
+
+        drawFrameWithDescription("Inventory", frameX, frameY, frameWidth, frameHeight, item);
+
+        int slotXstart = frameX + 20;
+        int slotYstart = frameY + 20;
+        drawItemGrid(slotXstart, slotYstart, 5, gamePanel.player.maxInventorySize);
+
+        // Draw cursor
+        int slotSize = gamePanel.tileSize + 3;
+        int cursorX = slotXstart + (slotSize * slotCol);
+        int cursorY = slotYstart + (slotSize * slotRow);
+
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(cursorX, cursorY, gamePanel.tileSize, gamePanel.tileSize, 10, 10);
+    }
+    public void drawChestScreen() {
+        OBJ_Chest chest = (OBJ_Chest) gamePanel.player.currentObj;
+
+        // Chest window (left side - 6 columns)
+        int frameChestX = gamePanel.tileSize * 3;
+        int frameChestY = gamePanel.tileSize * 2;
+        int frameChestWidth = gamePanel.tileSize * 7;
+        int frameChestHeight = gamePanel.tileSize * 8;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 50));
+        g2.drawString("Chest", frameChestX, frameChestY - 15);
+        drawSubWindow(frameChestX, frameChestY, frameChestWidth, frameChestHeight);
+
+        int chestSlotXstart = frameChestX + 20;
+        int chestSlotYstart = frameChestY + 20;
+        drawItemGrid(chestSlotXstart, chestSlotYstart, 6, chest.maxChestInvSize);
+
+        // Player inventory window (right side - 5 columns)
+        int frameX = gamePanel.tileSize * 11;
+        int frameY = gamePanel.tileSize * 2;
+        int frameWidth = gamePanel.tileSize * 6;
+        int frameHeight = gamePanel.tileSize * 5;
+
+        // Get item for description
+        Entity item = null;
         if (slotCol < 6) {
-            // Cursor is in crafting area
+            int chestIndex = slotCol + (slotRow * 6);
+            if (chestIndex < chest.chestInv.size()) {
+                item = chest.chestInv.get(chestIndex);
+            }
+        } else {
+            int invIndex = (slotCol - 8) + (slotRow * 5);
+            if (invIndex < gamePanel.player.inventory.size()) {
+                item = gamePanel.player.inventory.get(invIndex);
+            }
+        }
+
+        drawFrameWithDescription("Inventory", frameX, frameY, frameWidth, frameHeight, item);
+
+        int invSlotXstart = frameX + 20;
+        int invSlotYstart = frameY + 20;
+        drawItemGrid(invSlotXstart, invSlotYstart, 5, gamePanel.player.maxInventorySize);
+
+        // Draw cursor
+        int slotSize = gamePanel.tileSize + 3;
+        int cursorX, cursorY;
+
+        if (slotCol < 6) {
+            cursorX = chestSlotXstart + (slotSize * slotCol);
+            cursorY = chestSlotYstart + (slotSize * slotRow);
+        } else {
+            cursorX = invSlotXstart + (slotSize * (slotCol - 8));
+            cursorY = invSlotYstart + (slotSize * slotRow);
+        }
+
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(cursorX, cursorY, gamePanel.tileSize, gamePanel.tileSize, 10, 10);
+    }
+    public void drawCraftingScreen() {
+        int frameCraftingX = gamePanel.tileSize * 3;
+        int frameCraftingY = gamePanel.tileSize * 2;
+        int frameCraftingWidth = gamePanel.tileSize * 7;
+        int frameCraftingHeight = gamePanel.tileSize * 4;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 50));
+        g2.drawString("Craftable Items", frameCraftingX, frameCraftingY - 15);
+        drawSubWindow(frameCraftingX, frameCraftingY, frameCraftingWidth, frameCraftingHeight);
+
+        int craftingSlotXstart = frameCraftingX + 20;
+        int craftingSlotYstart = frameCraftingY + 20;
+        drawItemGrid(craftingSlotXstart, craftingSlotYstart, 6, gamePanel.crafting.craftableItems.size());
+
+        int frameX = gamePanel.tileSize * 11;
+        int frameY = gamePanel.tileSize * 2;
+        int frameWidth = gamePanel.tileSize * 6;
+        int frameHeight = gamePanel.tileSize * 5;
+
+        Entity item = null;
+        if (slotCol >= 6) {
+            int invIndex = (slotCol - 8) + (slotRow * 5);
+            if (invIndex < gamePanel.player.inventory.size()) {
+                item = gamePanel.player.inventory.get(invIndex);
+            }
+        } else {
+            int craftingIndex = slotCol + (slotRow * 6);
+            if (craftingIndex < gamePanel.crafting.craftableItems.size()) {
+                item = gamePanel.crafting.craftableItems.get(craftingIndex);
+            }
+        }
+
+        drawFrameWithDescription("Inventory", frameX, frameY, frameWidth, frameHeight, item);
+
+        int invSlotXstart = frameX + 20;
+        int invSlotYstart = frameY + 20;
+        drawItemGrid(invSlotXstart, invSlotYstart, 5, gamePanel.player.maxInventorySize);
+
+        int slotSize = gamePanel.tileSize + 3;
+        int cursorX, cursorY;
+
+        if (slotCol < 6) {
             cursorX = craftingSlotXstart + (slotSize * slotCol);
             cursorY = craftingSlotYstart + (slotSize * slotRow);
         } else {
-            // Cursor is in inventory area (offset by 8 to account for gap)
             cursorX = invSlotXstart + (slotSize * (slotCol - 8));
             cursorY = invSlotYstart + (slotSize * slotRow);
         }
@@ -732,74 +622,40 @@ public class UI {
         g2.setStroke(new BasicStroke(3));
         g2.drawRoundRect(cursorX, cursorY, gamePanel.tileSize, gamePanel.tileSize, 10, 10);
 
-        // DESCRIPTION FRAME
-        int dFrameX = frameX;
-        int dFrameY = frameY + frameHeight + 10;
-        int dFrameWidth = frameWidth;
-        int dFrameHeight = gamePanel.tileSize * 3;
-
-        // DRAW DESCRIPTION TEXT
-        int textX = dFrameX + 20;
-        int textY = dFrameY + gamePanel.tileSize - 20;
-        g2.setFont(g2.getFont().deriveFont(28F));
-        String itemDescription = null;
-
-        // DISPLAY ITEM DESCRIPTION
-        if (slotCol >= 6) {
-            // Cursor is in inventory area
-            int invIndex = (slotCol - 8) + (slotRow * 5);
-            if (invIndex < gamePanel.player.inventory.size()) {
-                if (gamePanel.player.inventory.get(invIndex) != null) {
-                    itemDescription = gamePanel.player.inventory.get(invIndex).description;
-                    drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
-                    for (String line : itemDescription.split("\n")) {
-                        g2.drawString(line, textX, textY);
-                        textY += 32;
-                    }
-                }
-            }
-        } else {
+        if (slotCol < 6) {
             int craftingIndex = slotCol + (slotRow * 6);
             if (craftingIndex < gamePanel.crafting.craftableItems.size()) {
-                Entity selectedItem = gamePanel.crafting.craftableItems.get(craftingIndex);
-                drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
-                for (String line : selectedItem.description.split("\n")) {
-                    g2.drawString(line, textX, textY);
-                    textY += 32;
-                }
-
                 String[] reqNames = gamePanel.crafting.recipeNames.get(craftingIndex);
                 int[] reqAmounts = gamePanel.crafting.recipeAmounts.get(craftingIndex);
+
                 String recipe = "";
-                for(int i = 0; i < reqNames.length; i++){
+                for (int i = 0; i < reqNames.length; i++) {
                     recipe += reqNames[i] + " [" + reqAmounts[i] + "]\n";
                 }
 
-                frameX = frameCraftingX;
-                frameY = frameCraftingY + frameCraftingHeight + 10;
-                textX = frameX + 20;
-                textY = frameY + gamePanel.tileSize - 20;
+                int recipeFrameX = frameCraftingX;
+                int recipeFrameY = frameCraftingY + frameCraftingHeight + 10;
+                int textX = recipeFrameX + 20;
+                int textY = recipeFrameY + gamePanel.tileSize - 20;
+
+                g2.setFont(g2.getFont().deriveFont(28F));
 
                 if (gamePanel.player.getFirstEmptySlot() != -1) {
-                    drawSubWindow(frameX, frameY, frameCraftingWidth, gamePanel.tileSize * 4);
+                    drawSubWindow(recipeFrameX, recipeFrameY, frameCraftingWidth, gamePanel.tileSize * 4);
+
                     if (gamePanel.crafting.canCraft(craftingIndex)) {
                         g2.drawString("Press [ENTER] to craft!", textX, textY);
-                        textY += 56;
-                        for(String line: recipe.split("\n")){
-                            g2.drawString(line, textX, textY);
-                            textY += 30;
-                        }
                     } else {
                         g2.drawString("Missing Resources to craft!", textX, textY);
-                        textY += 56;
-                        for(String line: recipe.split("\n")){
-                            g2.drawString(line, textX, textY);
-                            textY += 30;
-                        }
+                    }
+
+                    textY += 56;
+                    for (String line : recipe.split("\n")) {
+                        g2.drawString(line, textX, textY);
+                        textY += 30;
                     }
                 } else {
-                    // PRINT INVENTORY FULL
-                    drawSubWindow(frameX, frameY, frameCraftingWidth, gamePanel.tileSize*2);
+                    drawSubWindow(recipeFrameX, recipeFrameY, frameCraftingWidth, gamePanel.tileSize * 2);
                     g2.drawString("Inventory Full!", textX, textY);
                 }
             }

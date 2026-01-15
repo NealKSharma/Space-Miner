@@ -2,8 +2,12 @@ package com.neal.spaceminer.hostiles;
 
 import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.main.GamePanel;
+import com.neal.spaceminer.object.OBJ_TechScrap;
+import com.neal.spaceminer.object.OBJ_PowerCell;
+import com.neal.spaceminer.object.OBJ_DataCore;
 
-import java.util.Random;
+import java.awt.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class HOS_Dronex extends Entity {
     public static final String hosName = "Dronex";
@@ -58,7 +62,7 @@ public class HOS_Dronex extends Entity {
             if(actionCooldown == gamePanel.FPS*2){
                 actionCooldown = 0;
 
-                int i = new Random().nextInt(4) + 1; // PICK A NUMBER FROM 1 to 4
+                int i = ThreadLocalRandom.current().nextInt(1, 5);
 
                 switch (i) {
                     case 1: direction = "up"; break;
@@ -118,5 +122,30 @@ public class HOS_Dronex extends Entity {
                 if(collisionOn) direction = "right";
             }
         }
+    }
+    @Override
+    public Entity getDrop (){
+        int randDrop = ThreadLocalRandom.current().nextInt(1, 101);
+        Entity drop = new OBJ_TechScrap(gamePanel);;
+        if(randDrop <= 10) drop = new OBJ_DataCore(gamePanel);
+        else if( randDrop <= 55) drop = new OBJ_PowerCell(gamePanel);
+
+        int randX = ThreadLocalRandom.current().nextInt(-32, 33);
+        int randY = ThreadLocalRandom.current().nextInt(-32, 33);
+        drop.worldX = this.worldX + randX;
+        drop.worldY = this.worldY + randY;
+        return drop;
+    }
+    @Override
+    public Color getParticleColor() {
+        return new Color(99, 124, 138, 255);
+    }
+    @Override
+    public int getParticleSize() {
+        return 6;
+    }
+    @Override
+    public int getParticleDuration(){
+        return 40;
     }
 }

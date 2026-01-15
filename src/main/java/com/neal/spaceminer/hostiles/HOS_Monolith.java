@@ -3,7 +3,8 @@ package com.neal.spaceminer.hostiles;
 import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.main.GamePanel;
 
-import java.util.Random;
+import java.awt.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class HOS_Monolith extends Entity {
     public static final String hosName = "Monolith";
@@ -59,7 +60,7 @@ public class HOS_Monolith extends Entity {
             if(actionCooldown == gamePanel.FPS*2){
                 actionCooldown = 0;
 
-                int i = new Random().nextInt(4) + 1; // PICK A NUMBER FROM 1 to 4
+                int i = ThreadLocalRandom.current().nextInt(1, 5);
 
                 switch (i) {
                     case 1: direction = "up"; break;
