@@ -2,6 +2,7 @@ package com.neal.spaceminer.hostiles;
 
 import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.main.GamePanel;
+import com.neal.spaceminer.object.OBJ_CorruptionOrb;
 import com.neal.spaceminer.object.OBJ_VirusCore;
 import com.neal.spaceminer.object.OBJ_VirusResidue;
 import com.neal.spaceminer.object.OBJ_VirusSlurry;
@@ -22,6 +23,7 @@ public class HOS_Biophage extends Entity {
         life = maxLife;
         damage = 5;
         name = hosName;
+        projectile = new OBJ_CorruptionOrb(gamePanel);
 
         speedLock = 1;
 
@@ -52,24 +54,33 @@ public class HOS_Biophage extends Entity {
         int tileDistance = (xDistance + yDistance)/gamePanel.tileSize;
 
         if(!onPath && tileDistance < 5 && Math.random() < 0.007) onPath = true;
-        if(onPath && tileDistance > 8) onPath = false;
+        if(onPath && tileDistance > 10) onPath = false;
     }
     public void setAction() {
+        speed = 1;
         if(onPath){
             searchPath();
+
+            int i = ThreadLocalRandom.current().nextInt(1, 201);
+            if(i > 199 && !projectile.alive && shotAvailableCounter == 60){
+                projectile.set(worldX, worldY, direction, true, this);
+                gamePanel.projectileList.add(projectile);
+                shotAvailableCounter = 0;
+            }
         } else {
             actionCooldown++;
 
             if(actionCooldown == gamePanel.FPS*2){
                 actionCooldown = 0;
 
-                int i = ThreadLocalRandom.current().nextInt(1, 5);
+                int i = ThreadLocalRandom.current().nextInt(1, 8);
 
                 switch (i) {
                     case 1: direction = "up"; break;
                     case 2: direction = "down"; break;
                     case 3: direction = "left"; break;
                     case 4: direction = "right"; break;
+                    default: speed = 0;
                 }
             }
         }

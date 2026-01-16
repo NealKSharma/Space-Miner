@@ -69,7 +69,8 @@ public class GamePanel extends JPanel implements Runnable {
     public ArrayList<ArrayList<Entity>> npc = new ArrayList<>();
     public ArrayList<ArrayList<Entity>> hostile = new ArrayList<>();
     public ArrayList<Entity> particleList = new  ArrayList<>();
-    public ArrayList<Entity> entityList = new ArrayList<>();
+    public ArrayList<Entity> projectileList = new  ArrayList<>();
+    public ArrayList<Entity> entityList = new ArrayList<>(256);
 
     // GAME STATE
     public int gameState;
@@ -110,6 +111,7 @@ public class GamePanel extends JPanel implements Runnable {
         npc.clear();
         hostile.clear();
         particleList.clear();
+        projectileList.clear();
 
         currentMap = 0;
         player.setDefaultValues();
@@ -191,10 +193,19 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
-            for (int i = particleList.size() - 1; i >= 0; i--) {
+            for (int i = particleList.size() - 1; i >= 0; i--) { // IN REVERSE ORDER TO REDUCE SHIFTING OF ELEMENTS
                 Entity p = particleList.get(i);
                 if (p == null || !p.alive) {
                     particleList.remove(i);
+                } else {
+                    p.update();
+                }
+            }
+
+            for (int i = projectileList.size() - 1; i >= 0; i--) {
+                Entity p = projectileList.get(i);
+                if (p == null || !p.alive) {
+                    projectileList.remove(i);
                 } else {
                     p.update();
                 }
@@ -275,18 +286,22 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
-            // SORTING
-            try {
-                entityList.sort(Comparator.comparingInt(e -> {
-                    if (e.isBreakable || e.placedOnGround) {
-                        return e.worldY + e.solidArea.y;
-                    } else {
-                        return e.worldY + e.solidArea.y + e.solidArea.height;
-                    }
-                }));
-            } catch (IllegalArgumentException e) {
-                // INCASE SORT FAILS
+            // PROJECTILES
+            for (Entity projectile: projectileList){
+                if(projectile != null) {
+                    entityList.add(projectile);
+                }
             }
+
+            for (Entity e : entityList) {
+                int y = e.worldY + e.solidArea.y;
+                if (!e.isBreakable && !e.placedOnGround) {
+                    y += e.solidArea.height;
+                }
+                e.sortY = y;
+            }
+
+            entityList.sort(Comparator.comparingInt(e -> e.sortY));
 
             // DRAW ENTITIES
             for (Entity entity : entityList) {

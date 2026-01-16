@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Entity {
-
     protected GamePanel gamePanel;
 
     public int worldX, worldY;
@@ -34,9 +33,12 @@ public class Entity {
     public boolean invincible = false;
     public int invincibleCounter = 0;
     public int damage = 0;
-    public int type; // 0 - Player, 1 - NPC, 2 - Hostile
+    public int type; // 0 - Player, 1 - NPC, 2 - Hostile, 3 - Robot
     public int speedLock = 0;
     public int updateCounter = 0;
+    public int sortY;
+    public Projectile projectile;
+    public int shotAvailableCounter = 0;
 
     // COLLISION
     public Rectangle solidArea = new Rectangle(0, 0, 64, 64);
@@ -133,22 +135,25 @@ public class Entity {
     }
     public void checkCollision(){
         collisionOn = false;
+
         gamePanel.collisionChecker.checkTile(this);
-        gamePanel.collisionChecker.checkObject(this, false);
-        gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
-        gamePanel.collisionChecker.checkEntity(this, gamePanel.hostile);
-        gamePanel.collisionChecker.checkBot(this, gamePanel.bot);
+        if(!collisionOn) gamePanel.collisionChecker.checkObject(this, false);
+        if(!collisionOn) gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
+        if(!collisionOn) gamePanel.collisionChecker.checkEntity(this, gamePanel.hostile);
+        if(!collisionOn) gamePanel.collisionChecker.checkBot(this, gamePanel.bot);
+
         boolean contactPlayer = gamePanel.collisionChecker.checkPlayer(this);
 
-        if(this.type == 2 && contactPlayer){
-            if(!gamePanel.player.invincible){
-                gamePanel.playSE(3);
-                gamePanel.player.suiteIntegrity -= this.damage;
-                gamePanel.player.invincible = true;
-            }
+        if(this.type == 2 && contactPlayer && !gamePanel.player.invincible){
+            gamePanel.playSE(3);
+            gamePanel.player.suiteIntegrity -= damage;
+            gamePanel.player.invincible = true;
         }
     }
     public void update() {
+
+        if (!gamePanel.tileManager.isOnScreen(worldX, worldY) && type != 3) { return; }
+
         setAction();
         checkCollision();
 
@@ -183,6 +188,8 @@ public class Entity {
                     invincibleCounter = 0;
                 }
             }
+
+            if(shotAvailableCounter < 60) shotAvailableCounter++;
         }
     }
     public void setAction() {

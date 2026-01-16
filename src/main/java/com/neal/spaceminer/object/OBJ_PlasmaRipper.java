@@ -12,7 +12,7 @@ public class OBJ_PlasmaRipper extends Entity {
         name = objName;
         shrink = true;
         canPickup = true;
-        damage = 1;
+        damage = 2;
 
         solidArea.x = 16;
         solidArea.y = 16;

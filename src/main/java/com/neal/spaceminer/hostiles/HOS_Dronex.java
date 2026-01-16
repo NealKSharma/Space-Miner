@@ -54,6 +54,7 @@ public class HOS_Dronex extends Entity {
         if(onPath && tileDistance > 8) onPath = false;
     }
     public void setAction() {
+        speed = 1;
         if(onPath){
             searchPath();
         } else {
@@ -62,13 +63,14 @@ public class HOS_Dronex extends Entity {
             if(actionCooldown == gamePanel.FPS*2){
                 actionCooldown = 0;
 
-                int i = ThreadLocalRandom.current().nextInt(1, 5);
+                int i = ThreadLocalRandom.current().nextInt(1, 8);
 
                 switch (i) {
                     case 1: direction = "up"; break;
                     case 2: direction = "down"; break;
                     case 3: direction = "left"; break;
                     case 4: direction = "right"; break;
+                    default: speed = 0;
                 }
             }
         }

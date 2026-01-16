@@ -1,5 +1,6 @@
 package com.neal.spaceminer.tile;
 
+import com.neal.spaceminer.ai.Node;
 import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.main.Utility;
 
@@ -9,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class TileManager {
@@ -135,18 +137,19 @@ public class TileManager {
 
         if(drawPath){
             g2.setColor(new Color(255, 0, 0, 70));
-            try {
-                for (int i = 0; i < gamePanel.pathFinder.pathList.size(); i++) {
-                    int worldX = gamePanel.pathFinder.pathList.get(i).col * gamePanel.tileSize;
-                    int worldY = gamePanel.pathFinder.pathList.get(i).row * gamePanel.tileSize;
+            ArrayList<Node> pathSnapshot = new ArrayList<>(gamePanel.pathFinder.pathList);
+
+            for (Node node : pathSnapshot) {
+                if (node != null) {
+                    int worldX = node.col * gamePanel.tileSize;
+                    int worldY = node.row * gamePanel.tileSize;
+
                     if (isOnScreen(worldX, worldY)) {
                         int screenX = worldX - currentWorldX + screenXOffset;
                         int screenY = worldY - currentWorldY + screenYOffset;
                         g2.fillRect(screenX, screenY, gamePanel.tileSize, gamePanel.tileSize);
                     }
                 }
-            } catch (IndexOutOfBoundsException e) {
-                // THROW THE EXCEPTION - GENERATES A NEW FRAME
             }
         }
     }

@@ -3,6 +3,7 @@ package com.neal.spaceminer.entity;
 import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.main.KeyHandler;
 import com.neal.spaceminer.object.OBJ_Chest;
+import com.neal.spaceminer.object.OBJ_CorruptionOrb;
 import com.neal.spaceminer.object.OBJ_Pickaxe;
 import com.neal.spaceminer.object.OBJ_PlasmaRipper;
 
@@ -262,6 +263,7 @@ public class Player extends Entity {
             spriteCounter = 0;
             actionLocked = true;
         } else if(inventory.get(index) != null && inventory.get(index).name.equals("Plasma Ripper")) {
+            damage = inventory.get(index).damage;
             attacking = true;
             mining = false;
             spriteCounter = 0;
@@ -418,10 +420,11 @@ public class Player extends Entity {
         }
     public void attack(int i){
         Entity hostile = gamePanel.hostile.get(gamePanel.currentMap).get(i);
+        hostile.onPath = true;
         if(!hostile.invincible){
             gamePanel.playSE(2);
             generateParticle(hostile, hostile);
-            hostile.life--;
+            hostile.life -= damage;
             hostile.invincible = true;
             if(hostile.life <= 0){
                 // HOSTILE DIED

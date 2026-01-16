@@ -14,6 +14,7 @@ public class NPC_Robot extends Entity {
         direction = "down";
         onPath = true;
         name = npcName;
+        type = 3;
 
         solidArea = new Rectangle();
         solidArea.x = 18;
@@ -60,18 +61,17 @@ public class NPC_Robot extends Entity {
     }
     public void setAction() {
         if(onPath){
-            int distanceX = Math.abs(worldX - gamePanel.player.worldX);
-            int distanceY = Math.abs(worldY - gamePanel.player.worldY);
+                int distanceX = Math.abs(worldX - gamePanel.player.worldX);
+                int distanceY = Math.abs(worldY - gamePanel.player.worldY);
+                int range = 128;
 
-            int range = 128;
-
-            if(distanceX > range || distanceY > range) {
-                speed = 1;
-                searchPath();
-            } else {
-                speed = 0;
-                spriteCounter = 0;
-            }
+                if(distanceX > range || distanceY > range) {
+                    speed = 1;
+                    searchPath();
+                } else {
+                    speed = 0;
+                    spriteCounter = 0;
+                }
         } else {
             actionCooldown++;
             if(actionCooldown == gamePanel.FPS*2){
