@@ -49,9 +49,9 @@ public class GamePanel extends JPanel implements Runnable {
     public KeyHandler keyHandler = new KeyHandler(this);
     public CollisionChecker collisionChecker = new CollisionChecker(this);
     public AssetSetter assetSetter = new AssetSetter(this);
+    SaveLoad saveLoad = new SaveLoad(this);
     public UI ui = new UI(this);
     Config config = new Config(this);
-    SaveLoad saveLoad = new SaveLoad(this);
     public EnvironmentManager environmentManager = new EnvironmentManager(this);
     public EntityGenerator entityGenerator = new EntityGenerator(this);
     public PathFinder pathFinder = new PathFinder(this);

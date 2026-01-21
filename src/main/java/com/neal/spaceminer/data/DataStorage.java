@@ -5,29 +5,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DataStorage implements Serializable {
-    // PLAYER LOCATION
-    int playerX;
-    int playerY;
 
-    // BOT LOCATION
-    int botX;
-    int botY;
+    // PLAYER AND BOT
+    int playerX, playerY, suiteIntegrity;
+    int botX, botY, currentDialogue;
+    int currentMap = 0;
 
-    // NPC LOCATIONS
-    int[][] NPCX;
-    int[][] NPCY;
+    // NPC
+    ArrayList<ArrayList<String>> npcNames = new ArrayList<>();
+    ArrayList<ArrayList<Integer>> npcWorldX = new ArrayList<>();
+    ArrayList<ArrayList<Integer>> npcWorldY = new ArrayList<>();
 
     // HOSTILE LOCATIONS
-    int[][] hostileX;
-    int[][] hostileY;
+    ArrayList<ArrayList<String>> hostileNames = new ArrayList<>();
+    ArrayList<ArrayList<Integer>> hostileWorldX = new ArrayList<>();
+    ArrayList<ArrayList<Integer>> hostileWorldY = new ArrayList<>();
+    ArrayList<ArrayList<Integer>> hostileLife = new ArrayList<>();
 
     // PLAYER INVENTORY
-    ArrayList<String> itemNames = new ArrayList<String>();
+    ArrayList<String> itemNames = new ArrayList<>();
     ArrayList<Integer> itemSlot = new ArrayList<>();
     ArrayList<Integer> itemQuantity = new ArrayList<>();
-
-    // CURRENT MAP
-    int currentMap = 0;
 
     // OBJECTS ON MAP
     String[][] mapObjectNames;

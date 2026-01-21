@@ -72,6 +72,7 @@ public class Player extends Entity {
         currentObj = null;
         hasLight = false;
         mineCount = 0;
+        suiteIntegrity = 100;
 
         inventory.clear();
         for(int i = 0; i < maxInventorySize; i++) {

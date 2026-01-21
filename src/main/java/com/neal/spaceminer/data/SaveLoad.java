@@ -4,10 +4,9 @@ import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.main.GamePanel;
 import com.neal.spaceminer.object.OBJ_Chest;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,61 +17,75 @@ public class SaveLoad {
     public SaveLoad(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
     }
+    public ArrayList<String> getSaveFiles(){
+        ArrayList<String> saveNames = new ArrayList<>();
+        File folder = new File("saves");
+        if(folder.exists() && folder.isDirectory()){
+            File[] listOfFiles = folder.listFiles();
+            if (listOfFiles != null) {
+                for (File file : listOfFiles) {
+                    if (file.isFile() && file.getName().endsWith(".dat")) {
+                        String name = file.getName().replace(".dat", "");
+                        saveNames.add(name);
+                    }
+                }
+            }
+        }
+        return saveNames;
+    }
     public void save() {
         try{
-            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("save.dat"));
+            Files.createDirectories(Paths.get("saves"));
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("saves/" + gamePanel.ui.fileName + ".dat"));
             DataStorage ds = new DataStorage();
 
-            // PLAYER LOCATION
+            // PLAYER
             ds.playerX = gamePanel.player.worldX;
             ds.playerY = gamePanel.player.worldY;
+            ds.suiteIntegrity = gamePanel.player.suiteIntegrity;
 
-            // BOT LOCATION
+            // BOT
             ds.botX = gamePanel.bot.worldX;
             ds.botY = gamePanel.bot.worldY;
-
-            // NPC LOCATIONS
-            ds.NPCX = new int[gamePanel.maxMap][];
-            ds.NPCY = new int[gamePanel.maxMap][];
-
-            // HOSTILE LOCATIONS
-            ds.hostileX = new int[gamePanel.maxMap][];
-            ds.hostileY = new int[gamePanel.maxMap][];
+            ds.currentDialogue = gamePanel.bot.dialogueIndex;
 
             // CURRENT MAP
             ds.currentMap = gamePanel.currentMap;
 
-            // NPC
             for(int i = 0; i < gamePanel.maxMap; i++){
-                // Check if the NPC list for this map exists
-                if(gamePanel.npc.get(i) == null) continue;
-                int npcCount = gamePanel.npc.get(i).size();
 
-                ds.NPCX[i] = new int[npcCount];
-                ds.NPCY[i] = new int[npcCount];
-
-                for(int j = 0; j < npcCount; j++){
-                    if(gamePanel.npc.get(i).get(j) != null){
-                        ds.NPCX[i][j] = gamePanel.npc.get(i).get(j).worldX;
-                        ds.NPCY[i][j] = gamePanel.npc.get(i).get(j).worldY;
+                // NPCs
+                ArrayList<String> nNames = new ArrayList<>();
+                ArrayList<Integer> nX = new ArrayList<>();
+                ArrayList<Integer> nY = new ArrayList<>();
+                for(Entity e : gamePanel.npc.get(i)){
+                    if(e != null){
+                        nNames.add(e.name);
+                        nX.add(e.worldX);
+                        nY.add(e.worldY);
                     }
                 }
-            }
+                ds.npcNames.add(nNames);
+                ds.npcWorldX.add(nX);
+                ds.npcWorldY.add(nY);
 
-            // HOSTILE
-            for(int i = 0; i < gamePanel.maxMap; i++){
-                if(gamePanel.hostile.get(i) == null) continue;
-                int hostileCount = gamePanel.hostile.get(i).size();
-
-                ds.hostileX[i] = new int[hostileCount];
-                ds.hostileY[i] = new int[hostileCount];
-
-                for(int j = 0; j < hostileCount; j++){
-                    if(gamePanel.hostile.get(i).get(j) != null){
-                        ds.hostileX[i][j] = gamePanel.hostile.get(i).get(j).worldX;
-                        ds.hostileY[i][j] = gamePanel.hostile.get(i).get(j).worldY;
+                // HOSTILES
+                ArrayList<String> hNames = new ArrayList<>();
+                ArrayList<Integer> hX = new ArrayList<>();
+                ArrayList<Integer> hY = new ArrayList<>();
+                ArrayList<Integer> hL = new ArrayList<>();
+                for(Entity e : gamePanel.hostile.get(i)){
+                    if(e != null){
+                        hNames.add(e.name);
+                        hX.add(e.worldX);
+                        hY.add(e.worldY);
+                        hL.add(e.life);
                     }
                 }
+                ds.hostileNames.add(hNames);
+                ds.hostileWorldX.add(hX);
+                ds.hostileWorldY.add(hY);
+                ds.hostileLife.add(hL);
             }
 
             // PLAYER INVENTORY
@@ -137,39 +150,45 @@ public class SaveLoad {
     }
     public void load() {
         try {
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream("save.dat"));
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream("saves/" + gamePanel.ui.fileName + ".dat"));
             DataStorage ds = (DataStorage) ois.readObject();
 
-            // PLAYER LOCATION
+            // PLAYER
             gamePanel.player.worldX = ds.playerX;
             gamePanel.player.worldY = ds.playerY;
+            gamePanel.player.suiteIntegrity = ds.suiteIntegrity;
 
-            // BOT LOCATION
+            // BOT
             gamePanel.bot.worldX = ds.botX;
             gamePanel.bot.worldY = ds.botY;
+            gamePanel.bot.dialogueIndex = ds.currentDialogue;
 
-            // NPC LOCATION
-            if (ds.NPCX != null) {
-                for(int i = 0; i < ds.NPCX.length; i++){
-                    if(ds.NPCX[i] == null) continue;
-                    for(int j = 0; j < ds.NPCX[i].length; j++){
-                        if(j < gamePanel.npc.get(i).size() && gamePanel.npc.get(i).get(j) != null){
-                            gamePanel.npc.get(i).get(j).worldX = ds.NPCX[i][j];
-                            gamePanel.npc.get(i).get(j).worldY = ds.NPCY[i][j];
-                        }
+            for (int i = 0; i < gamePanel.maxMap; i++) {
+                gamePanel.npc.get(i).clear();
+                gamePanel.hostile.get(i).clear();
+            }
+
+            // REBUILD NPCs
+            for (int i = 0; i < ds.npcNames.size(); i++) {
+                for (int j = 0; j < ds.npcNames.get(i).size(); j++) {
+                    Entity npc = gamePanel.entityGenerator.getObject(ds.npcNames.get(i).get(j));
+                    if(npc != null) {
+                        npc.worldX = ds.npcWorldX.get(i).get(j);
+                        npc.worldY = ds.npcWorldY.get(i).get(j);
+                        gamePanel.npc.get(i).add(npc);
                     }
                 }
             }
 
-            // HOSTILE LOCATIONS
-            if(ds.hostileX != null) {
-                for(int i = 0; i < ds.hostileX.length; i++){
-                    if(ds.hostileX[i] == null) continue;
-                    for(int j = 0; j < ds.hostileX[i].length; j++){
-                        if(j < gamePanel.hostile.get(i).size() && gamePanel.hostile.get(i).get(j) != null){
-                            gamePanel.hostile.get(i).get(j).worldX = ds.hostileX[i][j];
-                            gamePanel.hostile.get(i).get(j).worldY = ds.hostileY[i][j];
-                        }
+            // REBUILD HOSTILES
+            for (int i = 0; i < ds.hostileNames.size(); i++) {
+                for (int j = 0; j < ds.hostileNames.get(i).size(); j++) {
+                    Entity monster = gamePanel.entityGenerator.getObject(ds.hostileNames.get(i).get(j));
+                    if(monster != null) {
+                        monster.worldX = ds.hostileWorldX.get(i).get(j);
+                        monster.worldY = ds.hostileWorldY.get(i).get(j);
+                        monster.life = ds.hostileLife.get(i).get(j);
+                        gamePanel.hostile.get(i).add(monster);
                     }
                 }
             }

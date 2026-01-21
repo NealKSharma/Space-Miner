@@ -28,35 +28,91 @@ public class KeyHandler implements KeyListener {
         else if (gamePanel.gameState == gamePanel.dialogueState) dialogueState(key);
     }
     public void titleState(int key){
-        if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) {
-            gamePanel.ui.commandNum--;
-            gamePanel.playSE(1);
-            if(gamePanel.ui.commandNum < 0){
-                gamePanel.ui.commandNum = 2;
+        if(gamePanel.ui.titleSubState == 0) {
+            if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) {
+                gamePanel.ui.commandNum--;
+                gamePanel.playSE(1);
+                if(gamePanel.ui.commandNum < 0){
+                    gamePanel.ui.commandNum = 2;
+                }
             }
-        }
-        if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) {
-            gamePanel.ui.commandNum++;
-            gamePanel.playSE(1);
-            if(gamePanel.ui.commandNum > 2){
-                gamePanel.ui.commandNum = 0;
+            if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) {
+                gamePanel.ui.commandNum++;
+                gamePanel.playSE(1);
+                if(gamePanel.ui.commandNum > 2){
+                    gamePanel.ui.commandNum = 0;
+                }
             }
-        }
 
-        if(key == KeyEvent.VK_ENTER){
-            if(gamePanel.ui.commandNum == 0){
+            if(key == KeyEvent.VK_ENTER) {
+                if (gamePanel.ui.commandNum == 0) {
+                    gamePanel.ui.titleSubState = 1;
+                    gamePanel.ui.subState = 0;
+                } else if (gamePanel.ui.commandNum == 1) {
+                    gamePanel.ui.titleSubState = 2;
+                    gamePanel.ui.subState = 0;
+                } else if (gamePanel.ui.commandNum == 2) {
+                    System.exit(0);
+                }
+            }
+        } else if (gamePanel.ui.titleSubState == 1) {
+            if(key == KeyEvent.VK_ENTER) {
+                if (!gamePanel.ui.currentFileName.isEmpty()) {
+                    for(String save: gamePanel.ui.saves){
+                        if(save.equalsIgnoreCase(gamePanel.ui.currentFileName)){
+                            gamePanel.ui.fileExists = true;
+                            return;
+                        }
+                    }
+                    gamePanel.ui.fileName = gamePanel.ui.currentFileName;
+                    gamePanel.reinitializeGame();
+                    gamePanel.gameState = gamePanel.transitionState;
+                    gamePanel.ui.transitionType = 1;
+                }
+            }
+            else if (key == KeyEvent.VK_ESCAPE) {
+                gamePanel.ui.titleSubState = 0;
+                gamePanel.ui.fileExists = false;
+            }
+            else if (key == KeyEvent.VK_BACK_SPACE) {
+                if (!gamePanel.ui.currentFileName.isEmpty()) {
+                    gamePanel.ui.fileExists = false;
+                    gamePanel.ui.currentFileName = gamePanel.ui.currentFileName.substring(0, gamePanel.ui.currentFileName.length() - 1);
+                }
+            }
+            else {
+                char c = (char) key;
+                if (key == KeyEvent.VK_SPACE || (key >= KeyEvent.VK_0 && key <= KeyEvent.VK_9) || (key >= KeyEvent.VK_A && key <= KeyEvent.VK_Z)) {
+                    if (gamePanel.ui.currentFileName.length() < 12) {
+                        gamePanel.ui.fileExists = false;
+                        gamePanel.ui.currentFileName += c;
+                    }
+                }
+            }
+        } else if (gamePanel.ui.titleSubState == 2){
+            if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) {
+                gamePanel.ui.titleCommandNum--;
+                gamePanel.playSE(1);
+                if(gamePanel.ui.titleCommandNum < 0){
+                    gamePanel.ui.titleCommandNum = gamePanel.ui.saves.size() - 1;
+                }
+            }
+            if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) {
+                gamePanel.ui.titleCommandNum++;
+                gamePanel.playSE(1);
+                if(gamePanel.ui.titleCommandNum > gamePanel.ui.saves.size() - 1){
+                    gamePanel.ui.titleCommandNum = 0;
+                }
+            }
+
+            if(key == KeyEvent.VK_ENTER) {
+                gamePanel.ui.fileName = gamePanel.ui.saves.get(gamePanel.ui.titleCommandNum);
                 gamePanel.reinitializeGame();
-                gamePanel.gameState = gamePanel.transitionState;
-                gamePanel.ui.transitionType = 1;
-                gamePanel.ui.subState = 0;
-            } else if(gamePanel.ui.commandNum == 1){
                 gamePanel.saveLoad.load();
                 gamePanel.gameState = gamePanel.transitionState;
                 gamePanel.ui.transitionType = 1;
-                gamePanel.ui.subState = 0;
-            } else if(gamePanel.ui.commandNum == 2){
-                System.exit(0);
             }
+            else if (key == KeyEvent.VK_ESCAPE) gamePanel.ui.titleSubState = 0;
         }
     }
     public void playState(int key){
@@ -209,6 +265,8 @@ public class KeyHandler implements KeyListener {
     private void enterQuitConfirmation(UI ui) {
         if (ui.commandNum == 0) {
             gamePanel.gameState = gamePanel.titleState;
+            gamePanel.ui.saves = gamePanel.saveLoad.getSaveFiles();
+            gamePanel.ui.titleSubState = 0;
         } else {
             ui.subState = 0;
             ui.commandNum = 3;

@@ -23,7 +23,14 @@ public class UI {
     public int commandNum = 0;
     public int subState = 0;
     int counter = 0;
+    int cursorCounter = 0;
     public int transitionType = 0;
+    public String fileName = "";
+    public String currentFileName = "NEW WORLD";
+    public int titleSubState = 0;
+    public int titleCommandNum = 0;
+    public ArrayList<String> saves;
+    public boolean fileExists = false;
 
     public int slotCol = 0;
     public int slotRow = 0;
@@ -40,6 +47,7 @@ public class UI {
             throw new RuntimeException(e);
         }
 
+        saves = gamePanel.saveLoad.getSaveFiles();
         loadTitleBackground();
     }
 
@@ -77,39 +85,120 @@ public class UI {
         g2.setColor(Color.WHITE);
         g2.drawString(text, x, y);
 
-        // MENU
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
-        text = "New Game";
-        y += gamePanel.tileSize * 2;
-        if(commandNum == 0){
-            g2.drawString(">", x - (gamePanel.tileSize/2), y);
-        }
-        g2.setColor(Color.DARK_GRAY);
-        g2.drawString(text, x+3, y+3);
-        g2.setColor(Color.WHITE);
-        g2.drawString(text, x, y);
+        if(titleSubState == 0){
+            // MENU
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
+            text = "New Game";
+            y += gamePanel.tileSize * 2;
+            if(commandNum == 0){
+                g2.drawString(">", x - (gamePanel.tileSize/2), y);
+            }
+            g2.setColor(Color.DARK_GRAY);
+            g2.drawString(text, x+3, y+3);
+            g2.setColor(Color.WHITE);
+            g2.drawString(text, x, y);
 
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
-        text = "Load Game";
-        y += gamePanel.tileSize;
-        if(commandNum == 1){
-            g2.drawString(">", x - (gamePanel.tileSize/2), y);
-        }
-        g2.setColor(Color.DARK_GRAY);
-        g2.drawString(text, x+3, y+3);
-        g2.setColor(Color.WHITE);
-        g2.drawString(text, x, y);
+            text = "Load Game";
+            y += gamePanel.tileSize;
+            if(commandNum == 1){
+                g2.drawString(">", x - (gamePanel.tileSize/2), y);
+            }
+            g2.setColor(Color.DARK_GRAY);
+            g2.drawString(text, x+3, y+3);
+            g2.setColor(Color.WHITE);
+            g2.drawString(text, x, y);
 
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
-        text = "Quit";
-        y += gamePanel.tileSize;
-        if(commandNum == 2){
-            g2.drawString(">", x - (gamePanel.tileSize/2), y);
+            text = "Quit";
+            y += gamePanel.tileSize;
+            if(commandNum == 2){
+                g2.drawString(">", x - (gamePanel.tileSize/2), y);
+            }
+            g2.setColor(Color.DARK_GRAY);
+            g2.drawString(text, x+3, y+3);
+            g2.setColor(Color.WHITE);
+            g2.drawString(text, x, y);
+        } else if(titleSubState == 1){
+            x = gamePanel.tileSize*4;
+            y += gamePanel.tileSize;
+            int width = gamePanel.tileSize * 12;
+            int height = gamePanel.tileSize * 8;
+            drawSubWindow(x, y, width, height);
+
+            // CREATE NEW WORLD
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
+            text = "Create New World";
+            int textX = getXforCenteredText(text);
+            int textY = y + gamePanel.tileSize;
+            g2.drawString(text, textX, textY);
+
+            int inputFieldY = textY + gamePanel.tileSize*2;
+            int inputFieldWidth = width - (gamePanel.tileSize * 2);
+            int inputFieldX = x + gamePanel.tileSize;
+
+            drawSubWindow(inputFieldX, inputFieldY - 40, inputFieldWidth, 50);
+
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
+            g2.setColor(Color.WHITE);
+            g2.drawString(currentFileName, getXforCenteredText(currentFileName) + 12, inputFieldY - 5);
+
+            cursorCounter++;
+            if (cursorCounter % 80 < 40) {
+                int length = (int) g2.getFontMetrics().getStringBounds(currentFileName, g2).getWidth();
+                g2.drawString("_", getXforCenteredText(currentFileName) + 12 + length, inputFieldY - 5);
+                cursorCounter %= 80;
+            }
+
+            if (fileExists) {
+                text = "Save Already Exists";
+                textX = getXforCenteredText(text);
+                g2.drawString(text, textX, inputFieldY + gamePanel.tileSize);
+            }
+
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 26F));
+            text = "Press [ENTER] to Save, [ESC] to Cancel";
+            textX = getXforCenteredText(text);
+            textY = y + height - gamePanel.tileSize;
+            g2.drawString(text, textX, textY);
+        } else if (titleSubState == 2){
+            x = gamePanel.tileSize*2;
+            y += gamePanel.tileSize;
+            int width = gamePanel.tileSize * 16;
+            int height = gamePanel.tileSize * 8;
+            drawSubWindow(x, y, width, height);
+
+            // Load World
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
+            text = "Load World";
+            int textX = getXforCenteredText(text);
+            int textY = y + gamePanel.tileSize;
+            g2.drawString(text, textX, textY);
+
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
+            if(saves.isEmpty()){
+                text = "No saves found";
+                g2.drawString(text, getXforCenteredText(text), y + (height/2));
+            } else {
+                textX = x + gamePanel.tileSize;
+                textY = y + gamePanel.tileSize*2;
+                for(int i = 0; i < saves.size(); i++){
+                    g2.drawString(saves.get(i), textX, textY);
+                    if (i == titleCommandNum){
+                        g2.drawString(">", textX-32, textY);
+                    }
+                    textY += gamePanel.tileSize;
+                    if((i+1) % 5 == 0){
+                        textX += gamePanel.tileSize*4;
+                        textY = y + gamePanel.tileSize*2;
+                    }
+                }
+            }
+
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 26F));
+            text = "Press [ENTER] to Load World, [ESC] to Cancel";
+            textX = getXforCenteredText(text);
+            textY = y + height - gamePanel.tileSize;
+            g2.drawString(text, textX, textY);
         }
-        g2.setColor(Color.DARK_GRAY);
-        g2.drawString(text, x+3, y+3);
-        g2.setColor(Color.WHITE);
-        g2.drawString(text, x, y);
 
         // COPYRIGHT
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
@@ -300,7 +389,7 @@ public class UI {
 
         // FULLSCREEN CHECKBOX
         textX = (int) (frameX + gamePanel.tileSize*4.5);
-        textY = frameY + gamePanel.tileSize*2;
+        textY = (int) (frameY + gamePanel.tileSize*1.8);
         g2.setStroke(new BasicStroke(3));
         g2.drawRect(textX, textY, gamePanel.tileSize/2, gamePanel.tileSize/2);
         if(gamePanel.fullScreen){

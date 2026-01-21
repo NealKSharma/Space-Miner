@@ -3,6 +3,7 @@ package com.neal.spaceminer.main;
 import com.neal.spaceminer.entity.Entity;
 import com.neal.spaceminer.object.*;
 import com.neal.spaceminer.tiles_interactive.*;
+import com.neal.spaceminer.hostiles.*;
 
 public class EntityGenerator {
 
@@ -40,11 +41,19 @@ public class EntityGenerator {
             case OBJ_VirusResidue.objName: obj = new OBJ_VirusResidue(gamePanel); break;
             case OBJ_VirusSlurry.objName: obj = new OBJ_VirusSlurry(gamePanel); break;
 
+            // INTERACTIVE TILES
             case IT_Rock.objName: obj = new IT_Rock(gamePanel); break;
             case IT_Chrono.objName: obj = new IT_Chrono(gamePanel); break;
             case IT_Pulsarite.objName: obj = new IT_Pulsarite(gamePanel); break;
             case IT_Scoria.objName: obj = new IT_Scoria(gamePanel); break;
             case IT_Void.objName: obj = new IT_Void(gamePanel); break;
+
+            // HOSTILES
+            case HOS_Biophage.hosName: obj = new HOS_Biophage(gamePanel); break;
+            case HOS_Dronex.hosName: obj = new HOS_Dronex(gamePanel); break;
+            case HOS_Monolith.hosName: obj = new HOS_Monolith(gamePanel); break;
+
+            // NPCs
         }
         return obj;
     }
