@@ -151,7 +151,6 @@ public class Entity {
         }
     }
     public void update() {
-
         if (!gamePanel.tileManager.isOnScreen(worldX, worldY) && type != 3) { return; }
 
         setAction();
@@ -191,6 +190,12 @@ public class Entity {
 
             if(shotAvailableCounter < 60) shotAvailableCounter++;
         }
+    }
+    public int getCenterX(){
+        return worldX + up1.getWidth()/2;
+    }
+    public int getCenterY(){
+        return worldY + up1.getHeight()/2;
     }
     public void setAction() {
 

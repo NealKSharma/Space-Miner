@@ -8,6 +8,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class HOS_Monolith extends Entity {
     public static final String hosName = "Monolith";
+    int cooldown = 0;
 
     public HOS_Monolith(GamePanel gamePanel) {
         super(gamePanel);
@@ -31,7 +32,6 @@ public class HOS_Monolith extends Entity {
         getImage();
     }
     public void getImage() {
-        // ONE TYPE OF IMAGE FOR THE ROBOT
         up1 = setup("/hostiles/back1", gamePanel.tileSize*2, gamePanel.tileSize*2);
         up2 = setup("/hostiles/back2", gamePanel.tileSize*2, gamePanel.tileSize*2);
         down1 = setup("/hostiles/front1", gamePanel.tileSize*2, gamePanel.tileSize*2);
@@ -44,17 +44,17 @@ public class HOS_Monolith extends Entity {
     public void update(){
         super.update();
 
-        int xDistance = Math.abs(worldX - gamePanel.player.worldX);
-        int yDistance = Math.abs(worldY - gamePanel.player.worldY);
+        int xDistance = Math.abs(getCenterX() - gamePanel.player.worldX);
+        int yDistance = Math.abs(getCenterY() - gamePanel.player.worldY);
         int tileDistance = (xDistance + yDistance)/gamePanel.tileSize;
 
-        if(!onPath && tileDistance < 9 && Math.random() < 0.009) onPath = true;
-        if(onPath && tileDistance > 14) onPath = false;
+        if(!onPath && tileDistance < 8) onPath = true;
+        if(onPath && tileDistance > 12) onPath = false;
     }
     public void setAction() {
         speed = 1;
         if(onPath){
-            searchPath();
+            moveToPlayer();
         } else {
             actionCooldown++;
 
@@ -73,54 +73,25 @@ public class HOS_Monolith extends Entity {
             }
         }
     }
-    public void searchPath(){
-        int startCol = (worldX + solidArea.x) / gamePanel.tileSize;
-        int startRow = (worldY + solidArea.y) / gamePanel.tileSize;
-        int goalCol = (gamePanel.player.worldX + gamePanel.player.solidArea.x) / gamePanel.tileSize;
-        int goalRow = (gamePanel.player.worldY + gamePanel.player.solidArea.y) / gamePanel.tileSize;
-
-        gamePanel.pathFinder.setNodes(startCol, startRow, goalCol, goalRow);
-        if(gamePanel.pathFinder.search()){
-            // NEXT WORLDX AND WORLDY
-            int nextX = gamePanel.pathFinder.pathList.getFirst().col * gamePanel.tileSize;
-            int nextY = gamePanel.pathFinder.pathList.getFirst().row * gamePanel.tileSize;
-
-            // ENTITY'S SOLID AREA POSITION
-            int enLeftX = worldX + solidArea.x;
-            int enRightX = worldX + solidArea.x + solidArea.width;
-            int enTopY = worldY + solidArea.y;
-            int enBottomY = worldY + solidArea.y + solidArea.height;
-
-            if(enTopY > nextY && enLeftX >= nextX && enRightX < nextX + gamePanel.tileSize) direction = "up";
-            else if(enTopY < nextY && enLeftX >= nextX && enRightX < nextX + gamePanel.tileSize) direction = "down";
-            else if(enTopY >= nextY && enBottomY < nextY + gamePanel.tileSize){
-                // LEFT OR RIGHT
-                if(enLeftX > nextX) direction = "left";
-                if(enLeftX < nextX) direction = "right";
-            } else if (enTopY > nextY && enLeftX > nextX){
-                // UP OR LEFT
-                direction = "up";
-                checkCollision();
-                if(collisionOn) direction = "left";
+    public void moveToPlayer(){
+        cooldown++;
+        if(cooldown == gamePanel.FPS/2){
+            int xDistance = Math.abs(getCenterX() - gamePanel.player.worldX);
+            int yDistance = Math.abs(getCenterY() - gamePanel.player.worldY);
+            if(xDistance > yDistance){
+                if(gamePanel.player.worldX < getCenterX()){
+                    direction = "left";
+                } else {
+                    direction = "right";
+                }
+            } else if (xDistance < yDistance){
+                if(gamePanel.player.worldY < getCenterY()){
+                    direction = "up";
+                } else {
+                    direction = "down";
+                }
             }
-            else if(enTopY > nextY && enLeftX < nextX){
-                // UP OR RIGHT
-                direction = "up";
-                checkCollision();
-                if(collisionOn) direction = "right";
-            }
-            else if(enTopY < nextY && enLeftX > nextX){
-                // DOWN OR LEFT
-                direction = "down";
-                checkCollision();
-                if(collisionOn) direction = "left";
-            }
-            else if(enTopY < nextY && enLeftX < nextX){
-                // DOWN OR RIGHT
-                direction = "down";
-                checkCollision();
-                if(collisionOn) direction = "right";
-            }
+            cooldown = 0;
         }
     }
 }
