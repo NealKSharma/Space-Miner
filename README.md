@@ -1,14 +1,6 @@
-# 🌌 Space-Miner
+# Space-Miner
 
-![Java](https://img.shields.io/badge/Language-Java-orange?style=flat-square)
-![Status](https://img.shields.io/badge/Status-Early_Prototype-red?style=flat-square)
-![Genre](https://img.shields.io/badge/Genre-Survival_Sandbox-blue?style=flat-square)
-
-> **Developer:** Neal Kaushik Sharma
-
----
-
-## 🪐 The Mission: PSR B1257+12
+## The Mission: PSR B1257+12
 
 You are stranded. Your ship has crash-landed in the **PSR B1257+12 system**—a real-world star system orbited by a massive **Pulsar**.
 
@@ -18,7 +10,7 @@ This is a game about **exploration**, **logistics**, and **survival** built enti
 
 ---
 
-## 🌌 The Core Narrative: The Lich's Clockwork Prison
+## The Core Narrative: The Lich's Clockwork Prison
 
 The reality of the **PSR B1257+12** system, or "The Lich," is that its planet is a colossal, ancient **Machine** powered by the raw, chaotic energy of the central pulsar. The pulsar is the system's central clock and power source, dictating a relentless, dangerous cycle. Your presence here began with **Pilot Thorne**, an astro-archaeologist who detected an ancient signal and crossed the orbital threshold. The Machine's prime directive, **Maintain and Repair**, was instantly triggered. Lacking an operator, it initiated a **Seizure Protocol**: it channeled the pulsar's energy into a brutal EMP that destroyed Thorne's ship and performed a brute-force **Neural Scan** of his dying mind. The human died, and his consciousness was captured as a blueprint.
 
@@ -26,7 +18,7 @@ You are the result: a **Pilot Program**, a piece of software running a synthetic
 
 ***
 
-## ⏰ Pulsar Mechanics and Scavenging
+## Pulsar Mechanics and Scavenging
 
 The pulsar's chaotic yet rhythmic energy flow directly impacts the planet's surface and the integrity of your suit, creating a dynamic survival challenge:
 
@@ -37,7 +29,7 @@ The pulsar's chaotic yet rhythmic energy flow directly impacts the planet's surf
 
 ***
 
-## 🚀 The Final Ascent: Breaking the Loop
+## The Final Ascent: Breaking the Loop
 
 Your ultimate objective is to return to the surface and locate the **Lost Starship**—the vessel of the highly advanced crew that preceded Pilot Thorne. This ship, buried deep beneath the Machine's surface layers, is far superior to Thorne's small vessel and is believed to be intact, having been deliberately hidden or protected by the previous pilots who realized the planet's true nature.
 
@@ -50,33 +42,33 @@ This escape requires two vital, self-constructed devices that must be successful
 
 ---
 
-## 📸 Gallery
+## Gallery
 
 ![img.png](img.png)
 
 ---
 
-## 🎮 Key Features
+## Key Features
 
-### 🎒 Deep Inventory Management
+### Deep Inventory Management
 Survival requires organization. The game features a complete **slot-based inventory system**.
 * **Drag & Swap:** Organize your backpack efficiently.
 * **Storage Containers:** Find chests scattered across the world to store excess materials.
 * **Smart Transfer:** Instantly move items between your inventory and storage containers with a single click.
 
-### 🗺️ Interactive World
+### Interactive World
 The world isn't just a static background.
 * **Precise Physics:** The game uses a custom collision system, allowing for smooth movement around obstacles rather than snapping to a rigid grid.
 * **Context-Sensitive Actions:** Interact with specific objects in the world—open crates, pick up tools off the ground, or inspect machinery—dynamically based on where you are facing.
 
-### ⚙️ Smooth Performance
+### Smooth Performance
 * **High Refresh Rate:** Running on a custom game loop optimized for **265 FPS**, providing fluid character animations and responsive controls.
 * **Save/Load System:** Your progress is persistent. Save your location, inventory, and world state and pick up exactly where you left off.
 * **Custom Settings:** Adjust audio levels, toggle fullscreen, and manage controls via a persistent configuration menu.
 
 ---
 
-## ⌨️ Controls
+## Controls
 
 | Key | Action |
 | :--- | :--- |
@@ -90,7 +82,7 @@ The world isn't just a static background.
 
 ---
 
-## 🧩 Tech Stack
+## Tech Stack
 
 This project is a showcase of **Native Java Development**, built without external engines.
 
@@ -101,7 +93,7 @@ This project is a showcase of **Native Java Development**, built without externa
 
 ---
 
-## 🧰 Roadmap
+## Roadmap
 
 - [ ] **Oxygen & Hunger Systems**
 - [ ] **Crafting UI**
@@ -111,12 +103,12 @@ This project is a showcase of **Native Java Development**, built without externa
 
 ---
 
-## 🪙 Credits
+## Credits
 
 * **Development:** Neal Kaushik Sharma
 * **Assets:** Custom pixel art and placeholder assets.
 
 ---
 
-### ⚠️ Note
+### Note
 *This project is currently in active development. Features are subject to change and optimization.*
